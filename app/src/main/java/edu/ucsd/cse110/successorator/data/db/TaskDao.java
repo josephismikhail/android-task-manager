@@ -10,11 +10,19 @@ import androidx.room.Transaction;
 import java.util.List;
 
 @Dao
-public abstract class TaskDao {
-
+public interface TaskDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract Long insert(TaskEntity flashcard);
+    Long insert(TaskEntity task);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insert(List<TaskEntity> tasks);
 
+    @Transaction
+    default int append(TaskEntity task) {
+        return Math.toIntExact(insert(new TaskEntity(task.task, task.id)));
+    }
+
+    @Query("SELECT COUNT(*) FROM tasks")
+    int count();
 }

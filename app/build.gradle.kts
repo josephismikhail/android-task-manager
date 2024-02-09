@@ -38,6 +38,7 @@ android {
 
 dependencies {
     implementation(project(":lib"))
+    implementation("androidx.room:room-common:2.6.1")
     project(":lib")
 
     implementation("androidx.room:room-runtime:2.6.1")

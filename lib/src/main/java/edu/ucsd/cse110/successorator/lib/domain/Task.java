@@ -18,6 +18,7 @@ public class Task {
         return id;
     }
 
+    @NonNull
     public String getTask() {
         return this.task;
     }

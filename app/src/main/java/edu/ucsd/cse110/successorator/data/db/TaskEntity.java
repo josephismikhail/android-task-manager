@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 import java.util.Objects;
 
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-@Entity
+@Entity(tableName = "tasks")
 public class TaskEntity {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "completed")
