@@ -26,7 +26,7 @@ public class RoomTaskRepository implements TaskRepository {
         var entities = taskList.stream()
                 .map(TaskEntity::fromTask)
                 .collect(Collectors.toList());
-        taskDao.insert((TaskEntity) entities);
+        taskDao.insert(entities);
     }
 
     @Override

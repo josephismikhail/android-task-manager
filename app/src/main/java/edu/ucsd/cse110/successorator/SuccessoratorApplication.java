@@ -27,8 +27,8 @@ public class SuccessoratorApplication extends Application {
         var database = Room.databaseBuilder(
                 getApplicationContext(),
                 SuccessoratorDatabase.class,
-                "successorator-databse"
-            )
+                "successorator-database"
+        )
                 .allowMainThreadQueries()
                 .build();
         this.taskRepository = new RoomTaskRepository(database.taskDao());
@@ -36,13 +36,13 @@ public class SuccessoratorApplication extends Application {
         var sharedPreferences = getSharedPreferences("successorator", MODE_PRIVATE);
         var isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
 
-//        if (isFirstRun && database.taskDao().count() == 0) {
-//            taskRepository.save(DEFAULT_TASKS);
-//
-//            sharedPreferences.edit()
-//                    .putBoolean("isFirstRun", false)
-//                    .apply();
-//        }
+        if (isFirstRun && database.taskDao().count() == 0) {
+            taskRepository.save(DEFAULT_TASKS);
+
+            sharedPreferences.edit()
+                    .putBoolean("isFirstRun", false)
+                    .apply();
+        }
     }
 
     public TaskRepository getTaskRepository() {

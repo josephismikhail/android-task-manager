@@ -28,8 +28,7 @@ public class TaskEntity {
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        var t = new TaskEntity(task.getTask(), task.id());
-        return t;
+        return new TaskEntity(task.getTask(), task.id());
     }
 
     public @NonNull Task toTask() {
