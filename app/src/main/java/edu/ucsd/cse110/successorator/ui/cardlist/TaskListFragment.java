@@ -15,6 +15,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
@@ -42,7 +43,7 @@ public class TaskListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         this.adapter = new TaskListAdapter(requireContext(), List.of());
-        activityModel.getOrderedCards().observe(cards -> {
+        activityModel.getOrderedTasks().observe(cards -> {
             if (cards == null) return;
             adapter.clear();
             adapter.addAll(new ArrayList<>(cards));
@@ -59,6 +60,11 @@ public class TaskListFragment extends Fragment {
     ) {
         this.view = FragmentTaskListBinding.inflate(inflater, container, false);
         view.taskList.setAdapter(adapter);
+
+        view.plusButton.setOnClickListener(v -> {
+            var dialogFragment = CreateTaskDialogFragment.newInstance();
+            dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
+        });
 
         return view.getRoot();
     }

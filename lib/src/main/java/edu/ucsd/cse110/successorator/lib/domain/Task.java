@@ -3,17 +3,20 @@ package edu.ucsd.cse110.successorator.lib.domain;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Serializable {
     private boolean completed;
-    private final @NonNull String task;
     private final @Nullable Integer id;
+    private final @NonNull String task;
+    private final @NonNull Integer sortOrder;
 
-    public Task(@NonNull String task, @Nullable Integer id) {
+    public Task(@NonNull String task, @Nullable Integer id, int sortOrder) {
         this.task = task;
         this.id = id;
         this.completed = false;
+        this.sortOrder = sortOrder;
     }
 
     public @Nullable Integer id() {
@@ -22,6 +25,14 @@ public class Task {
 
     public @NonNull String getTask() {
         return this.task;
+    }
+
+    public int sortOrder() {
+        return sortOrder;
+    }
+
+    public Task withId(int id) {
+        return new Task(task, id, sortOrder);
     }
 
     public boolean isCompleted() {
@@ -47,5 +58,9 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(completed, task, id);
+    }
+
+    public Task withSortOrder(int sortOrder) {
+        return new Task(task ,id, sortOrder);
     }
 }
