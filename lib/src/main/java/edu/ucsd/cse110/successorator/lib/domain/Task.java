@@ -36,7 +36,6 @@ public class Task {
     public void uncompleteTask() {
         this.completed = false;
     }
-}
 
     @Override
     public boolean equals(Object o) {

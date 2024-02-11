@@ -21,13 +21,19 @@ public class RoomTaskRepository implements TaskRepository {
     @Override
     public Subject<Task> find(int id) {
         var entityLiveData = taskDao.findAsLiveData(id);
-        var flashcardLiveData = Transformations.map(entityLiveData,TaskEntity::toTask);
-        return new LiveDataSubjectAdapter<>(flashcardLiveData);
+        var taskLiveData = Transformations.map(entityLiveData,TaskEntity::toTask);
+        return new LiveDataSubjectAdapter<>(taskLiveData);
     }
 
     @Override
     public Subject<List<Task>> findAll() {
-        return null;
+        var entitiesLiveData = taskDao.findAllAsLiveData();
+        var tasksLiveData = Transformations.map(entitiesLiveData, entities -> {
+            return entities.stream()
+                    .map(TaskEntity::toTask)
+                    .collect(Collectors.toList());
+        });
+        return new LiveDataSubjectAdapter<>(tasksLiveData);
     }
 
     @Override
