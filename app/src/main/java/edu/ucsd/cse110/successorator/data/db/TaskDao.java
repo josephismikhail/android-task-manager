@@ -18,11 +18,23 @@ public interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     List<Long> insert(List<TaskEntity> tasks);
 
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    TaskEntity find(int id);
+
+    @Query("SELECT * FROM tasks ORDER BY id")
+    List<TaskEntity> findAll();
+
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    LiveData<TaskEntity> findAsLiveData(int id);
+
+    @Query("SELECT * FROM tasks ORDER BY id")
+    LiveData<List<TaskEntity>> findAllAsLiveData();
+
+    @Query("SELECT COUNT(*) FROM tasks")
+    int count();
+
     @Transaction
     default int append(TaskEntity task) {
         return Math.toIntExact(insert(new TaskEntity(task.task, task.id)));
     }
-
-    @Query("SELECT COUNT(*) FROM tasks")
-    int count();
 }

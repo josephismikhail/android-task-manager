@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.successorator.data.db;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,12 +9,25 @@ import java.util.stream.Collectors;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
+import edu.ucsd.cse110.successorator.util.LiveDataSubjectAdapter;
 
 public class RoomTaskRepository implements TaskRepository {
     private final TaskDao taskDao;
 
     public RoomTaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
+    }
+
+    @Override
+    public Subject<Task> find(int id) {
+        var entityLiveData = taskDao.findAsLiveData(id);
+        var flashcardLiveData = Transformations.map(entityLiveData,TaskEntity::toTask);
+        return new LiveDataSubjectAdapter<>(flashcardLiveData);
+    }
+
+    @Override
+    public Subject<List<Task>> findAll() {
+        return null;
     }
 
     @Override
