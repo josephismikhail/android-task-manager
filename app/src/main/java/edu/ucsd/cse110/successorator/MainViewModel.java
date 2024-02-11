@@ -6,22 +6,24 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
 
-
     // UI state
-    private final SimpleSubject<List<Integer>> cardOrdering;
-    private final SimpleSubject<List<Task>> orderedCards;
+    private final MutableSubject<List<Integer>> cardOrdering;
+    private final MutableSubject<List<Task>> orderedCards;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -43,11 +45,10 @@ public class MainViewModel extends ViewModel {
         taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
 
-            var ordering = new ArrayList<Integer>();
-            for (int i = 0; i < cards.size(); i++) {
-                ordering.add(i);
-            }
-            cardOrdering.setValue(ordering);
+            var newOrderedCards = cards.stream()
+                    .sorted(Comparator.comparingInt(Task::id))
+                    .collect(Collectors.toList());
+            orderedCards.setValue(newOrderedCards);
         });
 
         cardOrdering.observe(ordering -> {
@@ -63,7 +64,7 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    public SimpleSubject<List<Task>> getOrderedCards() {
+    public Subject<List<Task>> getOrderedCards() {
         return orderedCards;
     }
 }
