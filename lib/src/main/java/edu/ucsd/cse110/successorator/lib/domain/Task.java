@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Task implements Serializable {
     private final @NonNull String task;
     private final @Nullable Integer id;
-    private final @NonNull Integer sortOrder;
+    private final int sortOrder;
     private boolean completed;
 
     public Task(@NonNull String task, @Nullable Integer id, int sortOrder) {

@@ -21,10 +21,10 @@ public class TaskEntity {
     @ColumnInfo(name = "id")
     public Integer id;
 
-    @ColumnInfo(name = "sortorder")
-    public Integer sortOrder;
+    @ColumnInfo(name = "sortOrder")
+    public int sortOrder;
 
-    TaskEntity(@NonNull String task, @Nullable Integer id, @NonNull Integer sortOrder) {
+    TaskEntity(@NonNull String task, @Nullable Integer id, int sortOrder) {
         this.task = task;
         this.id = id;
         this.sortOrder = sortOrder;

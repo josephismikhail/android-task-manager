@@ -58,7 +58,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var front = view.taskFrontEditText.getText().toString();
 
         var task = new Task(front, null, -1);
-        activityModel.prepend(task);
+        activityModel.append(task);
 
         dialog.dismiss();
     }

@@ -21,13 +21,13 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     TaskEntity find(int id);
 
-    @Query("SELECT * FROM tasks ORDER BY id")
+    @Query("SELECT * FROM tasks ORDER BY sortOrder")
     List<TaskEntity> findAll();
 
     @Query("SELECT * FROM tasks WHERE id = :id")
     LiveData<TaskEntity> findAsLiveData(int id);
 
-    @Query("SELECT * FROM tasks ORDER BY id")
+    @Query("SELECT * FROM tasks ORDER BY sortOrder")
     LiveData<List<TaskEntity>> findAllAsLiveData();
 
     @Query("SELECT COUNT(*) FROM tasks")
@@ -40,6 +40,6 @@ public interface TaskDao {
 
     @Transaction
     default int prepend(TaskEntity task){
-        return Math.toIntExact(insert(task));
+        return Math.toIntExact(insert(new TaskEntity(task.task, task.id, task.sortOrder)));
     }
 }
