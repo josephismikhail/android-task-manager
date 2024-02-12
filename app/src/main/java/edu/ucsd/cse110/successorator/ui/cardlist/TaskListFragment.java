@@ -43,10 +43,10 @@ public class TaskListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         this.adapter = new TaskListAdapter(requireContext(), List.of());
-        activityModel.getOrderedTasks().observe(cards -> {
-            if (cards == null) return;
+        activityModel.getOrderedTasks().observe(tasks -> {
+            if (tasks == null) return;
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards));
+            adapter.addAll(new ArrayList<>(tasks));
             adapter.notifyDataSetChanged();
         });
     }
