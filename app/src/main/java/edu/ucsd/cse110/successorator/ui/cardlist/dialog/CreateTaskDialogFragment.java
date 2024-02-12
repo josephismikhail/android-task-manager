@@ -57,8 +57,8 @@ public class CreateTaskDialogFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.taskFrontEditText.getText().toString();
 
-        var task = new Task(front, null, -1);
-        activityModel.append(task);
+        var task = new Task(front, 8, -1);
+        activityModel.prepend(task);
 
         dialog.dismiss();
     }
