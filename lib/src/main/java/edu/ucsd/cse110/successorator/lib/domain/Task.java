@@ -23,7 +23,8 @@ public class Task implements Serializable {
         return id;
     }
 
-    public @NonNull String getTask() {
+    @NonNull
+    public String getTask() {
         return this.task;
     }
 
@@ -38,7 +39,7 @@ public class Task implements Serializable {
     }
 
     public void completeTask() {
-        this.completed = true;
+       this.completed = true;
     }
 
     public void uncompleteTask() {
