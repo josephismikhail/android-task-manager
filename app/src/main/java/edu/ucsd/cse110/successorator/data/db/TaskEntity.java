@@ -21,17 +21,21 @@ public class TaskEntity {
     @ColumnInfo(name = "id")
     public Integer id;
 
-    TaskEntity(@NonNull String task, @Nullable Integer id) {
-        this.completed = false;
+    @ColumnInfo(name = "sortorder")
+    public Integer sortOrder;
+
+    TaskEntity(@NonNull String task, @Nullable Integer id, @NonNull Integer sortOrder) {
         this.task = task;
         this.id = id;
+        this.sortOrder = sortOrder;
+        this.completed = false;
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        return new TaskEntity(task.getTask(), task.id());
+        return new TaskEntity(task.getTask(), task.id(), task.sortOrder());
     }
 
     public @NonNull Task toTask() {
-        return new Task(task, id);
+        return new Task(task, id, sortOrder);
     }
 }

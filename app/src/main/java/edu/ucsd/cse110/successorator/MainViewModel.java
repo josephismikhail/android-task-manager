@@ -21,7 +21,6 @@ public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
 
-
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
 
@@ -52,7 +51,7 @@ public class MainViewModel extends ViewModel {
 
     }
 
-    public SimpleSubject<List<Task>> getOrderedTasks() {
+    public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
     }
 
@@ -64,5 +63,5 @@ public class MainViewModel extends ViewModel {
         taskRepository.prepend(task);
     }
 
-    public void remove(int id) { taskRepository.remove(id); }
+    //public void remove(int id) { taskRepository.remove(id); }
 }

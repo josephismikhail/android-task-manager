@@ -7,16 +7,16 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Task implements Serializable {
-    private boolean completed;
-    private final @Nullable Integer id;
     private final @NonNull String task;
+    private final @Nullable Integer id;
     private final @NonNull Integer sortOrder;
+    private boolean completed;
 
     public Task(@NonNull String task, @Nullable Integer id, int sortOrder) {
         this.task = task;
         this.id = id;
-        this.completed = false;
         this.sortOrder = sortOrder;
+        this.completed = false;
     }
 
     public @Nullable Integer id() {

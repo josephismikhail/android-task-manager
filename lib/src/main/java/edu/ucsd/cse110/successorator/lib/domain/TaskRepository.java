@@ -15,4 +15,6 @@ public interface TaskRepository {
     void save(List<Task> taskList);
 
     void append(Task task);
+
+    void prepend(Task task);
 }

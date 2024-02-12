@@ -35,6 +35,11 @@ public interface TaskDao {
 
     @Transaction
     default int append(TaskEntity task) {
-        return Math.toIntExact(insert(new TaskEntity(task.task, task.id)));
+        return Math.toIntExact(insert(new TaskEntity(task.task, task.id, task.sortOrder)));
+    }
+
+    @Transaction
+    default int prepend(TaskEntity task){
+        return Math.toIntExact(insert(task));
     }
 }
