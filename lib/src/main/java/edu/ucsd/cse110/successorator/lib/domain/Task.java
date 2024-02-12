@@ -31,9 +31,7 @@ public class Task implements Serializable {
         return sortOrder;
     }
 
-    public Task withId(int id) {
-        return new Task(task, id, sortOrder);
-    }
+    public Task withId(int id) { return new Task(task, id, sortOrder); }
 
     public boolean isCompleted() {
         return this.completed;
@@ -47,20 +45,20 @@ public class Task implements Serializable {
         this.completed = false;
     }
 
+    public Task withSortOrder(int sortOrder) {
+        return new Task(task, id, sortOrder);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task1 = (Task) o;
-        return completed == task1.completed && Objects.equals(task, task1.task) && Objects.equals(id, task1.id);
+        return completed == task1.completed && Objects.equals(id, task1.id) && Objects.equals(task, task1.task) && Objects.equals(sortOrder, task1.sortOrder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(completed, task, id);
-    }
-
-    public Task withSortOrder(int sortOrder) {
-        return new Task(task ,id, sortOrder);
+        return Objects.hash(completed, id, task, sortOrder);
     }
 }
