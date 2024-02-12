@@ -19,7 +19,8 @@ public class Task implements Serializable {
         this.completed = false;
     }
 
-    public @Nullable Integer id() {
+    @Nullable
+    public Integer id() {
         return id;
     }
 

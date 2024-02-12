@@ -42,11 +42,15 @@ public interface TaskDao {
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
 
+    @Query("SELECT MAX(id) FROM tasks")
+    int getMaxId();
+
     @Transaction
     default int append(TaskEntity task) {
         var maxSortOrder = getMaxsortOrder();
+        var maxId = getMaxId();
         var newTask = new TaskEntity(
-                task.task, task.id, maxSortOrder + 1
+                task.task, maxId + 1, maxSortOrder + 1
         );
         return Math.toIntExact(insert(newTask));
     }
@@ -54,8 +58,9 @@ public interface TaskDao {
     @Transaction
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinsortOrder(), getMaxsortOrder(), 1);
+        var maxId = getMaxId();
         var newTask = new TaskEntity(
-                task.task, task.id, getMinsortOrder() - 1
+                task.task, maxId + 1, getMinsortOrder() - 1
         );
         return Math.toIntExact(insert(newTask));
     }
