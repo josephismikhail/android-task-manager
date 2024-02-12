@@ -34,14 +34,14 @@ public class TaskRepository {
 
     public void append(Task task) {
         dataSource.putTask(
-                task.withSortOrder(dataSource.getMaxSortOrder() + 1)
+            task.withSortOrder(dataSource.getMaxSortOrder() + 1)
         );
     }
 
     public void prepend(Task task) {
         dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(), 1);
         dataSource.putTask(
-          task.withSortOrder(dataSource.getMinSortOrder() - 1)
+            task.withSortOrder(dataSource.getMinSortOrder() - 1)
         );
     }
 }

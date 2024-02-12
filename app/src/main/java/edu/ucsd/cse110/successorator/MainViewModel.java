@@ -24,12 +24,12 @@ public class MainViewModel extends ViewModel {
 
     public static final ViewModelInitializer<MainViewModel> initializer =
         new ViewModelInitializer<>(
-                MainViewModel.class,
-                creationExtras -> {
-                    var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
-                    assert app != null;
-                    return new MainViewModel(app.getTaskRepository());
-                });
+            MainViewModel.class,
+            creationExtras -> {
+                var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
+                assert app != null;
+                return new MainViewModel(app.getTaskRepository());
+            });
 
     public MainViewModel(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
@@ -39,11 +39,11 @@ public class MainViewModel extends ViewModel {
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return; // not ready yet, ignore
+            if (tasks == null) return;
 
             var newOrderedTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
+                .sorted(Comparator.comparingInt(Task::sortOrder))
+                .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
 

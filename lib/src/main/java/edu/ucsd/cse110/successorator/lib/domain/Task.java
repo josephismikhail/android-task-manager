@@ -58,7 +58,5 @@ public class Task implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(completed, id, task, sortOrder);
-    }
+    public int hashCode() { return Objects.hash(completed, id, task, sortOrder); }
 }

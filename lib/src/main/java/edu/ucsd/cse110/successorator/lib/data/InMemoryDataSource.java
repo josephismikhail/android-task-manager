@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 
+/**
+ * The InMemoryDataSource class functions as a local "database" of
+ * tasks for the app to run and present on. Will look to implement a
+ * remote database so data can persist between sessions.
+ */
 public class InMemoryDataSource {
     private int nextId = 0;
 
@@ -15,21 +20,21 @@ public class InMemoryDataSource {
     private int maxSortOrder = Integer.MIN_VALUE;
 
     private final Map<Integer, Task> tasks
-            = new HashMap<>();
+       = new HashMap<>();
     private final Map<Integer, SimpleSubject<Task>> taskSubjects
-            = new HashMap<>();
+       = new HashMap<>();
     private final SimpleSubject<List<Task>> allTasksSubjects
-            = new SimpleSubject<>();
+       = new SimpleSubject<>();
 
     public InMemoryDataSource() {
     }
 
     public final static List<Task> DEFAULT_CARDS = List.of(
-            new Task("Test 1",0, 0),
-            new Task("Test 2",1, 1),
-            new Task("Test 3",2, 2),
-            new Task("Test 4",3, 3),
-            new Task("Test 5",4, 4)
+       new Task("Test 1",0, 0),
+       new Task("Test 2",1, 1),
+       new Task("Test 3",2, 2),
+       new Task("Test 4",3, 3),
+       new Task("Test 5",4, 4)
     );
 
     public static InMemoryDataSource fromDefault() {
@@ -83,8 +88,8 @@ public class InMemoryDataSource {
 
     public void putTasks(List<Task> items) {
         var fixedTasks = items.stream()
-                .map(this::preInsert)
-                .collect(Collectors.toList());
+            .map(this::preInsert)
+            .collect(Collectors.toList());
 
         fixedTasks.forEach(task -> tasks.put(task.id(), task));
         postInsert();
@@ -106,12 +111,15 @@ public class InMemoryDataSource {
 
     public void shiftSortOrders(int from, int to, int by) {
         var items = tasks.values().stream()
-                .filter(task -> task.sortOrder() >= from && task.sortOrder() <= to)
-                .map(task -> task.withSortOrder(task.sortOrder() + by))
-                .collect(Collectors.toList());
+           .filter(task -> task.sortOrder() >= from && task.sortOrder() <= to)
+           .map(task -> task.withSortOrder(task.sortOrder() + by))
+           .collect(Collectors.toList());
         putTasks(items);
     }
 
+    /**
+     * Ensures that tasks inserted have a valid id
+     */
     private Task preInsert(Task task) {
         var id = task.id();
         if (id == null) {
@@ -123,6 +131,9 @@ public class InMemoryDataSource {
         return task;
     }
 
+    /**
+     * Ensures that after insertion of a task that sort orders are still valid
+     */
     private void postInsert() {
         minSortOrder = tasks.values().stream()
                 .map(Task::sortOrder)
@@ -134,6 +145,9 @@ public class InMemoryDataSource {
                 .orElse(Integer.MIN_VALUE);
     }
 
+    /**
+     * Checks to verify that constraints on sort order are maintained
+     */
     private void assertSortOrderConstraints() {
         var sortOrders = tasks.values().stream()
                 .map(Task::sortOrder)
