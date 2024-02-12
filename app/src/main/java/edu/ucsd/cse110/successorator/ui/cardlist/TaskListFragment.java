@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
+
+// library for showing date
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
@@ -65,6 +74,32 @@ public class TaskListFragment extends Fragment {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
+
+        TextView dateTextView = view.getRoot().findViewById(R.id.date);
+        Calendar calendar = Calendar.getInstance();
+        Date currentTime = calendar.getTime();
+
+        // Set the time to 2 AM
+        calendar.set(Calendar.HOUR_OF_DAY, 2);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Check if the current time is before 2 AM, then add one day
+        if (currentTime.before(calendar.getTime())) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        // Get the updated date and time
+        Date updatedTime = calendar.getTime();
+
+        // Format the date for display
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd", Locale.getDefault());
+        String updatedTimeString = sdf.format(updatedTime);
+
+        // Update the text of the TextView with the formatted date
+        dateTextView.setText(updatedTimeString);
+
 
         return view.getRoot();
     }
