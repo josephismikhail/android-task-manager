@@ -100,7 +100,6 @@ public class TaskListFragment extends Fragment {
         // Update the text of the TextView with the formatted date
         dateTextView.setText(updatedTimeString);
 
-
         return view.getRoot();
     }
 }
