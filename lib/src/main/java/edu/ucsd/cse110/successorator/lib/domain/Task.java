@@ -36,7 +36,7 @@ public class Task implements Serializable {
     public Task withId(int id) { return new Task(task, id, sortOrder); }
 
     public boolean isCompleted() {
-        return this.completed;
+        return completed;
     }
 
     public void completeTask() {

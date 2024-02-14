@@ -39,6 +39,9 @@ public interface TaskDao {
     @Query("SELECT MAX(sortOrder) FROM tasks")
     int getMaxsortOrder();
 
+    @Query("SELECT MAX(sortOrder) FROM tasks WHERE completed = 0")
+    int getIncompleteMaxsortOrder();
+
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
 
@@ -47,12 +50,23 @@ public interface TaskDao {
 
     @Transaction
     default int append(TaskEntity task) {
-        var maxSortOrder = getMaxsortOrder();
-        var maxId = getMaxId();
-        var newTask = new TaskEntity(
-                task.task, maxId + 1, maxSortOrder + 1
-        );
-        return Math.toIntExact(insert(newTask));
+//        var maxSortOrder = getMaxsortOrder();
+//        var maxId = getMaxId();
+//        var newTask = new TaskEntity(
+//                task.task + " Completed", maxId + 1, maxSortOrder + 1
+//        );
+//        newTask.completed = true;
+//        return Math.toIntExact(insert(newTask));
+        if (getIncompleteMaxsortOrder() == getMaxsortOrder()) { // if no completed tasks
+            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getMaxsortOrder() + 1);
+            newTask.completed = true;
+            return Math.toIntExact(insert(newTask));
+        } else {
+            shiftSortOrder(getIncompleteMaxsortOrder() + 1, getMaxsortOrder(), 1);
+            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getIncompleteMaxsortOrder() + 1);
+            newTask.completed = true;
+            return Math.toIntExact(insert(newTask));
+        }
     }
 
     @Transaction
@@ -60,8 +74,11 @@ public interface TaskDao {
         shiftSortOrder(getMinsortOrder(), getMaxsortOrder(), 1);
         var maxId = getMaxId();
         var newTask = new TaskEntity(
-                task.task, maxId + 1, getMinsortOrder() - 1
+                task.task + " Incomplete", maxId + 1, getMinsortOrder() - 1
         );
         return Math.toIntExact(insert(newTask));
     }
+
+    @Query("DELETE FROM tasks WHERE id = :id")
+    void remove(int id);
 }

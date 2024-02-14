@@ -58,4 +58,9 @@ public class RoomTaskRepository implements TaskRepository {
     public void prepend(Task task) {
         taskDao.prepend(TaskEntity.fromTask(task));
     }
+
+    @Override
+    public void remove(int id) {
+        taskDao.remove(id);
+    }
 }

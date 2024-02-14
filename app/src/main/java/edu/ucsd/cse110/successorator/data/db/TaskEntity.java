@@ -12,14 +12,14 @@ import edu.ucsd.cse110.successorator.lib.domain.Task;
 @Entity(tableName = "tasks")
 public class TaskEntity {
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    public Integer id;
+
     @ColumnInfo(name = "completed")
-    public boolean completed;
+    public Boolean completed;
 
     @ColumnInfo(name = "task")
     public String task;
-
-    @ColumnInfo(name = "id")
-    public Integer id;
 
     @ColumnInfo(name = "sortOrder")
     public int sortOrder;
