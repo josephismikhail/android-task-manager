@@ -7,23 +7,25 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Task implements Serializable {
-    private boolean completed;
-    private final @Nullable Integer id;
     private final @NonNull String task;
-    private final @NonNull Integer sortOrder;
+    private final @Nullable Integer id;
+    private final int sortOrder;
+    private boolean completed;
 
     public Task(@NonNull String task, @Nullable Integer id, int sortOrder) {
         this.task = task;
         this.id = id;
-        this.completed = false;
         this.sortOrder = sortOrder;
+        this.completed = false;
     }
 
-    public @Nullable Integer id() {
+    @Nullable
+    public Integer id() {
         return id;
     }
 
-    public @NonNull String getTask() {
+    @NonNull
+    public String getTask() {
         return this.task;
     }
 
@@ -38,7 +40,7 @@ public class Task implements Serializable {
     }
 
     public void completeTask() {
-        this.completed = true;
+       this.completed = true;
     }
 
     public void uncompleteTask() {
