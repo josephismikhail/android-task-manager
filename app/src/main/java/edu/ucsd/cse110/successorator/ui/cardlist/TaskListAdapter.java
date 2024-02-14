@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,19 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             var layoutInflater = LayoutInflater.from(getContext());
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
+
+        binding.getRoot().setOnClickListener(v -> {
+            if (task.isCompleted()) {
+                binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
+                        & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                task.uncompleteTask();
+            }
+            else {
+                binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
+                                                    | Paint.STRIKE_THRU_TEXT_FLAG);
+                task.completeTask();
+            }
+        });
 
         binding.taskText.setText(task.getTask());
 
