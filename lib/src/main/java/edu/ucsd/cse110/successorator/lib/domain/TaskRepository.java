@@ -10,12 +10,9 @@ public interface TaskRepository {
 
     Subject<List<Task>> findAll();
 
-
     void save(Task task);
 
     void save(List<Task> taskList);
-
-    void append(Task task);
 
     void prepend(Task task);
 

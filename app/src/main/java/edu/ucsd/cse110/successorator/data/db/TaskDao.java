@@ -45,24 +45,6 @@ public interface TaskDao {
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
 
-    @Query("SELECT MAX(id) FROM tasks")
-    int getMaxId();
-
-    @Transaction
-    default int append(TaskEntity task) {
-        if (getIncompleteMaxSortOrder() == getMaxSortOrder()) { // if no completed tasks
-            //var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getMaxsortOrder() + 1);
-            task.completed = true;
-            task.sortOrder = getMaxSortOrder() + 1;
-        } else {
-            shiftSortOrder(getIncompleteMaxSortOrder() + 1, getMaxSortOrder(), 1);
-//            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getIncompleteMaxsortOrder() + 1);
-            task.completed = true;
-            task.sortOrder = getIncompleteMaxSortOrder() + 1;
-        }
-        return Math.toIntExact(insert(task));
-    }
-
     @Transaction
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);

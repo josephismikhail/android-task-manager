@@ -71,10 +71,6 @@ public class MainViewModel extends ViewModel {
 
     public void save(Task task) { taskRepository.save(task); }
 
-    public void append(Task task) {
-        taskRepository.append(task);
-    }
-
     public void prepend(Task task) {
         taskRepository.prepend(task);
     }

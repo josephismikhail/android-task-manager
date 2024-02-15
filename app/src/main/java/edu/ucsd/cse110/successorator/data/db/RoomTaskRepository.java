@@ -49,11 +49,6 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void append(Task task) {
-        taskDao.append(TaskEntity.fromTask(task));
-    }
-
-    @Override
     public void prepend(Task task) {
         taskDao.prepend(TaskEntity.fromTask(task));
     }
