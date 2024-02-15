@@ -12,10 +12,10 @@ public class Task implements Serializable {
     private boolean completed;
     private final int sortOrder;
 
-    public Task(@Nullable Integer id, @NonNull String task, int sortOrder) {
+    public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
         this.id = id;
         this.task = task;
-        this.completed = false;
+        this.completed = completed;
         this.sortOrder = sortOrder;
     }
 
@@ -33,22 +33,18 @@ public class Task implements Serializable {
         return sortOrder;
     }
 
-    public Task withId(int id) { return new Task(id, task, sortOrder); }
+    public Task withId(int id) { return new Task(id, task, completed, sortOrder); }
 
     public boolean isCompleted() {
         return completed;
     }
 
-    public void completeTask() {
-       this.completed = true;
-    }
-
-    public void uncompleteTask() {
-        this.completed = false;
+    public void changeStatus() {
+        this.completed = !this.completed;
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(id, task, sortOrder);
+        return new Task(id, task, completed, sortOrder);
     }
 
     @Override

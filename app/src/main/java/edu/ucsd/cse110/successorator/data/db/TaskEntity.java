@@ -34,6 +34,6 @@ public class TaskEntity {
     }
 
     public @NonNull Task toTask() {
-        return new Task(id, task, sortOrder);
+        return new Task(id, task, completed, sortOrder);
     }
 }

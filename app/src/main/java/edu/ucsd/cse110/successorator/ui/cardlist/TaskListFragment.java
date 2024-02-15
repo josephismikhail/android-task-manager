@@ -48,11 +48,7 @@ public class TaskListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
-            if (task.isCompleted()) {
-                task.uncompleteTask();
-            } else {
-                task.completeTask();
-            }
+            task.changeStatus();
             activityModel.save(task);
         });
 
