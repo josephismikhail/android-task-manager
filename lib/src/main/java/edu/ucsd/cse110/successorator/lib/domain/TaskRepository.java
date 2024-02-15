@@ -10,6 +10,7 @@ public interface TaskRepository {
 
     Subject<List<Task>> findAll();
 
+
     void save(Task task);
 
     void save(List<Task> taskList);
@@ -19,4 +20,12 @@ public interface TaskRepository {
     void prepend(Task task);
 
     void remove(int id);
+
+    int getMinSortOrder();
+
+    int getMaxSortOrder();
+
+    int getIncompleteMaxSortOrder();
+
+    void shiftSortOrder(int from, int to, int by);
 }

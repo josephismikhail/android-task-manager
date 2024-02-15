@@ -34,13 +34,13 @@ public interface TaskDao {
     int count();
 
     @Query("SELECT MIN(sortOrder) FROM tasks")
-    int getMinsortOrder();
+    int getMinSortOrder();
 
     @Query("SELECT MAX(sortOrder) FROM tasks")
-    int getMaxsortOrder();
+    int getMaxSortOrder();
 
     @Query("SELECT MAX(sortOrder) FROM tasks WHERE completed = 0")
-    int getIncompleteMaxsortOrder();
+    int getIncompleteMaxSortOrder();
 
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
@@ -50,31 +50,24 @@ public interface TaskDao {
 
     @Transaction
     default int append(TaskEntity task) {
-//        var maxSortOrder = getMaxsortOrder();
-//        var maxId = getMaxId();
-//        var newTask = new TaskEntity(
-//                task.task + " Completed", maxId + 1, maxSortOrder + 1
-//        );
-//        newTask.completed = true;
-//        return Math.toIntExact(insert(newTask));
-        if (getIncompleteMaxsortOrder() == getMaxsortOrder()) { // if no completed tasks
+        if (getIncompleteMaxSortOrder() == getMaxSortOrder()) { // if no completed tasks
             //var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getMaxsortOrder() + 1);
             task.completed = true;
-            task.sortOrder = getMaxsortOrder() + 1;
+            task.sortOrder = getMaxSortOrder() + 1;
         } else {
-            shiftSortOrder(getIncompleteMaxsortOrder() + 1, getMaxsortOrder(), 1);
+            shiftSortOrder(getIncompleteMaxSortOrder() + 1, getMaxSortOrder(), 1);
 //            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getIncompleteMaxsortOrder() + 1);
             task.completed = true;
-            task.sortOrder = getIncompleteMaxsortOrder() + 1;
+            task.sortOrder = getIncompleteMaxSortOrder() + 1;
         }
         return Math.toIntExact(insert(task));
     }
 
     @Transaction
     default int prepend(TaskEntity task) {
-        shiftSortOrder(getMinsortOrder(), getMaxsortOrder(), 1);
+        shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
         var newTask = new TaskEntity(
-                null, task.task, false, getMinsortOrder() - 1
+                null, task.task, false, getMinSortOrder() - 1
         );
         return Math.toIntExact(insert(newTask));
     }

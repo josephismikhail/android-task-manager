@@ -1,12 +1,9 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
-import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
-import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends Fragment {
@@ -49,6 +44,23 @@ public class TaskListFragment extends Fragment {
 
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
             task.changeStatus();
+
+            var minSortOrder = activityModel.getMinSortOrder();
+            var maxSortOrder = activityModel.getMaxSortOrder();
+            var maxIncompleteSortOrder = activityModel.getIncompleteMaxSortOrder();
+
+            if (task.isCompleted()) { // move task to bottom of incomplete
+                if (maxSortOrder == maxIncompleteSortOrder) {
+                    task = task.withSortOrder(maxSortOrder + 1);
+                } else {
+                    activityModel.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1);
+                    task = task.withSortOrder(maxIncompleteSortOrder + 1);
+                }
+            } else { // moves task to top
+                activityModel.shiftSortOrder(minSortOrder, maxSortOrder, 1);
+                task = task.withSortOrder(minSortOrder);
+            }
+
             activityModel.save(task);
         });
 
@@ -70,24 +82,6 @@ public class TaskListFragment extends Fragment {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
-
-//        view.taskList.setOnItemClickListener((parent, view, position, id) -> {
-//            Task task = adapter.getItem(position);
-//            assert task != null;
-//
-////            TextView taskTextView = view.findViewById(R.id.task_text);
-//            if (task.isCompleted()) {
-//                activityModel.prepend(task);
-////                taskTextView.setPaintFlags(taskTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-//                task.uncompleteTask();
-//            } else {
-//                activityModel.append(task);
-//                task.completeTask();
-////                activityModel.remove(task.id());
-////                taskTextView.setPaintFlags(taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-////                adapter.notifyDataSetChanged();
-//            }
-//        });
 
         return view.getRoot();
     }

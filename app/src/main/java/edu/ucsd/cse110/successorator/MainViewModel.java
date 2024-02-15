@@ -5,16 +5,13 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
-import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
@@ -54,6 +51,22 @@ public class MainViewModel extends ViewModel {
 
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
+    }
+
+    public int getMinSortOrder() {
+        return taskRepository.getMinSortOrder();
+    }
+
+    public int getMaxSortOrder() {
+        return taskRepository.getMaxSortOrder();
+    }
+
+    public int getIncompleteMaxSortOrder() {
+        return taskRepository.getIncompleteMaxSortOrder();
+    }
+
+    public void shiftSortOrder(int from, int to, int by) {
+        taskRepository.shiftSortOrder(from, to, by);
     }
 
     public void save(Task task) { taskRepository.save(task); }
