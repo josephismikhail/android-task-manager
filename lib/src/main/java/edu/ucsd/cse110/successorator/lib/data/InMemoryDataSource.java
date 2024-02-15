@@ -30,11 +30,11 @@ public class InMemoryDataSource {
     }
 
     public final static List<Task> DEFAULT_CARDS = List.of(
-       new Task("Test 1",0, 0),
-       new Task("Test 2",1, 1),
-       new Task("Test 3",2, 2),
-       new Task("Test 4",3, 3),
-       new Task("Test 5",4, 4)
+       new Task(0, "Test 1", 0),
+       new Task(1, "Test 2", 1),
+       new Task(2, "Test 3", 2),
+       new Task(3, "Test 4", 3),
+       new Task(4, "Test 5", 4)
     );
 
     public static InMemoryDataSource fromDefault() {

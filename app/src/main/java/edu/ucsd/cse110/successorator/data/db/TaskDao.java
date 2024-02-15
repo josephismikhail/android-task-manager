@@ -58,23 +58,23 @@ public interface TaskDao {
 //        newTask.completed = true;
 //        return Math.toIntExact(insert(newTask));
         if (getIncompleteMaxsortOrder() == getMaxsortOrder()) { // if no completed tasks
-            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getMaxsortOrder() + 1);
-            newTask.completed = true;
-            return Math.toIntExact(insert(newTask));
+            //var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getMaxsortOrder() + 1);
+            task.completed = true;
+            task.sortOrder = getMaxsortOrder() + 1;
         } else {
             shiftSortOrder(getIncompleteMaxsortOrder() + 1, getMaxsortOrder(), 1);
-            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getIncompleteMaxsortOrder() + 1);
-            newTask.completed = true;
-            return Math.toIntExact(insert(newTask));
+//            var newTask = new TaskEntity(task.task + " Completed", getMaxId() + 1, getIncompleteMaxsortOrder() + 1);
+            task.completed = true;
+            task.sortOrder = getIncompleteMaxsortOrder() + 1;
         }
+        return Math.toIntExact(insert(task));
     }
 
     @Transaction
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinsortOrder(), getMaxsortOrder(), 1);
-        var maxId = getMaxId();
         var newTask = new TaskEntity(
-                task.task + " Incomplete", maxId + 1, getMinsortOrder() - 1
+                null, task.task, false, getMinsortOrder() - 1
         );
         return Math.toIntExact(insert(newTask));
     }

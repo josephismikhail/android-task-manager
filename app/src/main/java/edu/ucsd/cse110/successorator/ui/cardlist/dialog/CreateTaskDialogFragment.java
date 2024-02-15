@@ -8,7 +8,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -57,7 +56,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.taskFrontEditText.getText().toString();
 
-        var task = new Task(front, -1, -1);
+        var task = new Task(-1, front, -1);
         activityModel.prepend(task);
 
         dialog.dismiss();

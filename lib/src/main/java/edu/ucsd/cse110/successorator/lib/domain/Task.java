@@ -7,16 +7,16 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Task implements Serializable {
-    private final @NonNull String task;
     private final @Nullable Integer id;
-    private final int sortOrder;
+    private final @NonNull String task;
     private boolean completed;
+    private final int sortOrder;
 
-    public Task(@NonNull String task, @Nullable Integer id, int sortOrder) {
-        this.task = task;
+    public Task(@Nullable Integer id, @NonNull String task, int sortOrder) {
         this.id = id;
-        this.sortOrder = sortOrder;
+        this.task = task;
         this.completed = false;
+        this.sortOrder = sortOrder;
     }
 
     @Nullable
@@ -33,7 +33,7 @@ public class Task implements Serializable {
         return sortOrder;
     }
 
-    public Task withId(int id) { return new Task(task, id, sortOrder); }
+    public Task withId(int id) { return new Task(id, task, sortOrder); }
 
     public boolean isCompleted() {
         return completed;
@@ -48,7 +48,7 @@ public class Task implements Serializable {
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(task, id, sortOrder);
+        return new Task(id, task, sortOrder);
     }
 
     @Override

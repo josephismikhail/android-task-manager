@@ -13,10 +13,10 @@ import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 
 public class SuccessoratorApplication extends Application {
     List<Task> DEFAULT_TASKS = List.of(
-            new Task("Task 1", 1, 1),
-            new Task("Task 2", 2, 2),
-            new Task("Task 3", 3, 3),
-            new Task("Task 4", 4, 4)
+            new Task(1, "Task 1", 1),
+            new Task(2, "Task 2", 2),
+            new Task(3, "Task 3", 3),
+            new Task(4, "Task 4", 4)
     );
     private TaskRepository taskRepository;
 

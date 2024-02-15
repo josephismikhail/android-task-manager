@@ -11,19 +11,28 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+import edu.ucsd.cse110.successorator.data.db.TaskDao;
+import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
-    public TaskListAdapter(Context context, List<Task> tasks) {
+    private final Consumer<Task> onTaskClicked;
+
+    public TaskListAdapter(
+            Context context,
+            List<Task> tasks,
+            Consumer<Task> onTaskClicked) {
         super(context, 0, new ArrayList<>(tasks));
+        this.onTaskClicked = onTaskClicked;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        var task = getItem(position);
+        Task task = getItem(position);
         assert task != null;
 
         ListItemTaskBinding binding;
@@ -34,20 +43,23 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
 
+        // M -> V
+        // Make the view match the model.
+        binding.taskText.setText(task.getTask());
+        if (task.isCompleted()) {
+            binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
+                    | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
+                    & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+
+        // V -> M
+        // Bind clicks to update the model.
         binding.getRoot().setOnClickListener(v -> {
-            if (task.isCompleted()) {
-                binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
-                        & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                task.uncompleteTask();
-            }
-            else {
-                binding.taskText.setPaintFlags(binding.taskText.getPaintFlags()
-                                                    | Paint.STRIKE_THRU_TEXT_FLAG);
-                task.completeTask();
-            }
+            onTaskClicked.accept(task);
         });
 
-        binding.taskText.setText(task.getTask());
 
         return binding.getRoot();
     }
