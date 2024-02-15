@@ -34,34 +34,26 @@ public interface TaskDao {
     int count();
 
     @Query("SELECT MIN(sortOrder) FROM tasks")
-    int getMinsortOrder();
+    int getMinSortOrder();
 
     @Query("SELECT MAX(sortOrder) FROM tasks")
-    int getMaxsortOrder();
+    int getMaxSortOrder();
+
+    @Query("SELECT MAX(sortOrder) FROM tasks WHERE completed = 0")
+    int getIncompleteMaxSortOrder();
 
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
 
-    @Query("SELECT MAX(id) FROM tasks")
-    int getMaxId();
-
-    @Transaction
-    default int append(TaskEntity task) {
-        var maxSortOrder = getMaxsortOrder();
-        var maxId = getMaxId();
-        var newTask = new TaskEntity(
-                task.task, maxId + 1, maxSortOrder + 1
-        );
-        return Math.toIntExact(insert(newTask));
-    }
-
     @Transaction
     default int prepend(TaskEntity task) {
-        shiftSortOrder(getMinsortOrder(), getMaxsortOrder(), 1);
-        var maxId = getMaxId();
+        shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
         var newTask = new TaskEntity(
-                task.task, maxId + 1, getMinsortOrder() - 1
+                null, task.task, false, getMinSortOrder() - 1
         );
         return Math.toIntExact(insert(newTask));
     }
+
+    @Query("DELETE FROM tasks WHERE id = :id")
+    void remove(int id);
 }
