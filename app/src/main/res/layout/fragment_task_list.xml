@@ -40,4 +40,17 @@
         app:layout_constraintVertical_bias="1.0"
         tools:listitem="@layout/list_item_task" />
 
+    <ImageButton
+        android:id="@+id/date_button"
+        android:layout_width="49dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="252dp"
+        android:contentDescription="Forward Date Button"
+        app:layout_constraintBottom_toTopOf="@+id/task_list"
+        app:layout_constraintEnd_toStartOf="@+id/plus_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_forward_arrow" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

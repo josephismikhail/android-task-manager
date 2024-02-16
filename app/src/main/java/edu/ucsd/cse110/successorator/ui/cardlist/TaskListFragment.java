@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,7 @@ public class TaskListFragment extends Fragment {
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
 
+
         TextView dateTextView = view.getRoot().findViewById(R.id.date);
         Calendar calendar = Calendar.getInstance();
         Date currentTime = calendar.getTime();
@@ -99,6 +102,18 @@ public class TaskListFragment extends Fragment {
 
         // Update the text of the TextView with the formatted date
         dateTextView.setText(updatedTimeString);
+
+        view.dateButton.setOnClickListener(v -> {
+            // Increment the date by one day
+            calendar.add(Calendar.DATE, 1);
+
+            // Get the updated date and time
+            Date newTime = calendar.getTime();
+            String updatedTimeString2 = sdf.format(newTime);
+
+            // Update the text of the TextView with the formatted date
+            dateTextView.setText(updatedTimeString2);
+        });
 
         return view.getRoot();
     }
