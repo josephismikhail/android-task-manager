@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.successorator.data.db;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import java.util.List;
@@ -50,12 +49,41 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void append(Task task) {
-        taskDao.append(TaskEntity.fromTask(task));
+    public void prepend(Task task) {
+        taskDao.prepend(TaskEntity.fromTask(task));
     }
 
     @Override
-    public void prepend(Task task) {
-        taskDao.prepend(TaskEntity.fromTask(task));
+    public void remove(int id) {
+        taskDao.remove(id);
+    }
+
+    @Override
+    public int getMinSortOrder() {
+        return taskDao.getMinSortOrder();
+    }
+
+    @Override
+    public int getMaxSortOrder() {
+        return taskDao.getMaxSortOrder();
+    }
+
+    @Override
+    public int getIncompleteMaxSortOrder() {
+        return taskDao.getIncompleteMaxSortOrder();
+    }
+
+    @Override
+    public void shiftSortOrder(int from, int to, int by) {
+        taskDao.shiftSortOrder(from, to, by);
+    }
+
+    @Override
+    public void deleteCompletedTasks(boolean completed) {
+        for (TaskEntity task : taskDao.findAll()) {
+            if (task.completed) {
+                taskDao.remove(task.id);
+            }
+        }
     }
 }
