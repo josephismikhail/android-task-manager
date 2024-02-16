@@ -17,6 +17,14 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
+// library for showing date
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import android.widget.TextView;
+import edu.ucsd.cse110.successorator.R;
+
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
     private MainViewModel activityModel;
@@ -42,7 +50,28 @@ public class TaskListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        this.adapter = new TaskListAdapter(requireContext(), List.of());
+        this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
+            task.changeStatus();
+
+            var minSortOrder = activityModel.getMinSortOrder();
+            var maxSortOrder = activityModel.getMaxSortOrder();
+            var maxIncompleteSortOrder = activityModel.getIncompleteMaxSortOrder();
+
+            if (task.isCompleted()) { // move task to bottom of incomplete
+                if (maxSortOrder == maxIncompleteSortOrder) {
+                    task = task.withSortOrder(maxSortOrder + 1);
+                } else {
+                    activityModel.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1);
+                    task = task.withSortOrder(maxIncompleteSortOrder + 1);
+                }
+            } else { // moves task to top
+                activityModel.shiftSortOrder(minSortOrder, maxSortOrder, 1);
+                task = task.withSortOrder(minSortOrder);
+            }
+
+            activityModel.save(task);
+        });
+
         activityModel.getOrderedTasks().observe(tasks -> {
             if (tasks == null) return;
             adapter.clear();
@@ -61,6 +90,41 @@ public class TaskListFragment extends Fragment {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
+
+        TextView dateTextView = view.getRoot().findViewById(R.id.date);
+        Calendar calendar = Calendar.getInstance();
+        Date currentTime = calendar.getTime();
+
+        // Set the time to 2 AM
+        calendar.set(Calendar.HOUR_OF_DAY, 2);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Check if the current time is before 2 AM, then add one day
+        if (currentTime.before(calendar.getTime())) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        else {
+            var modelOwner = requireActivity();
+            var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
+            var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
+            this.activityModel = modelProvider.get(MainViewModel.class);
+
+            activityModel.deleteCompletedTasks(true);
+        }
+
+        // Get the updated date and time
+        Date updatedTime = calendar.getTime();
+
+        // Format the date for display
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd", Locale.getDefault());
+        String updatedTimeString = sdf.format(updatedTime);
+
+        // Update the text of the TextView with the formatted date
+        dateTextView.setText(updatedTimeString);
+
 
         return view.getRoot();
     }

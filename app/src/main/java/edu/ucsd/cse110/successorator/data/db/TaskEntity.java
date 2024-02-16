@@ -6,36 +6,34 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.Objects;
-
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 @Entity(tableName = "tasks")
 public class TaskEntity {
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "completed")
-    public boolean completed;
+    @ColumnInfo(name = "id")
+    public Integer id;
 
     @ColumnInfo(name = "task")
     public String task;
 
-    @ColumnInfo(name = "id")
-    public Integer id;
+    @ColumnInfo(name = "completed")
+    public boolean completed;
 
     @ColumnInfo(name = "sortOrder")
     public int sortOrder;
 
-    TaskEntity(@NonNull String task, @Nullable Integer id, int sortOrder) {
-        this.task = task;
+    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
         this.id = id;
+        this.task = task;
+        this.completed = completed;
         this.sortOrder = sortOrder;
-        this.completed = false;
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        return new TaskEntity(task.getTask(), task.id(), task.sortOrder());
+        return new TaskEntity(task.id(), task.getTask(), task.isCompleted(), task.sortOrder());
     }
 
     public @NonNull Task toTask() {
-        return new Task(task, id, sortOrder);
+        return new Task(id, task, completed, sortOrder);
     }
 }
