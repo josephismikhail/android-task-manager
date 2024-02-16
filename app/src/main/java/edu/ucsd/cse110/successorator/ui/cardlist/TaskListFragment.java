@@ -96,8 +96,8 @@ public class TaskListFragment extends Fragment {
         Date currentTime = calendar.getTime();
 
         // Set the time to 2 AM
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 51);
+        calendar.set(Calendar.HOUR_OF_DAY, 2);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
