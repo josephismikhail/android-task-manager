@@ -15,36 +15,6 @@ public class TaskTest {
     }
 
     @Test
-    public void testIsCompleted() {
-        Task task = new Task("TASK", 1, 0);
-        boolean expected = false;
-        boolean actual = task.isCompleted();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testCompleteTask() {
-        Task task = new Task("TASK", 1, 0);
-        task.completeTask();
-        boolean expected = true;
-        boolean actual = task.isCompleted();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testUncompleteTask() {
-        Task task = new Task("TASK", 1, 0);
-        task.completeTask();
-        boolean expected = true;
-        boolean actual = task.isCompleted();
-        assertEquals(expected, actual);
-        task.uncompleteTask();
-        expected = false;
-        actual = task.isCompleted();
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testWithId() {
         var task = new Task(2, "testing 1", true, 1);
         var expected = new Task(19, "testing 1", true, 1);
