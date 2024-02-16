@@ -86,4 +86,9 @@ public class RoomTaskRepository implements TaskRepository {
             }
         }
     }
+
+    @Override
+    public void deleteCompletedTasksBefore(long cutoffTime) {
+        taskDao.deleteCompletedTasksBefore(cutoffTime);
+    }
 }
