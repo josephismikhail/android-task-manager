@@ -76,4 +76,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void remove(int id) { taskRepository.remove(id); }
+
+    public void deleteCompletedTasks(boolean completed) {taskRepository.deleteCompletedTasks(completed);}
+
 }

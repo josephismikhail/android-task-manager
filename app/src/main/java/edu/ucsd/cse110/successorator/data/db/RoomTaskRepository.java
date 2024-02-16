@@ -77,4 +77,9 @@ public class RoomTaskRepository implements TaskRepository {
     public void shiftSortOrder(int from, int to, int by) {
         taskDao.shiftSortOrder(from, to, by);
     }
+
+    @Override
+    public void deleteCompletedTasks(boolean completed) {
+        taskDao.deleteCompletedTasks(completed);
+    }
 }

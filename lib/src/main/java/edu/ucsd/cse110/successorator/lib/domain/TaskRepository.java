@@ -25,4 +25,6 @@ public interface TaskRepository {
     int getIncompleteMaxSortOrder();
 
     void shiftSortOrder(int from, int to, int by);
+
+    void deleteCompletedTasks(boolean completed);
 }
