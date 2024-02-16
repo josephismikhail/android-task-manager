@@ -104,6 +104,7 @@ public class TaskListFragment extends Fragment {
         // Check if the current time is before 2 AM, then add one day
         if (currentTime.before(calendar.getTime())) {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
+
         }
 
         else {
@@ -112,7 +113,7 @@ public class TaskListFragment extends Fragment {
             var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
             this.activityModel = modelProvider.get(MainViewModel.class);
 
-            activityModel.deleteCompletedTasks(true);
+            activityModel.deleteCompletedTasksBefore(calendar.getTimeInMillis());
         }
 
         // Get the updated date and time

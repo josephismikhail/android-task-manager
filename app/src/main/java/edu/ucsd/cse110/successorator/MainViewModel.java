@@ -5,6 +5,7 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,5 +79,7 @@ public class MainViewModel extends ViewModel {
     public void remove(int id) { taskRepository.remove(id); }
 
     public void deleteCompletedTasks(boolean completed) {taskRepository.deleteCompletedTasks(completed);}
+
+    public void deleteCompletedTasksBefore(long cutoffTime) {taskRepository.deleteCompletedTasksBefore(cutoffTime);}
 
 }
