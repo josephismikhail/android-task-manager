@@ -2,46 +2,19 @@ package edu.ucsd.cse110.successorator.lib.domain;
 
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
-import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-public class TaskRepository {
-    private final InMemoryDataSource dataSource;
+public interface TaskRepository {
 
-    public TaskRepository(InMemoryDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    Subject<Task> find(int id);
 
-    public SimpleSubject<Task> find(int id) {
-        return dataSource.getTaskSubject(id);
-    }
+    Subject<List<Task>> findAll();
 
-    public SimpleSubject<List<Task>> findAll() {
-        return dataSource.getAllTasksSubjects();
-    }
+    void save(Task task);
 
-    public void save(Task task) {
-        dataSource.putTask(task);
-    }
+    void save(List<Task> taskList);
 
-    public void save(List<Task> tasks) {
-        dataSource.putTasks(tasks);
-    }
+    void append(Task task);
 
-    public void remove(int id) {
-        dataSource.removeTask(id);
-    }
-
-    public void append(Task task) {
-        dataSource.putTask(
-            task.withSortOrder(dataSource.getMaxSortOrder() + 1)
-        );
-    }
-
-    public void prepend(Task task) {
-        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(), 1);
-        dataSource.putTask(
-            task.withSortOrder(dataSource.getMinSortOrder() - 1)
-        );
-    }
+    void prepend(Task task);
 }

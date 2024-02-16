@@ -2,4 +2,6 @@
     <string name="app_name">Successorator</string>
     <string name="placeholder">Placeholder</string>
     <string name="hello_world">Hello, World!</string>
+    <string name="card_front_text">Card Front Text</string>
+    <string name="task_text">Task Text</string>
 </resources>
