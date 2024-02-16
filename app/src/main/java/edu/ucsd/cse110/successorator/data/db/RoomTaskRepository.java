@@ -80,6 +80,10 @@ public class RoomTaskRepository implements TaskRepository {
 
     @Override
     public void deleteCompletedTasks(boolean completed) {
-        taskDao.deleteCompletedTasks(completed);
+        for (TaskEntity task : taskDao.findAll()) {
+            if (task.completed) {
+                taskDao.remove(task.id);
+            }
+        }
     }
 }
