@@ -51,4 +51,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_forward_arrow" />
 
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="302dp"
+        android:layout_height="86dp"
+        android:text="No goals for the Day. Click the + at the upper right to enter your Most Important Thing."
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

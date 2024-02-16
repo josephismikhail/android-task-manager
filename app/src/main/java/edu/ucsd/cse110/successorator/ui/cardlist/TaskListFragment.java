@@ -85,6 +85,7 @@ public class TaskListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = FragmentTaskListBinding.inflate(inflater, container, false);
         view.taskList.setAdapter(adapter);
+        view.taskList.setEmptyView(view.emptyText);
 
         view.plusButton.setOnClickListener(v -> {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
