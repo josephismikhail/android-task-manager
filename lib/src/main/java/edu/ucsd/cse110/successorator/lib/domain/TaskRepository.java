@@ -27,4 +27,6 @@ public interface TaskRepository {
     void shiftSortOrder(int from, int to, int by);
 
     void deleteCompletedTasks(boolean completed);
+
+    void deleteCompletedTasksBefore(long cutoffTime);
 }

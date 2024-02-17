@@ -22,18 +22,22 @@ public class TaskEntity {
     @ColumnInfo(name = "sortOrder")
     public int sortOrder;
 
-    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
+    @ColumnInfo(name = "completedTime")
+    public Long completedTime;
+
+    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder, @Nullable Long completedTime) {
         this.id = id;
         this.task = task;
         this.completed = completed;
         this.sortOrder = sortOrder;
+        this.completedTime = completedTime;
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        return new TaskEntity(task.id(), task.getTask(), task.isCompleted(), task.sortOrder());
+        return new TaskEntity(task.id(), task.getTask(), task.isCompleted(), task.sortOrder(), task.getCompletedTime());
     }
 
     public @NonNull Task toTask() {
-        return new Task(id, task, completed, sortOrder);
+        return new Task(id, task, completed, sortOrder, completedTime);
     }
 }
