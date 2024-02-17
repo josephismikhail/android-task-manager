@@ -22,7 +22,7 @@ public class TaskEntity {
     @ColumnInfo(name = "sortOrder")
     public int sortOrder;
 
-    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
+    public TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
         this.id = id;
         this.task = task;
         this.completed = completed;
@@ -35,5 +35,9 @@ public class TaskEntity {
 
     public @NonNull Task toTask() {
         return new Task(id, task, completed, sortOrder);
+    }
+
+    public int getTaskID() {
+        return this.id;
     }
 }
