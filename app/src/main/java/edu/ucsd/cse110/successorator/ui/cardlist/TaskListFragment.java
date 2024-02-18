@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
@@ -22,8 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import android.widget.TextView;
-import edu.ucsd.cse110.successorator.R;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
@@ -85,6 +85,7 @@ public class TaskListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = FragmentTaskListBinding.inflate(inflater, container, false);
         view.taskList.setAdapter(adapter);
+        view.taskList.setEmptyView(view.emptyText);
 
         view.plusButton.setOnClickListener(v -> {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
@@ -106,7 +107,6 @@ public class TaskListFragment extends Fragment {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
 
         }
-
         else {
             var modelOwner = requireActivity();
             var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -126,6 +126,18 @@ public class TaskListFragment extends Fragment {
         // Update the text of the TextView with the formatted date
         dateTextView.setText(updatedTimeString);
 
+        view.dateButton.setOnClickListener(v -> {
+            // Increment the date by one day
+            calendar.add(Calendar.DATE, 1);
+
+            // Get the updated date and time
+            Date newTime = calendar.getTime();
+            String updatedTimeString2 = sdf.format(newTime);
+
+            // Update the text of the TextView with the formatted date
+            dateTextView.setText(updatedTimeString2);
+            activityModel.deleteCompletedTasks(true);
+        });
 
         return view.getRoot();
     }
