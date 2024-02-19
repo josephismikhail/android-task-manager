@@ -33,8 +33,6 @@ public class Task implements Serializable {
         return sortOrder;
     }
 
-    public Task withId(int id) { return new Task(id, task, completed, sortOrder); }
-
     public boolean isCompleted() {
         return completed;
     }
@@ -42,6 +40,8 @@ public class Task implements Serializable {
     public void changeStatus() {
         this.completed = !this.completed;
     }
+
+    public Task withId(int id) { return new Task(id, task, completed, sortOrder); }
 
     public Task withSortOrder(int sortOrder) {
         return new Task(id, task, completed, sortOrder);

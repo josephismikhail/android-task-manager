@@ -43,8 +43,7 @@ public class DatabaseTest {
         dao.insert(toEntity(task)); // Insert initial task
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
-        task.setCompleted(true); // Simulate task completion
-        repository.completeTask(task);
+        repository.completeTask(task); // Simulate completing task
 
         TaskEntity updatedTask = dao.find(task.id());
         assertTrue(updatedTask.isCompleted()); // Verify completion status is updated
@@ -54,14 +53,14 @@ public class DatabaseTest {
     }
 
 
-//    @Test
-//    public void writeAndReadTaskTest() throws Exception {
-//        TaskEntity task = new TaskEntity(0, "task", false, 0);
-//        dao.insert(task);
-//        TaskEntity byID = dao.find(task.getTaskID());
-//        assert byID != null;
-//        assertEquals(task.getTaskID(), byID.getTaskID());
-//    }
+    @Test
+    public void writeAndReadTaskTest() throws Exception {
+        TaskEntity task = new TaskEntity(0, "task", false, 0);
+        dao.insert(task);
+        TaskEntity byID = dao.find(task.getTaskID());
+        assert byID != null;
+        assertEquals(task.getTaskID(), byID.getTaskID());
+    }
 
 //    @Test
 //    public void completeTask_UpdatesCompletionStatusAndSortOrder() {

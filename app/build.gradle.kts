@@ -48,6 +48,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("org.mockito:mockito-android:4.11.0")
 
+    debugImplementation("androidx.test:monitor:1.6.1")
+    
     implementation("com.google.dagger:hilt-android:2.38.1")
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.38.1")
     implementation("com.google.dagger:hilt-android-testing:2.38.1")

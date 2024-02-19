@@ -16,16 +16,16 @@ public class TaskTest {
 
     @Test
     public void testWithId() {
-        var task = new Task(2, "testing 1", true, 1);
-        var expected = new Task(19, "testing 1", true, 1);
+        var task = new Task(2, "testing 1", false, 1);
+        var expected = new Task(19, "testing 1", false, 1);
         var actual = task.withId(19);
         assertEquals(expected, actual);
     }
 
     @Test
     public void testWithSortOrder() {
-        var task = new Task(2, "testing 1", true, 1);
-        var expected = new Task(2, "testing 1", true, 81);
+        var task = new Task(2, "testing 1", false, 1);
+        var expected = new Task(2, "testing 1", false, 81);
         var actual = task.withSortOrder(81);
         assertEquals(expected, actual);
     }
@@ -38,13 +38,5 @@ public class TaskTest {
 
         assertEquals(task1, task2);
         assertNotEquals(task1, task3);
-    }
-
-    @Test
-    public void testCompleteTask() {
-        var task1 = new Task(0, "Task 1", false, 0);
-        var task2 = new Task(1, "Task 2", false, 1);
-        var task3 = new Task(2, "Task 3", false, 2);
-        var task4 = new Task(3, "Task 4", false, 3);
     }
 }
