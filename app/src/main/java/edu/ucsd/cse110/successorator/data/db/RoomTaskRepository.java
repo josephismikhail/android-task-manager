@@ -1,6 +1,6 @@
 package edu.ucsd.cse110.successorator.data.db;
 
-import static edu.ucsd.cse110.successorator.data.db.TaskEntity.toEntity;
+import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import androidx.lifecycle.Transformations;
 
@@ -39,7 +39,7 @@ public class RoomTaskRepository implements TaskRepository {
 
     @Override
     public void save(Task task) {
-        taskDao.insert(TaskEntity.fromTask(task));
+        taskDao.insert(fromTask(task));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class RoomTaskRepository implements TaskRepository {
 
     @Override
     public void prepend(Task task) {
-        taskDao.prepend(TaskEntity.fromTask(task));
+        taskDao.prepend(fromTask(task));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class RoomTaskRepository implements TaskRepository {
 
     public void completeTask(Task task) {
         // convert to task entity
-        TaskEntity taskEntity = toEntity(task);
+        TaskEntity taskEntity = fromTask(task);
 
         boolean isNowCompleted = !taskEntity.isCompleted(); // Assuming changeStatus toggles the completion status.
         taskEntity.changeStatus(); // Toggle the task's completion status.

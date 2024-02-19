@@ -10,7 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
-import static edu.ucsd.cse110.successorator.data.db.TaskEntity.toEntity;
+import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
+import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import android.content.Context;
 
@@ -38,7 +39,8 @@ public class DatabaseTest {
 
     @Test
     public void writeAndReadTaskTest() throws Exception {
-        TaskEntity task = new TaskEntity(0, "task", false, 0);
+        var testTask = new Task(0, "task", false, 0, System.currentTimeMillis());
+        TaskEntity task = fromTask(testTask);
         dao.insert(task);
         TaskEntity byID = dao.find(task.getTaskID());
         assert byID != null;
@@ -47,8 +49,8 @@ public class DatabaseTest {
 
     @Test
     public void completeOneTaskTest() {
-        Task task = new Task(0, "Test Task", false, 0);
-        dao.insert(toEntity(task)); // Insert initial task
+        Task task = new Task(0, "Test Task", false, 0, System.currentTimeMillis());
+        dao.insert(fromTask(task)); // Insert initial task
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
         repository.completeTask(task); // Simulate completing task
@@ -62,10 +64,10 @@ public class DatabaseTest {
 
     @Test
     public void completeTwoTasksTest() {
-        Task task1 = new Task(0, "Test Task 1", false, 0);
-        Task task2 = new Task(1, "Test Task 2", false, 1);
-        dao.insert(toEntity(task1));
-        dao.insert(toEntity(task2));
+        Task task1 = new Task(0, "Test Task 1", false, 0, System.currentTimeMillis());
+        Task task2 = new Task(1, "Test Task 2", false, 1, System.currentTimeMillis());
+        dao.insert(fromTask(task1));
+        dao.insert(fromTask(task2));
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
         repository.completeTask(task1);
@@ -87,10 +89,10 @@ public class DatabaseTest {
 
     @Test
     public void uncompleteTwoTasksTest() {
-        Task task1 = new Task(0, "Test Task 1", true, 0);
-        Task task2 = new Task(1, "Test Task 2", true, 1);
-        dao.insert(toEntity(task1));
-        dao.insert(toEntity(task2));
+        Task task1 = new Task(0, "Test Task 1", true, 0, System.currentTimeMillis());
+        Task task2 = new Task(1, "Test Task 2", true, 1, System.currentTimeMillis());
+        dao.insert(fromTask(task1));
+        dao.insert(fromTask(task2));
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
 

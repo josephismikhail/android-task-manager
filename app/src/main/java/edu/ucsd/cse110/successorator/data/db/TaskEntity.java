@@ -61,10 +61,6 @@ public class TaskEntity {
         return new TaskEntity(this.id, this.task, this.completed, newSortOrder, this.completedTime);
     }
 
-    public static TaskEntity toEntity(Task task) {
-        return new TaskEntity(task.id(), task.getTask(), task.isCompleted(), task.sortOrder(), task.getCompletedTime());
-    }
-
     public int getSortOrder() {
         return this.sortOrder;
     }
