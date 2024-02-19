@@ -39,4 +39,15 @@ public class TaskTest {
         assertEquals(task1, task2);
         assertNotEquals(task1, task3);
     }
+
+    @Test
+    public void testChangeStatus() {
+        var task1 = new Task(1, "testing 1", false, 0);
+
+        assertFalse(task1.isCompleted());
+        task1.changeStatus();
+        assertTrue(task1.isCompleted());
+        task1.changeStatus();
+        assertFalse(task1.isCompleted());
+    }
 }
