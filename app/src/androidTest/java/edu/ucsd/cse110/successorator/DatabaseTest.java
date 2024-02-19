@@ -37,8 +37,16 @@ public class DatabaseTest {
     }
 
     @Test
-    public void completeTask_UpdatesCompletionStatusAndSortOrder() {
-        // Assuming you have a helper method to add a task
+    public void writeAndReadTaskTest() throws Exception {
+        TaskEntity task = new TaskEntity(0, "task", false, 0);
+        dao.insert(task);
+        TaskEntity byID = dao.find(task.getTaskID());
+        assert byID != null;
+        assertEquals(task.getTaskID(), byID.getTaskID());
+    }
+
+    @Test
+    public void completeOneTaskTest() {
         Task task = new Task(0, "Test Task", false, 0);
         dao.insert(toEntity(task)); // Insert initial task
 
@@ -52,31 +60,63 @@ public class DatabaseTest {
         assertEquals(expectedSortOrder, updatedTask.getSortOrder()); // Verify sortOrder is updated
     }
 
-
     @Test
-    public void writeAndReadTaskTest() throws Exception {
-        TaskEntity task = new TaskEntity(0, "task", false, 0);
-        dao.insert(task);
-        TaskEntity byID = dao.find(task.getTaskID());
-        assert byID != null;
-        assertEquals(task.getTaskID(), byID.getTaskID());
+    public void completeTwoTasksTest() {
+        Task task1 = new Task(0, "Test Task 1", false, 0);
+        Task task2 = new Task(1, "Test Task 2", false, 1);
+        dao.insert(toEntity(task1));
+        dao.insert(toEntity(task2));
+
+        RoomTaskRepository repository = new RoomTaskRepository(dao);
+        repository.completeTask(task1);
+
+        TaskEntity updatedTask1 = dao.find(task1.id());
+        assertTrue(updatedTask1.isCompleted());
+
+        assertEquals(2, updatedTask1.getSortOrder());
+
+        repository.completeTask(task2);
+
+        updatedTask1 = dao.find(task1.id());
+        TaskEntity updatedTask2 = dao.find(task2.id());
+        assertTrue(updatedTask2.isCompleted());
+
+        assertEquals(2, updatedTask2.getSortOrder());
+        assertTrue(updatedTask1.getSortOrder() > updatedTask2.getSortOrder());
     }
 
-//    @Test
-//    public void completeTask_UpdatesCompletionStatusAndSortOrder() {
-//        // Assuming you have a helper method to add a task
-//        Task task = new Task(null, "Test Task", false, 1);
-//        dao.insert(toEntity(task)); // Insert initial task
-//
-//        RoomTaskRepository repository = new RoomTaskRepository(dao);
-//        task.setCompleted(true); // Simulate task completion
-//        repository.completeTask(task);
-//
-//        TaskEntity updatedTask = dao.find(task.id());
-//        assertTrue(updatedTask.isCompleted()); // Verify completion status is updated
-//
-//        // Assuming you have logic to determine expected sortOrder
-//        int expectedSortOrder = 2;
-//        assertEquals(expectedSortOrder, updatedTask.getSortOrder()); // Verify sortOrder is updated
-//    }
+    @Test
+    public void uncompleteTwoTasksTest() {
+        Task task1 = new Task(0, "Test Task 1", true, 0);
+        Task task2 = new Task(1, "Test Task 2", true, 1);
+        dao.insert(toEntity(task1));
+        dao.insert(toEntity(task2));
+
+        RoomTaskRepository repository = new RoomTaskRepository(dao);
+
+        // uncomplete task 2
+        repository.completeTask(task2);
+
+        // update
+        TaskEntity updatedTask2 = dao.find(task2.id());
+
+        // check
+        assertFalse(updatedTask2.isCompleted());
+
+        TaskEntity updatedTask1 = dao.find(task1.id());
+
+        assertTrue(updatedTask2.getSortOrder() < updatedTask1.getSortOrder());
+
+        // uncomplete task 1
+        repository.completeTask(task1);
+
+        // update
+        updatedTask1 = dao.find(task1.id());
+        updatedTask2 = dao.find(task2.id());
+
+        // check
+        assertFalse(updatedTask1.isCompleted());
+
+        assertTrue(updatedTask2.getSortOrder() > updatedTask1.getSortOrder());
+    }
 }
