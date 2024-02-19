@@ -36,7 +36,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
-                .setMessage("Please provide the new card text.")
+                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::onNegativeButtonClick)
