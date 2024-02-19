@@ -105,7 +105,6 @@ public class TaskListFragment extends Fragment {
         // Check if the current time is before 2 AM, then add one day
         if (currentTime.before(calendar.getTime())) {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
-
         }
         else {
             var modelOwner = requireActivity();
