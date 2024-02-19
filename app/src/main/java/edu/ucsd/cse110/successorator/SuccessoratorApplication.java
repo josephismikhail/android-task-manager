@@ -11,6 +11,9 @@ import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class SuccessoratorApplication extends Application {
     List<Task> DEFAULT_TASKS = List.of(
             new Task(1, "Task 1", false, 1),

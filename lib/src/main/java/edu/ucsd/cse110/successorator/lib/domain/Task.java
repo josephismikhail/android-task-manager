@@ -10,7 +10,7 @@ public class Task implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String task;
     private boolean completed;
-    private final int sortOrder;
+    private int sortOrder;
 
     public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder) {
         this.id = id;
@@ -57,4 +57,8 @@ public class Task implements Serializable {
 
     @Override
     public int hashCode() { return Objects.hash(completed, id, task, sortOrder); }
+
+    public void setCompleted(boolean b) {
+        this.completed = b;
+    }
 }

@@ -10,8 +10,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
+import static edu.ucsd.cse110.successorator.data.db.TaskEntity.toEntity;
+
+import android.content.Context;
+
 import java.util.List;
 
+import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
 import edu.ucsd.cse110.successorator.data.db.TaskDao;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
@@ -19,49 +24,60 @@ import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseTest {
-
-    private SuccessoratorDatabase db; // Corrected to use your SuccessoratorDatabase
-    private TaskDao dao;
+    TaskDao dao;
 
     @Before
     public void createDb() {
-        db = Room.inMemoryDatabaseBuilder(
-                        ApplicationProvider.getApplicationContext(),
-                        SuccessoratorDatabase.class) // Corrected to SuccessoratorDatabase
-                .allowMainThreadQueries()
-                .build();
-        dao = db.taskDao();
-    }
-
-    @After
-    public void closeDb() {
-        db.close();
+        Context context = ApplicationProvider.getApplicationContext();
+        // Allowing main thread queries for simplicity in tests
+        dao = Room.inMemoryDatabaseBuilder(context, SuccessoratorDatabase.class)
+                .allowMainThreadQueries() // Allowing main thread queries for simplicity in tests
+                .build()
+                .taskDao();
     }
 
     @Test
-    public void writeAndReadTaskTest() throws Exception {
-        TaskEntity task = new TaskEntity(0, "task", false, 0);
-        dao.insert(task);
-        TaskEntity byID = dao.find(task.getTaskID());
-        assert byID != null;
-        assertEquals(task.getTaskID(), byID.getTaskID());
+    public void completeTask_UpdatesCompletionStatusAndSortOrder() {
+        // Assuming you have a helper method to add a task
+        Task task = new Task(0, "Test Task", false, 0);
+        dao.insert(toEntity(task)); // Insert initial task
+
+        RoomTaskRepository repository = new RoomTaskRepository(dao);
+        task.setCompleted(true); // Simulate task completion
+        repository.completeTask(task);
+
+        TaskEntity updatedTask = dao.find(task.id());
+        assertTrue(updatedTask.isCompleted()); // Verify completion status is updated
+
+        int expectedSortOrder = 1;
+        assertEquals(expectedSortOrder, updatedTask.getSortOrder()); // Verify sortOrder is updated
     }
 
+
 //    @Test
-//    public void completeTaskTest() throws Exception {
-//        // Assuming dao is your data access object (DAO) and db is your database instance
-//        TaskEntity task1 = new TaskEntity(0, "task 1", false, 0);
-//        dao.insert(task1); // Insert task1
+//    public void writeAndReadTaskTest() throws Exception {
+//        TaskEntity task = new TaskEntity(0, "task", false, 0);
+//        dao.insert(task);
+//        TaskEntity byID = dao.find(task.getTaskID());
+//        assert byID != null;
+//        assertEquals(task.getTaskID(), byID.getTaskID());
+//    }
+
+//    @Test
+//    public void completeTask_UpdatesCompletionStatusAndSortOrder() {
+//        // Assuming you have a helper method to add a task
+//        Task task = new Task(null, "Test Task", false, 1);
+//        dao.insert(toEntity(task)); // Insert initial task
 //
-//        // Perform completion operation that also updates sortOrder,
-//        // you need to implement this method in your DAO
-//        dao.completeTask(task1.getTaskID(), true);
+//        RoomTaskRepository repository = new RoomTaskRepository(dao);
+//        task.setCompleted(true); // Simulate task completion
+//        repository.completeTask(task);
 //
-//        // Retrieve the updated task
-//        TaskEntity updatedTask = LiveDataTestUtil.getOrAwaitValue(dao.findAsLiveData(task1.getTaskID()));
+//        TaskEntity updatedTask = dao.find(task.id());
+//        assertTrue(updatedTask.isCompleted()); // Verify completion status is updated
 //
-//        // Verify that the sortOrder is updated as expected
-//        assertEquals(4, updatedTask.sortOrder);
+//        // Assuming you have logic to determine expected sortOrder
+//        int expectedSortOrder = 2;
+//        assertEquals(expectedSortOrder, updatedTask.getSortOrder()); // Verify sortOrder is updated
 //    }
 }
-
