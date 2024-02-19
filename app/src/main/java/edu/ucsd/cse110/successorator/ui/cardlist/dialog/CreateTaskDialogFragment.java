@@ -36,7 +36,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
-                .setMessage("Please provide the new card text.")
+                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::onNegativeButtonClick)
@@ -54,12 +54,15 @@ public class CreateTaskDialogFragment extends DialogFragment {
     }
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
-        var front = view.taskFrontEditText.getText().toString();
+        var taskText = view.taskFrontEditText.getText().toString();
+        if (taskText.trim().isEmpty()) {
+            dialog.dismiss();
+        } else {
+            var task = new Task(-1, taskText, false, -1, null);
+            activityModel.prepend(task);
 
-        var task = new Task(-1, front, false, -1, null);
-        activityModel.prepend(task);
-
-        dialog.dismiss();
+            dialog.dismiss();
+        }
     }
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {

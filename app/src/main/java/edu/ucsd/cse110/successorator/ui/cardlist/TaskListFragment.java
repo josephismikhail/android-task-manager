@@ -16,6 +16,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
@@ -50,26 +51,10 @@ public class TaskListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
+
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
-            task.changeStatus();
-
-            var minSortOrder = activityModel.getMinSortOrder();
-            var maxSortOrder = activityModel.getMaxSortOrder();
-            var maxIncompleteSortOrder = activityModel.getIncompleteMaxSortOrder();
-
-            if (task.isCompleted()) { // move task to bottom of incomplete
-                if (maxSortOrder == maxIncompleteSortOrder) {
-                    task = task.withSortOrder(maxSortOrder + 1);
-                } else {
-                    activityModel.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1);
-                    task = task.withSortOrder(maxIncompleteSortOrder + 1);
-                }
-            } else { // moves task to top
-                activityModel.shiftSortOrder(minSortOrder, maxSortOrder, 1);
-                task = task.withSortOrder(minSortOrder);
-            }
-
-            activityModel.save(task);
+            // Delegate the task completion logic to the ViewModel
+            activityModel.completeTask(TaskEntity.fromTask(task));
         });
 
         activityModel.getOrderedTasks().observe(tasks -> {

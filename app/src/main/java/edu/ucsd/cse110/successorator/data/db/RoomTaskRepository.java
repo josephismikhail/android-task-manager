@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.successorator.data.db;
 
+import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
+
 import androidx.lifecycle.Transformations;
 
 import java.util.List;
@@ -37,7 +39,7 @@ public class RoomTaskRepository implements TaskRepository {
 
     @Override
     public void save(Task task) {
-        taskDao.insert(TaskEntity.fromTask(task));
+        taskDao.insert(fromTask(task));
     }
 
     @Override
@@ -50,7 +52,7 @@ public class RoomTaskRepository implements TaskRepository {
 
     @Override
     public void prepend(Task task) {
-        taskDao.prepend(TaskEntity.fromTask(task));
+        taskDao.prepend(fromTask(task));
     }
 
     @Override
@@ -76,6 +78,36 @@ public class RoomTaskRepository implements TaskRepository {
     @Override
     public void shiftSortOrder(int from, int to, int by) {
         taskDao.shiftSortOrder(from, to, by);
+    }
+
+    public void completeTask(Task task) {
+        // convert to task entity
+        TaskEntity taskEntity = fromTask(task);
+
+        boolean isNowCompleted = !taskEntity.isCompleted(); // Assuming changeStatus toggles the completion status.
+        taskEntity.changeStatus(); // Toggle the task's completion status.
+
+        // Fetch current sortOrder values to determine the new position of the task
+        int minSortOrder = taskDao.getMinSortOrder(); // Implement this to fetch the minimum sortOrder among all tasks.
+        int maxSortOrder = taskDao.getMaxSortOrder(); // Implement this to fetch the maximum sortOrder among all tasks.
+        int maxIncompleteSortOrder = taskDao.getIncompleteMaxSortOrder(); // Implement this to fetch the maximum sortOrder among incomplete tasks.
+
+        if (isNowCompleted) {
+            if (maxIncompleteSortOrder < maxSortOrder) { // There are completed tasks.
+                taskDao.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1); // shift completed tasks by 1
+                taskEntity = taskEntity.withSortOrder(maxIncompleteSortOrder + 1);
+            }
+            else { // no completed tasks
+                taskEntity = taskEntity.withSortOrder(maxSortOrder + 1);
+            }
+        }
+        else { // uncompleted complete tasks move to the top of the list
+            taskDao.shiftSortOrder(minSortOrder, maxSortOrder, 1);
+            taskEntity = taskEntity.withSortOrder(minSortOrder);
+        }
+
+        // Save the updated task
+        taskDao.insert(taskEntity);
     }
 
     @Override

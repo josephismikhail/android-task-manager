@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+import javax.inject.Inject;
+
+import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
+import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
@@ -32,6 +36,7 @@ public class MainViewModel extends ViewModel {
                 return new MainViewModel(app.getTaskRepository());
             });
 
+    @Inject
     public MainViewModel(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
 
@@ -82,4 +87,9 @@ public class MainViewModel extends ViewModel {
 
     public void deleteCompletedTasksBefore(long cutoffTime) {taskRepository.deleteCompletedTasksBefore(cutoffTime);}
 
+
+    public void completeTask(TaskEntity task) {
+        // Delegate the operation to the repository
+        taskRepository.completeTask(task.toTask());
+    }
 }

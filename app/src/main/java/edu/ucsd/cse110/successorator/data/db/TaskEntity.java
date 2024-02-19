@@ -40,4 +40,28 @@ public class TaskEntity {
     public @NonNull Task toTask() {
         return new Task(id, task, completed, sortOrder, completedTime);
     }
+
+    public int getTaskID() {
+        return this.id;
+    }
+
+    public String getTaskName() {
+        return this.task;
+    }
+
+    public boolean isCompleted() {
+        return this.completed;
+    }
+
+    public void changeStatus() {
+        this.completed = !this.isCompleted();
+    }
+
+    public TaskEntity withSortOrder(int newSortOrder) {
+        return new TaskEntity(this.id, this.task, this.completed, newSortOrder, this.completedTime);
+    }
+
+    public int getSortOrder() {
+        return this.sortOrder;
+    }
 }
