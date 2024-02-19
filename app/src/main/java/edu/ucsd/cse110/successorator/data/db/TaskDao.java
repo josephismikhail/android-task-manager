@@ -49,11 +49,14 @@ public interface TaskDao {
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
         var newTask = new TaskEntity(
-                null, task.task, false, getMinSortOrder() - 1
+                null, task.task, false, getMinSortOrder() - 1, null
         );
         return Math.toIntExact(insert(newTask));
     }
 
     @Query("DELETE FROM tasks WHERE id = :id")
     void remove(int id);
+
+    @Query("DELETE FROM tasks WHERE completed = 1 AND completedTime < :cutoffTime")
+    void deleteCompletedTasksBefore(long cutoffTime);
 }

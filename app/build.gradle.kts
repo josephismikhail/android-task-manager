@@ -54,4 +54,5 @@ dependencies {
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.38.1")
     implementation("com.google.dagger:hilt-android-testing:2.38.1")
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.38.1")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
 }

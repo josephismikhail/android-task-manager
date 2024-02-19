@@ -16,10 +16,10 @@ import dagger.hilt.android.HiltAndroidApp;
 @HiltAndroidApp
 public class SuccessoratorApplication extends Application {
     List<Task> DEFAULT_TASKS = List.of(
-            new Task(1, "Task 1", false, 1),
-            new Task(2, "Task 2", false, 2),
-            new Task(3, "Task 3", false, 3),
-            new Task(4, "Task 4", false, 4)
+            new Task(1, "Task 1", false, 1, System.currentTimeMillis()),
+            new Task(2, "Task 2", false, 2, System.currentTimeMillis()),
+            new Task(3, "Task 3", false, 3, System.currentTimeMillis()),
+            new Task(4, "Task 4", false, 4, System.currentTimeMillis())
     );
     private TaskRepository taskRepository;
 

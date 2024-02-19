@@ -109,4 +109,18 @@ public class RoomTaskRepository implements TaskRepository {
         // Save the updated task
         taskDao.insert(taskEntity);
     }
+
+    @Override
+    public void deleteCompletedTasks(boolean completed) {
+        for (TaskEntity task : taskDao.findAll()) {
+            if (task.completed) {
+                taskDao.remove(task.id);
+            }
+        }
+    }
+
+    @Override
+    public void deleteCompletedTasksBefore(long cutoffTime) {
+        taskDao.deleteCompletedTasksBefore(cutoffTime);
+    }
 }
