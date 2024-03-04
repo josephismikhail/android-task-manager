@@ -3,11 +3,16 @@ package edu.ucsd.cse110.successorator;
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -17,12 +22,14 @@ import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
+    private final TimeKeeper timeKeeper;
 
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
@@ -33,12 +40,13 @@ public class MainViewModel extends ViewModel {
             creationExtras -> {
                 var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
                 assert app != null;
-                return new MainViewModel(app.getTaskRepository());
+                return new MainViewModel(app.getTaskRepository(), app.getTimeKeeper());
             });
 
     @Inject
-    public MainViewModel(TaskRepository taskRepository) {
+    public MainViewModel(TaskRepository taskRepository, TimeKeeper timeKeeper) {
         this.taskRepository = taskRepository;
+        this.timeKeeper = timeKeeper;
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
@@ -52,7 +60,6 @@ public class MainViewModel extends ViewModel {
                 .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
-
     }
 
     public Subject<List<Task>> getOrderedTasks() {
@@ -87,9 +94,12 @@ public class MainViewModel extends ViewModel {
 
     public void deleteCompletedTasksBefore(long cutoffTime) {taskRepository.deleteCompletedTasksBefore(cutoffTime);}
 
-
     public void completeTask(TaskEntity task) {
         // Delegate the operation to the repository
         taskRepository.completeTask(task.toTask());
     }
+
+    public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime(); }
+
+    public void setNewTime(LocalDateTime newTime) { timeKeeper.setDateTime(newTime); }
 }
