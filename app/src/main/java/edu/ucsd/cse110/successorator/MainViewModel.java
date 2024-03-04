@@ -24,13 +24,11 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
 public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
+    private TaskViews currTaskView;
 
     // UI state
-    private SimpleSubject<List<Task>> orderedTasks;
-    private final SimpleSubject<List<Task>> todayOrderedTasks;
-    private final SimpleSubject<List<Task>> tomorrowOrderedTasks;
-    private final SimpleSubject<List<Task>> pendingOrderedTasks;
-    private final SimpleSubject<List<Task>> recurringOrderedTasks;
+    private final Subject<List<Task>> unorderedTasks;
+    private final SimpleSubject<List<Task>> orderedTasks;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
         new ViewModelInitializer<>(
@@ -44,54 +42,14 @@ public class MainViewModel extends ViewModel {
     @Inject
     public MainViewModel(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
+        this.currTaskView = TaskViews.TODAY_VIEW;
 
         // Create the observable subjects.
-        this.todayOrderedTasks = new SimpleSubject<>();
-        this.tomorrowOrderedTasks = new SimpleSubject<>();
-        this.pendingOrderedTasks = new SimpleSubject<>();
-        this.recurringOrderedTasks = new SimpleSubject<>();
-        this.orderedTasks = todayOrderedTasks;
+        this.orderedTasks = new SimpleSubject<>();
+        this.unorderedTasks = taskRepository.findAll();
 
         // When the list of cards changes (or is first loaded), reset the ordering.
-        taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return;
-            // TODO - filter to get only today's tasks
-            var newTodayOrderedTasks = tasks.stream()
-                .sorted(Comparator.comparingInt(Task::sortOrder))
-                .collect(Collectors.toList());
-            todayOrderedTasks.setValue(newTodayOrderedTasks);
-        });
-
-        // When the list of cards changes (or is first loaded), reset the ordering.
-        taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return;
-            // TODO - filter to get only tomorrow's tasks
-            System.out.println("hahahaha");
-            var newTomorrowOrderedTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
-            tomorrowOrderedTasks.setValue(newTomorrowOrderedTasks);
-        });
-
-        // When the list of cards changes (or is first loaded), reset the ordering.
-        taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return;
-            // TODO - filter to get only pending tasks
-            var newPendingOrderedTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
-            pendingOrderedTasks.setValue(newPendingOrderedTasks);
-        });
-
-        // When the list of cards changes (or is first loaded), reset the ordering.
-        taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return;
-            // TODO - filter to get only recurring tasks
-            var newRecurringOrderedTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
-            recurringOrderedTasks.setValue(newRecurringOrderedTasks);
-        });
+        this.unorderedTasks.observe(this::updateOrderedTasks);
 
     }
 
@@ -133,20 +91,47 @@ public class MainViewModel extends ViewModel {
     }
 
     public void switchView(TaskViews nextView) {
-        switch (nextView) {
+        this.currTaskView = nextView;
+        updateOrderedTasks(this.unorderedTasks.getValue());
+    }
+
+    private void updateOrderedTasks(List<Task> tasks) {
+        if (tasks == null) return;
+        List<Task> newOrderedTasks;
+        switch (this.currTaskView) {
             case TODAY_VIEW:
-                this.orderedTasks = this.todayOrderedTasks;
+                // TODO - filter to get only today's tasks
+                System.out.println("updated on today");
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::sortOrder))
+                        .collect(Collectors.toList());
+                orderedTasks.setValue(newOrderedTasks);
                 break;
             case TOMORROW_VIEW:
-                this.orderedTasks = this.tomorrowOrderedTasks;
+                // TODO - filter to get only tomorrow's tasks
+                System.out.println("updated on tomorrow");
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::sortOrder))
+                        .filter(Task::isCompleted)
+                        .collect(Collectors.toList());
+                orderedTasks.setValue(newOrderedTasks);
                 break;
             case PENDING_VIEW:
-                this.orderedTasks = this.pendingOrderedTasks;
+                // TODO - filter to get only pending tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::sortOrder))
+                        .filter(t -> !t.isCompleted())
+                        .collect(Collectors.toList());
+                orderedTasks.setValue(newOrderedTasks);
                 break;
             case RECURRING_VIEW:
-                this.orderedTasks = this.recurringOrderedTasks;
+                // TODO - filter to get only recurring tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::sortOrder))
+                        .collect(Collectors.toList());
+                orderedTasks.setValue(newOrderedTasks);
                 break;
         }
-        this.orderedTasks.setValue(this.orderedTasks.getValue());
     }
+
 }
