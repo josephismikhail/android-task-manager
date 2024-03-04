@@ -6,6 +6,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 @Entity(tableName = "tasks")
 public class TaskEntity {
@@ -55,6 +58,11 @@ public class TaskEntity {
 
     public void changeStatus() {
         this.completed = !this.isCompleted();
+        if (this.completed) {
+            this.completedTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        } else {
+            this.completedTime = null;
+        }
     }
 
     public TaskEntity withSortOrder(int newSortOrder) {

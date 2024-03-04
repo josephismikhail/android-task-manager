@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 public class Task implements Serializable {
@@ -44,7 +46,7 @@ public class Task implements Serializable {
     public void changeStatus() {
         this.completed = !this.completed;
         if (this.completed) {
-            this.completedTime = System.currentTimeMillis();
+            this.completedTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         } else {
             this.completedTime = null;
         }

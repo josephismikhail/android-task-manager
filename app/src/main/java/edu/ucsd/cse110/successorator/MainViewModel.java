@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -21,6 +22,7 @@ import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
@@ -34,6 +36,7 @@ import androidx.lifecycle.ViewModel;
 public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
+    private final TimeKeeper timeKeeper;
 
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
@@ -44,17 +47,20 @@ public class MainViewModel extends ViewModel {
 
 
     public static final ViewModelInitializer<MainViewModel> initializer =
-            new ViewModelInitializer<>(
-                    MainViewModel.class,
-                    creationExtras -> {
-                        var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
-                        assert app != null;
-                        return new MainViewModel(app.getTaskRepository());
-                    });
+
+        new ViewModelInitializer<>(
+            MainViewModel.class,
+            creationExtras -> {
+                var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
+                assert app != null;
+                return new MainViewModel(app.getTaskRepository(), app.getTimeKeeper());
+            });
+
 
     @Inject
-    public MainViewModel(TaskRepository taskRepository) {
+    public MainViewModel(TaskRepository taskRepository, TimeKeeper timeKeeper) {
         this.taskRepository = taskRepository;
+        this.timeKeeper = timeKeeper;
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
@@ -71,10 +77,7 @@ public class MainViewModel extends ViewModel {
             orderedTasks.setValue(newOrderedTasks);
         });
 
-        currentTime.observe(newCurrentTime -> {
-            var dateText = "TODO";
-            this.dateDisplayText.setValue(dateText);
-        });
+
     }
 
     public Subject<List<Task>> getOrderedTasks() {
@@ -120,40 +123,14 @@ public class MainViewModel extends ViewModel {
         taskRepository.deleteCompletedTasksBefore(cutoffTime);
     }
 
-
     public void completeTask(TaskEntity task) {
         // Delegate the operation to the repository
         taskRepository.completeTask(task.toTask());
     }
 
-    // Local date time
-    private final MutableLiveData<String> formattedDateLiveData = new MutableLiveData<>();
 
-    public LiveData<String> getFormattedDateLiveData() {
-        return formattedDateLiveData;
-    }
+    public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime(); }
 
-    public void updateFormattedDate() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime updatedTime = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(2, 0));
-
-        if (currentTime.isBefore(updatedTime)) {
-            updatedTime = updatedTime.minusDays(1);
-        } else {
-            this.deleteCompletedTasksBefore(calendar.getTimeInMillis());
-            // there should be multiple cases for the different recurring
-        }
-        // Format the date for display using DateTimeFormatter
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
-        String formattedDate = updatedTime.format(formatter);
-
-        // Update the LiveData with the formatted date
-        formattedDateLiveData.setValue(formattedDate);
-    }
-
-    public LocalDateTime incrementDate(LocalDateTime currentDateTime) {
-        // Increment the date by one day
-        return currentDateTime.plusDays(1);
-    }
+    public void setNewTime(LocalDateTime newTime) { timeKeeper.setDateTime(newTime); }
 
 }
