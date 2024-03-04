@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -77,11 +79,12 @@ public class TaskListFragment extends Fragment {
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
 
-        TextView dateTextView = view.getRoot().findViewById(R.id.date);
+        Spinner dateSpinner = view.getRoot().findViewById(R.id.date);
         Calendar calendar = Calendar.getInstance();
         Date currentTime = calendar.getTime();
 
         // Set the time to 2 AM
+        // use local date time to get the current date and time, instead of calendar
         calendar.set(Calendar.HOUR_OF_DAY, 2);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -101,25 +104,44 @@ public class TaskListFragment extends Fragment {
         }
 
         // Get the updated date and time
-        Date updatedTime = calendar.getTime();
+//        Date updatedTime = calendar.getTime();
 
         // Format the date for display
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd", Locale.getDefault());
-        String updatedTimeString = sdf.format(updatedTime);
+//        String updatedTimeString = sdf.format(updatedTime);
 
-        // Update the text of the TextView with the formatted date
-        dateTextView.setText(updatedTimeString);
+        // set up the options of the dropdown menu
+        List<String> options = new ArrayList<>();
+        options.add("Today - " + sdf.format(calendar.getTime()));
+        Calendar tmrCalendar = (Calendar) calendar.clone();
+        tmrCalendar.add(Calendar.DAY_OF_YEAR, 1);
+        options.add("Tomorrow - " + sdf.format(tmrCalendar.getTime()));
+        options.add("Pending");
+        options.add("Recurring");
+
+        // set up the adapter for the dropdown menu
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(adapter);
+
+//        // Update the text of the TextView with the formatted date
+//        dateSpinner.setText(updatedTimeString);
 
         view.dateButton.setOnClickListener(v -> {
             // Increment the date by one day
             calendar.add(Calendar.DATE, 1);
 
             // Get the updated date and time
-            Date newTime = calendar.getTime();
-            String updatedTimeString2 = sdf.format(newTime);
+            options.set(0, "Today - " + sdf.format(calendar.getTime()));
+            Calendar tmrCalendar2 = (Calendar) calendar.clone();
+            tmrCalendar2.add(Calendar.DAY_OF_YEAR, 1);
+            options.set(1, "Tomorrow - " + sdf.format(tmrCalendar2.getTime()));
+//            String updatedTimeString2 = sdf.format(newTime);
+            adapter.notifyDataSetChanged();
+            dateSpinner.setSelection(0);
 
             // Update the text of the TextView with the formatted date
-            dateTextView.setText(updatedTimeString2);
+//            dateSpinner.setText(updatedTimeString2);
             activityModel.deleteCompletedTasks(true);
         });
 
