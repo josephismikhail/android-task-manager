@@ -84,8 +84,8 @@ public class MainViewModel extends ViewModel {
 
     public void save(Task task) { taskRepository.save(task); }
 
-    public void prepend(Task task) {
-        taskRepository.prepend(task);
+    public void newTask(Task task) {
+        taskRepository.newTask(task);
     }
 
     public void remove(int id) { taskRepository.remove(id); }

@@ -4,5 +4,8 @@ import java.time.LocalDateTime;
 
 public interface TimeKeeper {
     LocalDateTime getDateTime();
+
     void setDateTime(LocalDateTime dateTime);
+
+    void updateDateTime();
 }

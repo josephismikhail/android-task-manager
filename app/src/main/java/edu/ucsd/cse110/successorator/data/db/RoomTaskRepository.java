@@ -51,9 +51,28 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void prepend(Task task) {
-        taskDao.prepend(fromTask(task));
+    public void newTask(Task task) {
+        int maxSortOrder = taskDao.getMaxSortOrder(); // Implement this to fetch the maximum sortOrder among all tasks.
+        int maxIncompleteSortOrder = taskDao.getIncompleteMaxSortOrder(); // Implement this to fetch the maximum sortOrder among incomplete tasks.
+
+        if (maxIncompleteSortOrder < maxSortOrder) { // There are completed tasks.
+            taskDao.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1); // shift completed tasks by 1
+            task = task.withSortOrder(maxIncompleteSortOrder + 1);
+        }
+        else { // no completed tasks
+            task = task.withSortOrder(maxSortOrder + 1);
+        }
+        // Save the updated task
+        taskDao.insert(TaskEntity.fromTask(task));
     }
+
+    // newRecurringTask
+    // create (also make RecurTask interface?) DailyRecurTask, WeeklyRecurTask, etc.
+    // each keep a list of Tasks which are recurring
+    // possibly add new parameter for Task called createdTime
+    // compare createdTime with current time and check the difference
+    // if X time has passed and it's supposed to recur every X days
+    // then insert that task
 
     @Override
     public void remove(int id) {

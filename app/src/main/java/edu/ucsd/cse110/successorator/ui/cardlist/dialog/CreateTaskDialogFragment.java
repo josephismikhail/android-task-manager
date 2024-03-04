@@ -58,8 +58,8 @@ public class CreateTaskDialogFragment extends DialogFragment {
         if (taskText.trim().isEmpty()) {
             dialog.dismiss();
         } else {
-            var task = new Task(-1, taskText, false, -1, null);
-            activityModel.prepend(task);
+            var task = new Task(null, taskText, false, -1, null);
+            activityModel.newTask(task);
 
             dialog.dismiss();
         }

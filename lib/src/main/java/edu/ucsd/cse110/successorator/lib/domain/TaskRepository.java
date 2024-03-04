@@ -14,7 +14,7 @@ public interface TaskRepository {
 
     void save(List<Task> taskList);
 
-    void prepend(Task task);
+    void newTask(Task task);
 
     void remove(int id);
 
