@@ -88,6 +88,14 @@ public class MainViewModel extends ViewModel {
         taskRepository.newTask(task);
     }
 
+    public void newRecurringTask(Task task, String frequency) {
+        taskRepository.newRecurringTask(task, frequency);
+    }
+
+    public void recurTask(LocalDateTime date) {
+        taskRepository.recurTask(date);
+    }
+
     public void remove(int id) { taskRepository.remove(id); }
 
     public void deleteCompletedTasks(boolean completed) {taskRepository.deleteCompletedTasks(completed);}

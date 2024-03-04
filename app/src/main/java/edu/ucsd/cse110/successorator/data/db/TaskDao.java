@@ -33,6 +33,9 @@ public interface TaskDao {
     @Query("SELECT COUNT(*) FROM tasks")
     int count();
 
+    @Query("SELECT MAX(id) FROM tasks")
+    int getMaxId();
+
     @Query("SELECT MIN(sortOrder) FROM tasks")
     int getMinSortOrder();
 

@@ -101,6 +101,7 @@ public class TaskListFragment extends Fragment {
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             dateTextView.setText(activityModel.getCurrentTime().format(formatter));
             activityModel.deleteCompletedTasks(true);
+            activityModel.recurTask(activityModel.getCurrentTime());
         });
 
         return view.getRoot();
