@@ -123,6 +123,7 @@ public class TaskListFragment extends Fragment {
             activityModel.deleteCompletedTasks(true);
         });
 
+
         return view.getRoot();
     }
 }
