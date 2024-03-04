@@ -17,6 +17,7 @@ import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
@@ -25,7 +26,11 @@ public class MainViewModel extends ViewModel {
     private final TaskRepository taskRepository;
 
     // UI state
-    private final SimpleSubject<List<Task>> orderedTasks;
+    private SimpleSubject<List<Task>> orderedTasks;
+    private final SimpleSubject<List<Task>> todayOrderedTasks;
+    private final SimpleSubject<List<Task>> tomorrowOrderedTasks;
+    private final SimpleSubject<List<Task>> pendingOrderedTasks;
+    private final SimpleSubject<List<Task>> recurringOrderedTasks;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
         new ViewModelInitializer<>(
@@ -41,16 +46,50 @@ public class MainViewModel extends ViewModel {
         this.taskRepository = taskRepository;
 
         // Create the observable subjects.
-        this.orderedTasks = new SimpleSubject<>();
+        this.todayOrderedTasks = new SimpleSubject<>();
+        this.tomorrowOrderedTasks = new SimpleSubject<>();
+        this.pendingOrderedTasks = new SimpleSubject<>();
+        this.recurringOrderedTasks = new SimpleSubject<>();
+        this.orderedTasks = todayOrderedTasks;
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
-
-            var newOrderedTasks = tasks.stream()
+            // TODO - filter to get only today's tasks
+            var newTodayOrderedTasks = tasks.stream()
                 .sorted(Comparator.comparingInt(Task::sortOrder))
                 .collect(Collectors.toList());
-            orderedTasks.setValue(newOrderedTasks);
+            todayOrderedTasks.setValue(newTodayOrderedTasks);
+        });
+
+        // When the list of cards changes (or is first loaded), reset the ordering.
+        taskRepository.findAll().observe(tasks -> {
+            if (tasks == null) return;
+            // TODO - filter to get only tomorrow's tasks
+            var newTomorrowOrderedTasks = tasks.stream()
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+            tomorrowOrderedTasks.setValue(newTomorrowOrderedTasks);
+        });
+
+        // When the list of cards changes (or is first loaded), reset the ordering.
+        taskRepository.findAll().observe(tasks -> {
+            if (tasks == null) return;
+            // TODO - filter to get only pending tasks
+            var newPendingOrderedTasks = tasks.stream()
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+            pendingOrderedTasks.setValue(newPendingOrderedTasks);
+        });
+
+        // When the list of cards changes (or is first loaded), reset the ordering.
+        taskRepository.findAll().observe(tasks -> {
+            if (tasks == null) return;
+            // TODO - filter to get only recurring tasks
+            var newRecurringOrderedTasks = tasks.stream()
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+            recurringOrderedTasks.setValue(newRecurringOrderedTasks);
         });
 
     }
@@ -87,9 +126,26 @@ public class MainViewModel extends ViewModel {
 
     public void deleteCompletedTasksBefore(long cutoffTime) {taskRepository.deleteCompletedTasksBefore(cutoffTime);}
 
-
     public void completeTask(TaskEntity task) {
         // Delegate the operation to the repository
         taskRepository.completeTask(task.toTask());
+    }
+
+    public void switchView(TaskViews nextView) {
+        switch (nextView) {
+            case TODAY_VIEW:
+                this.orderedTasks = this.todayOrderedTasks;
+                break;
+            case TOMORROW_VIEW:
+                this.orderedTasks = this.tomorrowOrderedTasks;
+                break;
+            case PENDING_VIEW:
+                this.orderedTasks = this.pendingOrderedTasks;
+                break;
+            case RECURRING_VIEW:
+                this.orderedTasks = this.recurringOrderedTasks;
+                break;
+        }
+        this.orderedTasks.setValue(this.orderedTasks.getValue());
     }
 }
