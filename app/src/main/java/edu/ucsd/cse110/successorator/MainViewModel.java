@@ -66,6 +66,7 @@ public class MainViewModel extends ViewModel {
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
             // TODO - filter to get only tomorrow's tasks
+            System.out.println("hahahaha");
             var newTomorrowOrderedTasks = tasks.stream()
                     .sorted(Comparator.comparingInt(Task::sortOrder))
                     .collect(Collectors.toList());

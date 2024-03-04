@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
@@ -124,6 +126,40 @@ public class TaskListFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dateSpinner.setAdapter(adapter);
+
+        // switch to different views
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item
+                String selectedItem = (String) parent.getItemAtPosition(position);
+
+                // Perform actions based on the selected item
+                switch (selectedItem.split(" - ")[0]) { // Using split to get the first part ("Today", "Tomorrow", "Pending", "Recurring")
+                    case "Today":
+                        // Perform action for Today
+                        activityModel.switchView(TaskViews.TODAY_VIEW);
+                        break;
+                    case "Tomorrow":
+                        // Perform action for Tomorrow
+                        activityModel.switchView(TaskViews.TOMORROW_VIEW);
+                        break;
+                    case "Pending":
+                        // Perform action for Pending
+                        activityModel.switchView(TaskViews.PENDING_VIEW);
+                        break;
+                    case "Recurring":
+                        // Perform action for Recurring
+                        activityModel.switchView(TaskViews.RECURRING_VIEW);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Do something when nothing is selected
+            }
+        });
 
 //        // Update the text of the TextView with the formatted date
 //        dateSpinner.setText(updatedTimeString);
