@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -47,7 +49,11 @@ public class CreateTaskDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         this.view = FragmentDialogCreateTaskBinding.inflate(getLayoutInflater());
-
+        // Click save button to save
+        FragmentDialogCreateTaskBinding binding = this.view;
+        ImageButton saveButton = binding.saveButton;
+        // Set a click listener for the Save ImageButton
+        saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
                 .setMessage("Please provide the new task text.")
@@ -55,6 +61,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::onNegativeButtonClick)
                 .create();
+
     }
 
     @Override
@@ -66,9 +73,17 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-
     }
-
+    private void onSaveButtonClick(View v) {
+        var taskText = view.taskFrontEditText.getText().toString();
+        if (taskText.trim().isEmpty()) {
+            //not valid
+        } else {
+            var task = new Task(-1, taskText, false, -1, null);
+            activityModel.prepend(task);
+            getDialog().dismiss();
+        }
+    }
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskText = view.taskFrontEditText.getText().toString();
         if (taskText.trim().isEmpty()) {
