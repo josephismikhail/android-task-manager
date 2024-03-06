@@ -61,6 +61,10 @@ public class MainViewModel extends ViewModel {
                 .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
+
+//        timeKeeper.getDateTime().observe(
+//                timeKeeper.setDateTime();
+//        });
     }
 
     public Subject<List<Task>> getOrderedTasks() {
@@ -108,7 +112,7 @@ public class MainViewModel extends ViewModel {
         taskRepository.completeTask(task.toTask());
     }
 
-    public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime(); }
+    public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime().getValue(); }
 
     public void setNewTime(LocalDateTime newTime) { timeKeeper.setDateTime(newTime); }
 }

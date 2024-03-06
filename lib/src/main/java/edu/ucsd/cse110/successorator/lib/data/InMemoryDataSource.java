@@ -1,12 +1,15 @@
 package edu.ucsd.cse110.successorator.lib.data;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 /**
  * The InMemoryDataSource class functions as a local "database" of
@@ -21,12 +24,16 @@ public class InMemoryDataSource {
 
     private final Map<Integer, Task> tasks
        = new HashMap<>();
+    private LocalDateTime currentTime;
+    private final SimpleSubject<LocalDateTime> timeSubject
+       = new SimpleSubject<>();
     private final Map<Integer, SimpleSubject<Task>> taskSubjects
        = new HashMap<>();
     private final SimpleSubject<List<Task>> allTasksSubjects
        = new SimpleSubject<>();
 
     public InMemoryDataSource() {
+        currentTime = LocalDateTime.now();
     }
 
     public final static List<Task> DEFAULT_CARDS = List.of(
@@ -43,6 +50,14 @@ public class InMemoryDataSource {
             data.putTask(task);
         }
         return data;
+    }
+
+    public Subject<LocalDateTime> getTimeSubject() {
+        return timeSubject;
+    }
+
+    public void setTime(LocalDateTime dateTime) {
+        timeSubject.setValue(dateTime);
     }
 
     public List<Task> getTasks() {
