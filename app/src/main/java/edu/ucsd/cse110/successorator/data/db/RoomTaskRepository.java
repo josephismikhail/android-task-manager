@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.lib.domain.DailyRecur;
 import edu.ucsd.cse110.successorator.lib.domain.MonthlyRecur;
+import edu.ucsd.cse110.successorator.lib.domain.RecurFrequency;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.domain.WeeklyRecur;
@@ -83,20 +84,20 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void newRecurringTask(Task task, String frequency) {
+    public void newRecurringTask(Task task, RecurFrequency frequency) {
         newTask(task);
         task = task.withId(taskDao.getMaxId());
         switch (frequency) {
-            case "DAILY":
+            case DAILY:
                 dailyRecur.addTask(task, null);
                 return;
-            case "WEEKLY":
+            case WEEKLY:
                 weeklyRecur.addTask(task, LocalDateTime.now());
                 return;
-            case "MONTHLY":
+            case MONTHLY:
                 monthlyRecur.addTask(task, LocalDateTime.now());
                 return;
-            case "YEARLY":
+            case YEARLY:
                 yearlyRecur.addTask(task, LocalDateTime.now());
         }
     }

@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.RecurFrequency;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
@@ -88,7 +89,7 @@ public class MainViewModel extends ViewModel {
         taskRepository.newTask(task);
     }
 
-    public void newRecurringTask(Task task, String frequency) {
+    public void newRecurringTask(Task task, RecurFrequency frequency) {
         taskRepository.newRecurringTask(task, frequency);
     }
 

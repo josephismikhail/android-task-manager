@@ -104,6 +104,7 @@ public class TaskListFragment extends Fragment {
             activityModel.recurTask(activityModel.getCurrentTime());
         });
 
+
         return view.getRoot();
     }
 }

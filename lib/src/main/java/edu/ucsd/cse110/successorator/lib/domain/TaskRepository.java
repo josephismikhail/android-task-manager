@@ -17,7 +17,7 @@ public interface TaskRepository {
 
     void newTask(Task task);
 
-    void newRecurringTask(Task task, String frequency);
+    void newRecurringTask(Task task, RecurFrequency frequency);
 
     void recurTask(LocalDateTime date);
 

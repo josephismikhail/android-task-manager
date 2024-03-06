@@ -27,6 +27,9 @@ public class MonthlyRecur implements RecurTask {
         return recurringTasks.remove(task);
     }
 
+    // Monthly recurring has to be recurring on the X monday of a month, for example,
+    // stupid stupid stupid
+    // change to recur on the X Y-day of the month
     @Override
     public List<Task> checkRecur(LocalDateTime date) {
         List<Task> recurTasks = new ArrayList<>(); // List of tasks to be recurred

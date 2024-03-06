@@ -2,6 +2,7 @@ package edu.ucsd.cse110.successorator.lib.domain;
 
 import java.time.LocalDateTime;
 
+import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class SimpleTimeKeeper implements TimeKeeper {
@@ -21,6 +22,7 @@ public class SimpleTimeKeeper implements TimeKeeper {
         currentTime = dateTime;
     }
 
+    @Override
     public void updateDateTime() {
         this.currentTime = LocalDateTime.now();
     }

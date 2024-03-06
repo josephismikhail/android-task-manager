@@ -27,6 +27,7 @@ public class YearlyRecur implements RecurTask {
         return recurringTasks.remove(task);
     }
 
+    // if recur on 29th of february (leap year), the task must recur on march 1st
     @Override
     public List<Task> checkRecur(LocalDateTime date) {
         List<Task> recurTasks = new ArrayList<>(); // List of tasks to be recurred
