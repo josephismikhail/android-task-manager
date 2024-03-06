@@ -2,20 +2,23 @@ package edu.ucsd.cse110.successorator.lib.domain;
 
 import java.time.LocalDateTime;
 
-public class SimpleTimeKeeper implements TimeKeeper {
-    private LocalDateTime currentTime;
+import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-    public SimpleTimeKeeper() {
-        currentTime = LocalDateTime.now();
+public class SimpleTimeKeeper implements TimeKeeper {
+    private final InMemoryDataSource dataSource;
+
+    public SimpleTimeKeeper(InMemoryDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
-    public LocalDateTime getDateTime() {
-        return currentTime;
+    public Subject<LocalDateTime> getDateTime() {
+        return dataSource.getTimeSubject();
     }
 
     @Override
     public void setDateTime(LocalDateTime dateTime) {
-        currentTime = dateTime;
+        dataSource.setTime(dateTime);
     }
 }
