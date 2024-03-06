@@ -12,4 +12,6 @@ public interface RecurTask {
     boolean removeTask(Task task);
 
     List<Task> checkRecur(LocalDateTime date);
+
+    public List<Task> getTasksForDate(LocalDateTime time);
 }

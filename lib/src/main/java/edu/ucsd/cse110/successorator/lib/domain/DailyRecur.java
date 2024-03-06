@@ -34,4 +34,8 @@ public class DailyRecur implements RecurTask {
             return new ArrayList<Task>();
         }
     }
+
+    public List<Task> getTasksForDate(LocalDateTime time) {
+        return new ArrayList<>(recurringTasks);
+    }
 }

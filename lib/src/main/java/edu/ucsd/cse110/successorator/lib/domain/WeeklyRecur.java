@@ -42,4 +42,9 @@ public class WeeklyRecur implements RecurTask {
         }
         return recurTasks;
     }
+
+    @Override
+    public List<Task> getTasksForDate(LocalDateTime time) {
+        return new ArrayList<>(recurringTasks);
+    }
 }

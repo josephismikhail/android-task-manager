@@ -41,4 +41,9 @@ public class YearlyRecur implements RecurTask {
         }
         return recurTasks;
     }
+
+    @Override
+    public List<Task> getTasksForDate(LocalDateTime time) {
+        return new ArrayList<>(recurringTasks);
+    }
 }
