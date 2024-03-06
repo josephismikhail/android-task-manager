@@ -4,15 +4,15 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-// make abstract?
-public interface RecurTask {
+public abstract class RecurTask {
 
-    void addTask(Task task, LocalDateTime time);
+    abstract void addTask(Task task, LocalDateTime time);
 
-    boolean removeTask(Task task);
+    abstract boolean removeTask(Task task);
 
-    List<Task> checkRecur(LocalDateTime date);
+    abstract List<Task> checkRecur(LocalDateTime date);
 
-    public List<Task> getTasksForDate(LocalDateTime time);
+    abstract public List<Task> getTasksForDate(LocalDateTime time);
 }

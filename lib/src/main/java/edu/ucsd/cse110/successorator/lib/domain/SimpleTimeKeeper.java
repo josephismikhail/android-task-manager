@@ -24,9 +24,4 @@ public class SimpleTimeKeeper implements TimeKeeper {
     public void setDateTime(LocalDateTime dateTime) {
         dataSource.setTime(dateTime);
     }
-
-    @Override
-    public void updateDateTime() {
-        this.currentTime = LocalDateTime.now();
-    }
 }

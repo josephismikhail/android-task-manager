@@ -4,38 +4,40 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class DailyRecur implements RecurTask {
+public class DailyRecur extends RecurTask {
     DayOfWeek currentDay;
-    private List<Task> recurringTasks;
+    private final Map<Task, LocalDateTime> recurringTasks;
 
     public DailyRecur(DayOfWeek currentDay) {
         this.currentDay = currentDay;
-        this.recurringTasks = new ArrayList<>();
+        this.recurringTasks = new HashMap<>();
     }
 
     @Override
     public void addTask(Task task, LocalDateTime date) {
-        recurringTasks.add(task);
+        recurringTasks.put(task, null);
     }
 
     @Override
     public boolean removeTask(Task task) {
-        return recurringTasks.remove(task);
+        return recurringTasks.remove(task, recurringTasks.get(task));
     }
 
     @Override
     public List<Task> checkRecur(LocalDateTime time) {
         if (time.getDayOfWeek() != currentDay) {
             this.currentDay = time.getDayOfWeek();
-            return recurringTasks;
+            return new ArrayList<>(recurringTasks.keySet());
         } else {
-            return new ArrayList<Task>();
+            return new ArrayList<>();
         }
     }
 
     public List<Task> getTasksForDate(LocalDateTime time) {
-        return new ArrayList<>(recurringTasks);
+        return new ArrayList<>(recurringTasks.keySet());
     }
 }

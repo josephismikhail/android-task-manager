@@ -56,14 +56,18 @@ public class MainViewModel extends ViewModel {
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
 
+            recurTask(getCurrentTime());
             var newOrderedTasks = tasks.stream()
                 .sorted(Comparator.comparingInt(Task::sortOrder))
                 .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
 
-//        timeKeeper.getDateTime().observe(
-//                timeKeeper.setDateTime();
+//        timeKeeper.getDateTime().observe(time -> {
+//            if (time == null) return;
+//            if (time.isAfter(getCurrentTime())) {
+//                recurTask(time);
+//            }
 //        });
     }
 

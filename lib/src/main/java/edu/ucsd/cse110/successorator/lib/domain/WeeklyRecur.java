@@ -3,40 +3,47 @@ package edu.ucsd.cse110.successorator.lib.domain;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class WeeklyRecur implements RecurTask {
-    private List<LocalDateTime> dateRecurred;
-    private List<Task> recurringTasks;
+public class WeeklyRecur extends RecurTask {
+//    private List<LocalDateTime> dateRecurred;
+//    private List<Task> recurringTasks;
+    private final Map<Task, LocalDateTime> recurringTasks;
 
     public WeeklyRecur() {
-        this.dateRecurred = new ArrayList<>();
-        this.recurringTasks = new ArrayList<>();
+//        this.dateRecurred = new ArrayList<>();
+//        this.recurringTasks = new ArrayList<>();
+        this.recurringTasks = new HashMap<>();
     }
 
     @Override
     public void addTask(Task task, LocalDateTime date) {
-        recurringTasks.add(task);
-        dateRecurred.add(date);
+//        recurringTasks.add(task);
+//        dateRecurred.add(date);
+        recurringTasks.put(task, date);
     }
 
     @Override
     public boolean removeTask(Task task) {
-        int index = recurringTasks.indexOf(task);
-        dateRecurred.remove(index);
-        return recurringTasks.remove(task);
+//        int index = recurringTasks.indexOf(task);
+//        dateRecurred.remove(index);
+//        return recurringTasks.remove(task);
+        return recurringTasks.remove(task, recurringTasks.get(task));
     }
 
     @Override
     public List<Task> checkRecur(LocalDateTime date) {
-        List<Task> recurTasks = new ArrayList<>();
-        for (int i = 0; i < dateRecurred.size(); i++) {
-            var taskDate = dateRecurred.get(i);
-            var daysUntil = taskDate.until(date, ChronoUnit.DAYS);
-            if (daysUntil > 1) {
+        List<Task> recurTasks = new ArrayList<>(); // List of tasks to be recurred
+        for (Map.Entry<Task, LocalDateTime> entry : recurringTasks.entrySet()) {
+            var task = entry.getKey();
+            var taskDate = entry.getValue(); // Last date task was recurred
+
+            if (taskDate.until(date, ChronoUnit.DAYS) > 1) { // Checks if at least a day passed
                 if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
-                    recurTasks.add(recurringTasks.get(i));
-                    dateRecurred.set(i, date);
+                    recurTasks.add(task);
+                    recurringTasks.replace(task, date);
                 }
             }
         }
@@ -45,6 +52,6 @@ public class WeeklyRecur implements RecurTask {
 
     @Override
     public List<Task> getTasksForDate(LocalDateTime time) {
-        return new ArrayList<>(recurringTasks);
+        return new ArrayList<>(recurringTasks.keySet());
     }
 }

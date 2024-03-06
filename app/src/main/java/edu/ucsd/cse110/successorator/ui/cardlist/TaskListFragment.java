@@ -97,6 +97,7 @@ public class TaskListFragment extends Fragment {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
         dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
+        // Forward date button
         view.dateButton.setOnClickListener(v -> {
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             dateTextView.setText(activityModel.getCurrentTime().format(formatter));
