@@ -1,12 +1,13 @@
-package edu.ucsd.cse110.successorator.lib.domain;
+package edu.ucsd.cse110.successorator.lib.domain.recur;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class DailyRecur extends RecurTask {
     DayOfWeek currentDay;
@@ -37,6 +38,7 @@ public class DailyRecur extends RecurTask {
         }
     }
 
+    @Override
     public List<Task> getTasksForDate(LocalDateTime time) {
         return new ArrayList<>(recurringTasks.keySet());
     }

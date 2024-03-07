@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.successorator.lib.domain;
+package edu.ucsd.cse110.successorator.lib.domain.recur;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -7,32 +7,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WeeklyRecur extends RecurTask {
-//    private List<LocalDateTime> dateRecurred;
-//    private List<Task> recurringTasks;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.recur.RecurTask;
+
+public class YearlyRecur extends RecurTask {
     private final Map<Task, LocalDateTime> recurringTasks;
 
-    public WeeklyRecur() {
-//        this.dateRecurred = new ArrayList<>();
-//        this.recurringTasks = new ArrayList<>();
+    public YearlyRecur() {
         this.recurringTasks = new HashMap<>();
     }
 
     @Override
     public void addTask(Task task, LocalDateTime date) {
-//        recurringTasks.add(task);
-//        dateRecurred.add(date);
         recurringTasks.put(task, date);
     }
 
     @Override
     public boolean removeTask(Task task) {
-//        int index = recurringTasks.indexOf(task);
-//        dateRecurred.remove(index);
-//        return recurringTasks.remove(task);
         return recurringTasks.remove(task, recurringTasks.get(task));
     }
 
+    // if recur on 29th of february (leap year), the task must recur on march 1st
     @Override
     public List<Task> checkRecur(LocalDateTime date) {
         List<Task> recurTasks = new ArrayList<>(); // List of tasks to be recurred
@@ -41,7 +36,7 @@ public class WeeklyRecur extends RecurTask {
             var taskDate = entry.getValue(); // Last date task was recurred
 
             if (taskDate.until(date, ChronoUnit.DAYS) > 1) { // Checks if at least a day passed
-                if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
+                if (taskDate.getDayOfYear() == date.getDayOfYear()) {
                     recurTasks.add(task);
                     recurringTasks.replace(task, date);
                 }

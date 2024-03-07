@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.successorator.lib.domain;
+package edu.ucsd.cse110.successorator.lib.domain.recur;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class YearlyRecur extends RecurTask {
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+
+public class MonthlyRecur extends RecurTask {
     private final Map<Task, LocalDateTime> recurringTasks;
 
-    public YearlyRecur() {
+    public MonthlyRecur() {
         this.recurringTasks = new HashMap<>();
     }
 
@@ -24,7 +26,7 @@ public class YearlyRecur extends RecurTask {
         return recurringTasks.remove(task, recurringTasks.get(task));
     }
 
-    // if recur on 29th of february (leap year), the task must recur on march 1st
+    // Monthly recurring has to be recurring on the X monday of a month, for example,
     @Override
     public List<Task> checkRecur(LocalDateTime date) {
         List<Task> recurTasks = new ArrayList<>(); // List of tasks to be recurred
@@ -33,7 +35,7 @@ public class YearlyRecur extends RecurTask {
             var taskDate = entry.getValue(); // Last date task was recurred
 
             if (taskDate.until(date, ChronoUnit.DAYS) > 1) { // Checks if at least a day passed
-                if (taskDate.getDayOfYear() == date.getDayOfYear()) {
+                if (taskDate.getDayOfMonth() == date.getDayOfMonth()) {
                     recurTasks.add(task);
                     recurringTasks.replace(task, date);
                 }

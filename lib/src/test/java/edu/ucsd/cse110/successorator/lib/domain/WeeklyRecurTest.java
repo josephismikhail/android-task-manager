@@ -7,6 +7,8 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import edu.ucsd.cse110.successorator.lib.domain.recur.WeeklyRecur;
+
 public class WeeklyRecurTest {
     private WeeklyRecur weeklyRecur;
     private Task task1;

@@ -5,17 +5,16 @@ import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 import androidx.lifecycle.Transformations;
 
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.successorator.lib.domain.DailyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.MonthlyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.RecurFrequency;
+import edu.ucsd.cse110.successorator.lib.domain.recur.DailyRecur;
+import edu.ucsd.cse110.successorator.lib.domain.recur.MonthlyRecur;
+import edu.ucsd.cse110.successorator.lib.domain.recur.RecurFrequency;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
-import edu.ucsd.cse110.successorator.lib.domain.WeeklyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.YearlyRecur;
+import edu.ucsd.cse110.successorator.lib.domain.recur.WeeklyRecur;
+import edu.ucsd.cse110.successorator.lib.domain.recur.YearlyRecur;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 import edu.ucsd.cse110.successorator.util.LiveDataSubjectAdapter;
 

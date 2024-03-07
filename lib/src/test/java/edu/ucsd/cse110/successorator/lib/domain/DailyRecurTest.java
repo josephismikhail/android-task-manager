@@ -8,6 +8,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import edu.ucsd.cse110.successorator.lib.domain.recur.DailyRecur;
+
 public class DailyRecurTest {
     private DailyRecur dailyRecur;
     private Task task1;
