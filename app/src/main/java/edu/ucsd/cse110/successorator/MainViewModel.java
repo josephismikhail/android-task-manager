@@ -5,6 +5,7 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +30,13 @@ public class MainViewModel extends ViewModel {
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
 
+    private final SimpleSubject<LocalDateTime> currentTime;
+
+    private final SimpleSubject<String> dateDisplayText;
+
+
     public static final ViewModelInitializer<MainViewModel> initializer =
+
         new ViewModelInitializer<>(
             MainViewModel.class,
             creationExtras -> {
@@ -45,14 +52,16 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
+        this.currentTime = new SimpleSubject<>();
+        this.dateDisplayText = new SimpleSubject<>();
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
 
             var newOrderedTasks = tasks.stream()
-                .sorted(Comparator.comparingInt(Task::sortOrder))
-                .collect(Collectors.toList());
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
 
@@ -67,6 +76,9 @@ public class MainViewModel extends ViewModel {
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
     }
+
+    public Subject<String> getDateDisplayText() { return dateDisplayText; }
+
 
     public int getMinSortOrder() {
         return taskRepository.getMinSortOrder();
@@ -84,7 +96,9 @@ public class MainViewModel extends ViewModel {
         taskRepository.shiftSortOrder(from, to, by);
     }
 
-    public void save(Task task) { taskRepository.save(task); }
+    public void save(Task task) {
+        taskRepository.save(task);
+    }
 
     public void newTask(Task task) {
         taskRepository.newTask(task);
@@ -98,11 +112,17 @@ public class MainViewModel extends ViewModel {
         taskRepository.recurTask(date);
     }
 
-    public void remove(int id) { taskRepository.remove(id); }
+    public void remove(int id) {
+        taskRepository.remove(id);
+    }
 
-    public void deleteCompletedTasks(boolean completed) {taskRepository.deleteCompletedTasks(completed);}
+    public void deleteCompletedTasks(boolean completed) {
+        taskRepository.deleteCompletedTasks(completed);
+    }
 
-    public void deleteCompletedTasksBefore(long cutoffTime) {taskRepository.deleteCompletedTasksBefore(cutoffTime);}
+    public void deleteCompletedTasksBefore(long cutoffTime) {
+        taskRepository.deleteCompletedTasksBefore(cutoffTime);
+    }
 
     public void completeTask(TaskEntity task) {
         // Delegate the operation to the repository
