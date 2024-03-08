@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -80,6 +83,52 @@ public class TaskListFragment extends Fragment {
             var dialogFragment = CreateTaskDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
+
+
+        Spinner focusModeButton = view.mode;
+
+// Example data for the spinner
+        String[] items = new String[]{"Home Mode", "Work Mode", "School Mode", "Errand Mode"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        focusModeButton.setAdapter(adapter);
+        TextView title = view.date;
+
+// Handling item selection
+        focusModeButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // change title
+                String selectedItem = items[position];
+                title.setText(selectedItem);
+                // change task list accodring to name
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Do something when no item is selected
+            }
+        });
+
+//        NavigationView navigationView = view.FocusModeView;
+//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                int itemId = item.getItemId();
+//                Intent intent = new Intent(getActivity(), FocusModeActivity.class);
+//                if (itemId == R.id.home_mode) {
+//                    intent.putExtra("mode", "Home Mode");
+//                } else if (itemId == R.id.work_mode) {
+//                    intent.putExtra("mode", "Work Mode");
+//                } else if (itemId == R.id.school_mode) {
+//                    intent.putExtra("mode", "School Mode");
+//                } else if (itemId == R.id.errand_mode) {
+//                    intent.putExtra("mode", "Errand Mode");
+//                }
+//                startActivity(intent);
+//                // Close the navigation drawer if needed
+//                return true;
+//            }
+//        });
+
 
         TextView dateTextView = view.getRoot().findViewById(R.id.date);
         LocalDateTime currentTime = LocalDateTime.now();
