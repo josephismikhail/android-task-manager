@@ -18,12 +18,6 @@ import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 
 @HiltAndroidApp
 public class SuccessoratorApplication extends Application {
-//    List<Task> DEFAULT_TASKS = List.of(
-//            new Task(1, "Task 1", false, 1, System.currentTimeMillis()),
-//            new Task(2, "Task 2", false, 2, System.currentTimeMillis()),
-//            new Task(3, "Task 3", false, 3, System.currentTimeMillis()),
-//            new Task(4, "Task 4", false, 4, System.currentTimeMillis())
-//    );
     private InMemoryDataSource dataSource;
     private TaskRepository taskRepository;
     private TimeKeeper timeKeeper;

@@ -88,7 +88,7 @@ public class TaskEntity {
         return recurDate;
     }
 
-    public void changeStatus(LocalDateTime date) {
+    public void changeStatus() {
         this.completed = !this.isCompleted();
         if (this.completed) {
             this.completedTime = LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(-8));//date.toEpochSecond(ZoneOffset.ofHours(-8));//.toInstant().toEpochMilli();
@@ -104,5 +104,9 @@ public class TaskEntity {
     public TaskEntity withSortOrder(int newSortOrder) {
         return new TaskEntity(this.id, this.task, this.completed, newSortOrder,
                 this.completedTime, this.recurType, this.recurDate, this.display);
+    }
+
+    public void setDisplay(boolean b) {
+        this.display = b;
     }
 }

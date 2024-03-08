@@ -75,28 +75,24 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void updateDisplayTask(List<Task> taskList, LocalDateTime date) {
+    public void updateDisplayTask(LocalDateTime date) {
+        List<TaskEntity> taskList = taskDao.findAll();
         if (taskList == null) return;
 
-        for (Task task : taskList) {
+        for (TaskEntity task : taskList) {
             if (!checkRecurTask(task, date) && task.isCompleted()
-                    && completedBeforeToday(task, date)) {
+                    && completedBeforeToday(task.toTask(), date)) {
                 task.setDisplay(false);
-                var taskEntity = fromTask(task);
-                taskDao.insert(taskEntity);
+                taskDao.insert(task);
             } else if (checkRecurTask(task, date) && task.isCompleted()) {
                 task.changeStatus();
                 task.setDisplay(true);
-                var taskEntity = fromTask(task);
-                taskDao.insert(taskEntity);
+                taskDao.insert(task);
             }
-//            else if (!task.isCompleted()) {
-//                save(task);
-//            }
         }
     }
 
-    public boolean checkRecurTask(Task task, LocalDateTime date) {
+    public boolean checkRecurTask(TaskEntity task, LocalDateTime date) {
         var recurType = task.getRecurType();
         var taskRecurDate = LocalDateTime.ofEpochSecond(task.getRecurDate(),
                 0, ZoneOffset.ofHours(-8));
@@ -113,7 +109,9 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     public boolean checkRecurWeekly(LocalDateTime taskDate, LocalDateTime date) {
-        return taskDate.getDayOfWeek() == date.getDayOfWeek();
+        var taskWeekday = taskDate.getDayOfWeek();
+        var currentWeekday = date.getDayOfWeek();
+        return taskWeekday == currentWeekday;
     }
 
     public boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
@@ -138,17 +136,16 @@ public class RoomTaskRepository implements TaskRepository {
     private boolean completedBeforeToday(Task task, LocalDateTime date) {
         LocalDateTime timeCompleted = LocalDateTime.ofEpochSecond(task.getCompletedTime(),
                 0, ZoneOffset.ofHours(-8));
-//        timeCompleted = LocalDateTime.from(timeCompleted.adjustInto(date));
-        return timeCompleted.until(date, ChronoUnit.DAYS) > 0;
+        return timeCompleted.isBefore(date);
     }
 
     @Override
-    public void completeTask(Task task, LocalDateTime date) {
+    public void completeTask(Task task) {
         // convert to task entity
         TaskEntity taskEntity = fromTask(task);
 
         boolean isNowCompleted = !taskEntity.isCompleted(); // Assuming changeStatus toggles the completion status.
-        taskEntity.changeStatus(date); // Toggle the task's completion status.
+        taskEntity.changeStatus(); // Toggle the task's completion status.
 
         // Fetch current sortOrder values to determine the new position of the task
         int minSortOrder = taskDao.getMinSortOrder(); // Implement this to fetch the minimum sortOrder among all tasks.

@@ -52,7 +52,7 @@ public class DatabaseTest {
         dao.insert(fromTask(task)); // Insert initial task
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
-        repository.completeTask(task, null); // Simulate completing task
+        repository.completeTask(task); // Simulate completing task
 
         TaskEntity updatedTask = dao.find(task.getId());
         assertTrue(updatedTask.isCompleted()); // Verify completion status is updated
@@ -71,14 +71,14 @@ public class DatabaseTest {
         dao.insert(fromTask(task2));
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
-        repository.completeTask(task1, null);
+        repository.completeTask(task1);
 
         TaskEntity updatedTask1 = dao.find(task1.getId());
         assertTrue(updatedTask1.isCompleted());
 
         assertEquals(2, updatedTask1.getSortOrder());
 
-        repository.completeTask(task2, null);
+        repository.completeTask(task2);
 
         updatedTask1 = dao.find(task1.getId());
         TaskEntity updatedTask2 = dao.find(task2.getId());
@@ -100,7 +100,7 @@ public class DatabaseTest {
         RoomTaskRepository repository = new RoomTaskRepository(dao);
 
         // uncomplete task 2
-        repository.completeTask(task2, null);
+        repository.completeTask(task2);
 
         // update
         TaskEntity updatedTask2 = dao.find(task2.getId());
@@ -113,7 +113,7 @@ public class DatabaseTest {
         assertTrue(updatedTask2.getSortOrder() < updatedTask1.getSortOrder());
 
         // uncomplete task 1
-        repository.completeTask(task1, null);
+        repository.completeTask(task1);
 
         // update
         updatedTask1 = dao.find(task1.getId());

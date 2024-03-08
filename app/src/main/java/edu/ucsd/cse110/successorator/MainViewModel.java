@@ -69,15 +69,18 @@ public class MainViewModel extends ViewModel {
                     .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
-        updateDisplayTask();
     }
 
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
     }
 
-    public void updateDisplayTask() {
-        taskRepository.updateDisplayTask(allTasks, getCurrentTime());
+    public void updateDisplayTask(LocalDateTime date) {
+        taskRepository.updateDisplayTask(date);
+    }
+
+    public void updateDisplayTaskButton() {
+        taskRepository.updateDisplayTask(getCurrentTime());
     }
 
     public Subject<String> getDateDisplayText() { return dateDisplayText; }
@@ -91,7 +94,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void completeTask(TaskEntity task) {
-        taskRepository.completeTask(task.toTask(), getCurrentTime());
+        taskRepository.completeTask(task.toTask());
     }
 
     public void deleteCompletedTasks(boolean completed) {

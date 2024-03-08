@@ -92,7 +92,7 @@ public class TaskListFragment extends Fragment {
             cutoffTime = currentTime;
 //            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
             activityModel.deleteCompletedTasks(true);
-            activityModel.updateDisplayTask();
+            activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
         activityModel.setNewTime(cutoffTime);
@@ -104,7 +104,7 @@ public class TaskListFragment extends Fragment {
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             dateTextView.setText(activityModel.getCurrentTime().format(formatter));
             activityModel.deleteCompletedTasks(true);
-            activityModel.updateDisplayTask();
+            activityModel.updateDisplayTask(activityModel.getCurrentTime());
         });
 
         return view.getRoot();

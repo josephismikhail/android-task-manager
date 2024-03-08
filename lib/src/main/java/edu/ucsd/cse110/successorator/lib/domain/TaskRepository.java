@@ -17,11 +17,12 @@ public interface TaskRepository {
 
     void newTask(Task task);
 
-    void updateDisplayTask(List<Task> taskList, LocalDateTime date);
+    void updateDisplayTask(LocalDateTime date);
 
     void deleteCompletedTasks(boolean completed);
 
     void deleteCompletedTasksBefore(long cutoffTime);
 
-    void completeTask(Task task, LocalDateTime date);
+    void completeTask(Task task);
+
 }
