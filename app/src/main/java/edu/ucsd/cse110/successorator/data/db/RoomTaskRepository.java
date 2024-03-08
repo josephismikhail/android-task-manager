@@ -4,35 +4,27 @@ import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import androidx.lifecycle.Transformations;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.successorator.lib.domain.recur.DailyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.recur.MonthlyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.recur.RecurFrequency;
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
-import edu.ucsd.cse110.successorator.lib.domain.recur.WeeklyRecur;
-import edu.ucsd.cse110.successorator.lib.domain.recur.YearlyRecur;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 import edu.ucsd.cse110.successorator.util.LiveDataSubjectAdapter;
 
 public class RoomTaskRepository implements TaskRepository {
     private final TaskDao taskDao;
-    private final DailyRecur dailyRecur = new DailyRecur(LocalDateTime.now().getDayOfWeek());
-    private final WeeklyRecur weeklyRecur = new WeeklyRecur();
-    private final MonthlyRecur monthlyRecur = new MonthlyRecur();
-    private final YearlyRecur yearlyRecur = new YearlyRecur();
 
     public RoomTaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
-        Task task = new Task(1, "Daily Recurring Task", false, 1, null);
-        dailyRecur.addTask(task, LocalDateTime.now());
-        Task task2 = new Task(2, "Weekly Recurring Task", false, 1, null);
-        weeklyRecur.addTask(task2, LocalDateTime.now());
-        Task task3 = new Task(3, "Monthly Recurring Task", false, 1, null);
-        monthlyRecur.addTask(task3, LocalDateTime.now());
     }
 
     @Override
@@ -83,82 +75,80 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void newRecurringTask(Task task, RecurFrequency frequency) {
-        newTask(task);
-        task = task.withId(taskDao.getMaxId());
-        switch (frequency) {
-            case DAILY:
-                dailyRecur.addTask(task, null);
-                return;
-            case WEEKLY:
-                weeklyRecur.addTask(task, LocalDateTime.now());
-                return;
-            case MONTHLY:
-                monthlyRecur.addTask(task, LocalDateTime.now());
-                return;
-            case YEARLY:
-                yearlyRecur.addTask(task, LocalDateTime.now());
+    public void updateDisplayTask(List<Task> taskList, LocalDateTime date) {
+        if (taskList == null) return;
+
+        for (Task task : taskList) {
+            if (!checkRecurTask(task, date) && task.isCompleted()
+                    && completedBeforeToday(task, date)) {
+                task.setDisplay(false);
+                var taskEntity = fromTask(task);
+                taskDao.insert(taskEntity);
+            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+                task.changeStatus();
+                task.setDisplay(true);
+                var taskEntity = fromTask(task);
+                taskDao.insert(taskEntity);
+            }
+//            else if (!task.isCompleted()) {
+//                save(task);
+//            }
         }
     }
 
-    @Override
-    public void recurTask(LocalDateTime date) {
-        var dailyTasks = dailyRecur.checkRecur(date);
-        var weeklyTasks = weeklyRecur.checkRecur(date);
-        var monthlyTasks = monthlyRecur.checkRecur(date);
-        var yearlyTasks = yearlyRecur.checkRecur(date);
-        if (!dailyTasks.isEmpty()) {
-            dailyTasks.forEach(this::newTask);
-        }
-        if (!weeklyTasks.isEmpty()) {
-            weeklyTasks.forEach(this::newTask);
-        }
-        if (!monthlyTasks.isEmpty()) {
-            monthlyTasks.forEach(this::newTask);
-        }
-        if (!yearlyTasks.isEmpty()) {
-            yearlyTasks.forEach(this::newTask);
+    public boolean checkRecurTask(Task task, LocalDateTime date) {
+        var recurType = task.getRecurType();
+        var taskRecurDate = LocalDateTime.ofEpochSecond(task.getRecurDate(),
+                0, ZoneOffset.ofHours(-8));
+
+        if (recurType == RecurType.DAILY) {
+            return true;
+        } else if (recurType == RecurType.WEEKLY) {
+            return checkRecurWeekly(taskRecurDate, date);
+        } else if (recurType == RecurType.MONTHLY) {
+            return checkRecurMonthly(taskRecurDate, date);
+        } else {
+            return checkRecurYearly(taskRecurDate, date);
         }
     }
-    // newRecurringTask
-    // create (also make RecurTask interface?) DailyRecurTask, WeeklyRecurTask, etc.
-    // each keep a list of Tasks which are recurring
-    // possibly add new parameter for Task called createdTime
-    // compare createdTime with current time and check the difference
-    // if X time has passed and it's supposed to recur every X days
-    // then insert that task
 
-    @Override
-    public void remove(int id) {
-        taskDao.remove(id);
+    public boolean checkRecurWeekly(LocalDateTime taskDate, LocalDateTime date) {
+        return taskDate.getDayOfWeek() == date.getDayOfWeek();
+    }
+
+    public boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
+        var taskNthWeekday = taskDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        var dateNthWeekday = date.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
+            return taskNthWeekday == dateNthWeekday;
+        }
+        return false;
+    }
+
+    private boolean checkRecurYearly(LocalDateTime taskDate, LocalDateTime date) {
+        if (taskDate.getDayOfMonth() == 29 && taskDate.getMonth() == Month.FEBRUARY) {
+            return taskDate.getDayOfYear() == date.getDayOfYear();
+        } else {
+            return (taskDate.getDayOfMonth() == date.getDayOfMonth())
+                    && (taskDate.getMonth() == date.getMonth());
+        }
+
+    }
+
+    private boolean completedBeforeToday(Task task, LocalDateTime date) {
+        LocalDateTime timeCompleted = LocalDateTime.ofEpochSecond(task.getCompletedTime(),
+                0, ZoneOffset.ofHours(-8));
+//        timeCompleted = LocalDateTime.from(timeCompleted.adjustInto(date));
+        return timeCompleted.until(date, ChronoUnit.DAYS) > 0;
     }
 
     @Override
-    public int getMinSortOrder() {
-        return taskDao.getMinSortOrder();
-    }
-
-    @Override
-    public int getMaxSortOrder() {
-        return taskDao.getMaxSortOrder();
-    }
-
-    @Override
-    public int getIncompleteMaxSortOrder() {
-        return taskDao.getIncompleteMaxSortOrder();
-    }
-
-    @Override
-    public void shiftSortOrder(int from, int to, int by) {
-        taskDao.shiftSortOrder(from, to, by);
-    }
-
-    public void completeTask(Task task) {
+    public void completeTask(Task task, LocalDateTime date) {
         // convert to task entity
         TaskEntity taskEntity = fromTask(task);
 
         boolean isNowCompleted = !taskEntity.isCompleted(); // Assuming changeStatus toggles the completion status.
-        taskEntity.changeStatus(); // Toggle the task's completion status.
+        taskEntity.changeStatus(date); // Toggle the task's completion status.
 
         // Fetch current sortOrder values to determine the new position of the task
         int minSortOrder = taskDao.getMinSortOrder(); // Implement this to fetch the minimum sortOrder among all tasks.
@@ -186,9 +176,14 @@ public class RoomTaskRepository implements TaskRepository {
     @Override
     public void deleteCompletedTasks(boolean completed) {
         for (TaskEntity task : taskDao.findAll()) {
-            if (task.completed) {
+            var recurType = task.getRecurType();
+            if (task.isCompleted() && (recurType == RecurType.PENDING || recurType == RecurType.ONCE)) {
                 taskDao.remove(task.id);
             }
+//            else {//if (recurType == RecurType.DAILY){
+//                task.uncomplete();
+//                save(task.toTask());
+//            }
         }
     }
 

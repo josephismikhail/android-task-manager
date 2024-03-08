@@ -3,7 +3,6 @@ package edu.ucsd.cse110.successorator.lib.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.lib.domain.recur.RecurFrequency;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public interface TaskRepository {
@@ -18,23 +17,11 @@ public interface TaskRepository {
 
     void newTask(Task task);
 
-    void newRecurringTask(Task task, RecurFrequency frequency);
-
-    void recurTask(LocalDateTime date);
-
-    void remove(int id);
-
-    int getMinSortOrder();
-
-    int getMaxSortOrder();
-
-    int getIncompleteMaxSortOrder();
-
-    void shiftSortOrder(int from, int to, int by);
+    void updateDisplayTask(List<Task> taskList, LocalDateTime date);
 
     void deleteCompletedTasks(boolean completed);
 
     void deleteCompletedTasksBefore(long cutoffTime);
 
-    void completeTask(Task task);
+    void completeTask(Task task, LocalDateTime date);
 }

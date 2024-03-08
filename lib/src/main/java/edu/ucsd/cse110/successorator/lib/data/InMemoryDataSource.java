@@ -3,7 +3,6 @@ package edu.ucsd.cse110.successorator.lib.data;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import edu.ucsd.cse110.successorator.lib.util.Subject;
  */
 public class InMemoryDataSource {
     private int nextId = 0;
-
     private int minSortOrder = Integer.MAX_VALUE;
     private int maxSortOrder = Integer.MIN_VALUE;
 
@@ -37,11 +35,11 @@ public class InMemoryDataSource {
     }
 
     public final static List<Task> DEFAULT_CARDS = List.of(
-       new Task(0, "Test 1", false, 0, null),
-       new Task(1, "Test 2", false, 1, null),
-       new Task(2, "Test 3", false, 2, null),
-       new Task(3, "Test 4", false, 3, null),
-       new Task(4, "Test 5", false, 4, null)
+//       new Task(0, "Test 1", false, 0, null),
+//       new Task(1, "Test 2", false, 1, null),
+//       new Task(2, "Test 3", false, 2, null),
+//       new Task(3, "Test 4", false, 3, null),
+//       new Task(4, "Test 5", false, 4, null)
     );
 
     public static InMemoryDataSource fromDefault() {
@@ -91,12 +89,12 @@ public class InMemoryDataSource {
 
     public void putTask(Task task) {
         var fixedTask = preInsert(task);
-        tasks.put(fixedTask.id(), fixedTask);
+        tasks.put(fixedTask.getId(), fixedTask);
         postInsert();
         assertSortOrderConstraints();
 
-        if (taskSubjects.containsKey(fixedTask.id())) {
-            taskSubjects.get(fixedTask.id()).setValue(fixedTask);
+        if (taskSubjects.containsKey(fixedTask.getId())) {
+            taskSubjects.get(fixedTask.getId()).setValue(fixedTask);
         }
         allTasksSubjects.setValue(getTasks());
     }
@@ -106,14 +104,14 @@ public class InMemoryDataSource {
             .map(this::preInsert)
             .collect(Collectors.toList());
 
-        fixedTasks.forEach(task -> tasks.put(task.id(), task));
+        fixedTasks.forEach(task -> tasks.put(task.getId(), task));
         postInsert();
         assertSortOrderConstraints();
     }
 
     public void removeTask(int id) {
         var task = tasks.get(id);
-        var sortOrder = task.sortOrder();
+        var sortOrder = task.getSortOrder();
 
         tasks.remove(id);
         shiftSortOrders(sortOrder, maxSortOrder, -1);
@@ -126,8 +124,8 @@ public class InMemoryDataSource {
 
     public void shiftSortOrders(int from, int to, int by) {
         var items = tasks.values().stream()
-           .filter(task -> task.sortOrder() >= from && task.sortOrder() <= to)
-           .map(task -> task.withSortOrder(task.sortOrder() + by))
+           .filter(task -> task.getSortOrder() >= from && task.getSortOrder() <= to)
+           .map(task -> task.withSortOrder(task.getSortOrder() + by))
            .collect(Collectors.toList());
         putTasks(items);
     }
@@ -136,7 +134,7 @@ public class InMemoryDataSource {
      * Ensures that tasks inserted have a valid id
      */
     private Task preInsert(Task task) {
-        var id = task.id();
+        var id = task.getId();
         if (id == null) {
             task = task.withId(nextId++);
         }
@@ -151,11 +149,11 @@ public class InMemoryDataSource {
      */
     private void postInsert() {
         minSortOrder = tasks.values().stream()
-                .map(Task::sortOrder)
+                .map(Task::getSortOrder)
                 .min(Integer::compareTo)
                 .orElse(Integer.MAX_VALUE);
         maxSortOrder = tasks.values().stream()
-                .map(Task::sortOrder)
+                .map(Task::getSortOrder)
                 .max(Integer::compareTo)
                 .orElse(Integer.MIN_VALUE);
     }
@@ -165,7 +163,7 @@ public class InMemoryDataSource {
      */
     private void assertSortOrderConstraints() {
         var sortOrders = tasks.values().stream()
-                .map(Task::sortOrder)
+                .map(Task::getSortOrder)
                 .collect(Collectors.toList());
 
         assert sortOrders.stream().allMatch(i -> i >= 0);

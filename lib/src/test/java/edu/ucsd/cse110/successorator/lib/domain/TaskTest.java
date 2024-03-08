@@ -8,9 +8,9 @@ public class TaskTest {
     @Test
     public void testGetters() {
         var task = new Task(1, "testing 1", true, 0, System.currentTimeMillis());
-        assertEquals(Integer.valueOf(1), task.id());
+        assertEquals(Integer.valueOf(1), task.getId());
         assertEquals("testing 1", task.getTask());
-        assertEquals(0, task.sortOrder());
+        assertEquals(0, task.getSortOrder());
         assertTrue(task.isCompleted());
     }
 

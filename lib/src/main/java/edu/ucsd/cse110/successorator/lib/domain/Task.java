@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 public class Task implements Serializable {
@@ -14,17 +15,24 @@ public class Task implements Serializable {
     private boolean completed;
     private final int sortOrder;
     private Long completedTime;
+    private RecurType recurType;
+    private Long recurDate;
+    private boolean display;
 
-    public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder, @Nullable Long completedTime) {
+    public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
+                @Nullable Long completedTime, RecurType recurType, Long recurDate, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
         this.sortOrder = sortOrder;
         this.completedTime = completedTime;
+        this.recurType = recurType;
+        this.recurDate = recurDate;
+        this.display = display;
     }
 
     @Nullable
-    public Integer id() {
+    public Integer getId() {
         return id;
     }
 
@@ -33,27 +41,12 @@ public class Task implements Serializable {
         return this.task;
     }
 
-    public int sortOrder() {
-        return sortOrder;
-    }
-
-    public Task withId(int id) { return new Task(id, task, completed, sortOrder, completedTime); }
-
     public boolean isCompleted() {
         return completed;
     }
 
-    public void changeStatus() {
-        this.completed = !this.completed;
-        if (this.completed) {
-            this.completedTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        } else {
-            this.completedTime = null;
-        }
-    }
-
-    public Task withSortOrder(int sortOrder) {
-        return new Task(id, task, completed, sortOrder, completedTime);
+    public int getSortOrder() {
+        return sortOrder;
     }
 
     @Nullable
@@ -61,8 +54,49 @@ public class Task implements Serializable {
         return completedTime;
     }
 
-    public void setCompletedTime(@Nullable Long completedTime) {
-        this.completedTime = completedTime;
+    public RecurType getRecurType() {
+        return recurType;
+    }
+
+    public Long getRecurDate() {
+        return recurDate;
+    }
+
+    public boolean display() {
+        return display;
+    }
+
+    public Task withId(int id) {
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+    }
+
+    public void changeStatus() {
+        this.completed = !this.completed;
+        if (this.completed) {
+            this.completedTime = LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(-8));//.toInstant().toEpochMilli();
+        } else {
+            this.completedTime = null;
+        }
+    }
+
+    public void uncomplete() {
+        this.completed = false;
+    }
+
+    public Task withSortOrder(int sortOrder) {
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+    }
+
+    public Task withRecurType(RecurType recurType) {
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+    }
+
+    public Task withRecurDate(Long recurDate) {
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+    }
+
+    public void setDisplay(boolean display) {
+        this.display = display;
     }
 
     @Override

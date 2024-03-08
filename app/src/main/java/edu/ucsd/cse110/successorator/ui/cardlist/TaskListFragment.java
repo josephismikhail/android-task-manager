@@ -83,14 +83,16 @@ public class TaskListFragment extends Fragment {
 
         TextView dateTextView = view.getRoot().findViewById(R.id.date);
         LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime cutoffTime = LocalDate.now().atTime(2,0,0);
+        LocalDateTime cutoffTime = currentTime.toLocalDate().atTime(2,0,0);
 
         if (currentTime.isBefore(cutoffTime)) {
             cutoffTime = cutoffTime.minusDays(1);
         }
         else {
             cutoffTime = currentTime;
-            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
+            activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask();
         }
 
         activityModel.setNewTime(cutoffTime);
@@ -102,9 +104,8 @@ public class TaskListFragment extends Fragment {
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             dateTextView.setText(activityModel.getCurrentTime().format(formatter));
             activityModel.deleteCompletedTasks(true);
-            activityModel.recurTask(activityModel.getCurrentTime());
+            activityModel.updateDisplayTask();
         });
-
 
         return view.getRoot();
     }

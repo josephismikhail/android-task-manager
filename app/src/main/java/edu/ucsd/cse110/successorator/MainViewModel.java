@@ -5,8 +5,8 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
-import edu.ucsd.cse110.successorator.lib.domain.recur.RecurFrequency;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
@@ -29,6 +28,8 @@ public class MainViewModel extends ViewModel {
 
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
+
+    private List<Task> allTasks;
 
     private final SimpleSubject<LocalDateTime> currentTime;
 
@@ -52,6 +53,7 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
+        this.allTasks = new ArrayList<>();
         this.currentTime = new SimpleSubject<>();
         this.dateDisplayText = new SimpleSubject<>();
 
@@ -59,42 +61,26 @@ public class MainViewModel extends ViewModel {
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
 
-            var newOrderedTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
+            allTasks = tasks.stream()
+                    .sorted(Comparator.comparingInt(Task::getSortOrder))
+                    .collect(Collectors.toList());
+            var newOrderedTasks = allTasks.stream()
+                    .filter(Task::display)
                     .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
-
-//        timeKeeper.getDateTime().observe(time -> {
-//            if (time == null) return;
-//            if (time.isAfter(getCurrentTime())) {
-//                recurTask(time);
-//            }
-//        });
+        updateDisplayTask();
     }
 
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
     }
 
+    public void updateDisplayTask() {
+        taskRepository.updateDisplayTask(allTasks, getCurrentTime());
+    }
+
     public Subject<String> getDateDisplayText() { return dateDisplayText; }
-
-
-    public int getMinSortOrder() {
-        return taskRepository.getMinSortOrder();
-    }
-
-    public int getMaxSortOrder() {
-        return taskRepository.getMaxSortOrder();
-    }
-
-    public int getIncompleteMaxSortOrder() {
-        return taskRepository.getIncompleteMaxSortOrder();
-    }
-
-    public void shiftSortOrder(int from, int to, int by) {
-        taskRepository.shiftSortOrder(from, to, by);
-    }
 
     public void save(Task task) {
         taskRepository.save(task);
@@ -104,16 +90,8 @@ public class MainViewModel extends ViewModel {
         taskRepository.newTask(task);
     }
 
-    public void newRecurringTask(Task task, RecurFrequency frequency) {
-        taskRepository.newRecurringTask(task, frequency);
-    }
-
-    public void recurTask(LocalDateTime date) {
-        taskRepository.recurTask(date);
-    }
-
-    public void remove(int id) {
-        taskRepository.remove(id);
+    public void completeTask(TaskEntity task) {
+        taskRepository.completeTask(task.toTask(), getCurrentTime());
     }
 
     public void deleteCompletedTasks(boolean completed) {
@@ -122,11 +100,6 @@ public class MainViewModel extends ViewModel {
 
     public void deleteCompletedTasksBefore(long cutoffTime) {
         taskRepository.deleteCompletedTasksBefore(cutoffTime);
-    }
-
-    public void completeTask(TaskEntity task) {
-        // Delegate the operation to the repository
-        taskRepository.completeTask(task.toTask());
     }
 
     public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime().getValue(); }

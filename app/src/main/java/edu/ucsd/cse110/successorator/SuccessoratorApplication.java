@@ -42,15 +42,6 @@ public class SuccessoratorApplication extends Application {
                 .build();
         this.taskRepository = new RoomTaskRepository(database.taskDao());
         this.timeKeeper = new SimpleTimeKeeper(this.dataSource);
-//        var sharedPreferences = getSharedPreferences("successorator", MODE_PRIVATE);
-//        var isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
-//        if (isFirstRun && database.taskDao().count() == 0) {
-//            taskRepository.save(DEFAULT_TASKS);
-//
-//            sharedPreferences.edit()
-//                    .putBoolean("isFirstRun", false)
-//                    .apply();
-//        }
     }
 
     public TaskRepository getTaskRepository() { return taskRepository; }
