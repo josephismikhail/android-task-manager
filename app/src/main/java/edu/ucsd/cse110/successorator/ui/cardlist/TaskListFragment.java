@@ -25,12 +25,6 @@ import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
-// library for showing date
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
     private MainViewModel activityModel;
@@ -89,22 +83,6 @@ public class TaskListFragment extends Fragment {
         });
 
         Spinner dateSpinner = view.getRoot().findViewById(R.id.date);
-        Calendar calendar = Calendar.getInstance();
-        Date currentTime = calendar.getTime();
-
-        // Set the time to 2 AM
-        // use local date time to get the current date and time, instead of calendar
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        // Check if the current time is before 2 AM, then add one day
-        if (currentTime.before(calendar.getTime())) {
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-        }
-
-        // TextView dateTextView = view.getRoot().findViewById(R.id.date);
         LocalDateTime currentLocalTime = LocalDateTime.now();
         LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
 
@@ -113,24 +91,16 @@ public class TaskListFragment extends Fragment {
         }
         else {
             cutoffTime = currentLocalTime;
-//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
-        // Get the updated date and time
-//        Date updatedTime = calendar.getTime();
+        activityModel.setNewTime(cutoffTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
 
-        // Format the date for display
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd", Locale.getDefault());
-//        String updatedTimeString = sdf.format(updatedTime);
-
-        // set up the options of the dropdown menu
         List<String> options = new ArrayList<>();
-        options.add("Today - " + sdf.format(calendar.getTime()));
-        Calendar tmrCalendar = (Calendar) calendar.clone();
-        tmrCalendar.add(Calendar.DAY_OF_YEAR, 1);
-        options.add("Tomorrow - " + sdf.format(tmrCalendar.getTime()));
+        options.add("Today - " + activityModel.getCurrentTime().format(formatter));
+        options.add("Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
         options.add("Pending");
         options.add("Recurring");
 
@@ -173,35 +143,18 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-//        // Update the text of the TextView with the formatted date
-//        dateSpinner.setText(updatedTimeString);
         activityModel.setNewTime(cutoffTime);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
-        // dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
-        // Forward date button
         view.dateButton.setOnClickListener(v -> {
-            // Increment the date by one day
-            calendar.add(Calendar.DATE, 1);
-
-            // Get the updated date and time
-            options.set(0, "Today - " + sdf.format(calendar.getTime()));
-            Calendar tmrCalendar2 = (Calendar) calendar.clone();
-            tmrCalendar2.add(Calendar.DAY_OF_YEAR, 1);
-            options.set(1, "Tomorrow - " + sdf.format(tmrCalendar2.getTime()));
-//            String updatedTimeString2 = sdf.format(newTime);
-            adapter.notifyDataSetChanged();
-            // dateSpinner.setSelection(0);
-
-            // Update the text of the TextView with the formatted date
-//            dateSpinner.setText(updatedTimeString2);
-            activityModel.deleteCompletedTasks(true);
-            activityModel.updateDisplayTask(activityModel.getCurrentTime());
-
 
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(activityModel.getCurrentTime());
+
+            options.set(0, "Today - " + activityModel.getCurrentTime().format(formatter));
+            options.set(1, "Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
+            adapter.notifyDataSetChanged();
+
         });
 
         return view.getRoot();
