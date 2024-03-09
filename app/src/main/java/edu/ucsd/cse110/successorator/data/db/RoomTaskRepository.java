@@ -4,9 +4,14 @@ import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import androidx.lifecycle.Transformations;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
@@ -51,35 +56,87 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void prepend(Task task) {
-        taskDao.prepend(fromTask(task));
+    public void newTask(Task task) {
+        int maxSortOrder = taskDao.getMaxSortOrder(); // Implement this to fetch the maximum sortOrder among all tasks.
+        int maxIncompleteSortOrder = taskDao.getIncompleteMaxSortOrder(); // Implement this to fetch the maximum sortOrder among incomplete tasks.
+
+        if (maxIncompleteSortOrder < maxSortOrder) { // There are completed tasks.
+            taskDao.shiftSortOrder(maxIncompleteSortOrder + 1, maxSortOrder, 1); // shift completed tasks by 1
+            task = task.withSortOrder(maxIncompleteSortOrder + 1);
+        }
+        else { // no completed tasks
+            task = task.withSortOrder(maxSortOrder + 1);
+        }
+        // Save the updated task
+        taskDao.insert(TaskEntity.fromTask(task));
     }
 
     @Override
-    public void remove(int id) {
-        taskDao.remove(id);
+    public void updateDisplayTask(LocalDateTime date) {
+        List<TaskEntity> taskList = taskDao.findAll();
+        if (taskList == null) return;
+
+        for (TaskEntity task : taskList) {
+            if (!checkRecurTask(task, date) && task.isCompleted()
+                    && completedBeforeToday(task.toTask(), date)) {
+                task.setDisplay(false);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+                task.changeStatus();
+                task.setDisplay(true);
+                taskDao.insert(task);
+            }
+        }
+    }
+
+    public static boolean checkRecurTask(TaskEntity task, LocalDateTime date) {
+        var recurType = task.getRecurType();
+        var taskRecurDate = LocalDateTime.ofEpochSecond(task.getRecurDate(),
+                0, ZoneOffset.ofHours(-8));
+
+        if (recurType == RecurType.DAILY) {
+            return true;
+        } else if (recurType == RecurType.WEEKLY) {
+            return checkRecurWeekly(taskRecurDate, date);
+        } else if (recurType == RecurType.MONTHLY) {
+            return checkRecurMonthly(taskRecurDate, date);
+        } else {
+            return checkRecurYearly(taskRecurDate, date);
+        }
+    }
+
+    public static boolean checkRecurWeekly(LocalDateTime taskDate, LocalDateTime date) {
+        var taskWeekday = taskDate.getDayOfWeek();
+        var currentWeekday = date.getDayOfWeek();
+        return taskWeekday == currentWeekday;
+    }
+
+    public static boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
+        var taskNthWeekday = taskDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        var dateNthWeekday = date.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
+            return taskNthWeekday == dateNthWeekday;
+        }
+        return false;
+    }
+
+    private static boolean checkRecurYearly(LocalDateTime taskDate, LocalDateTime date) {
+        if (taskDate.getDayOfMonth() == 29 && taskDate.getMonth() == Month.FEBRUARY) {
+            return taskDate.getDayOfYear() == date.getDayOfYear();
+        } else {
+            return (taskDate.getDayOfMonth() == date.getDayOfMonth())
+                    && (taskDate.getMonth() == date.getMonth());
+        }
+
+    }
+
+    private boolean completedBeforeToday(Task task, LocalDateTime date) {
+        LocalDateTime timeCompleted = LocalDateTime.ofEpochSecond(task.getCompletedTime(),
+                0, ZoneOffset.ofHours(-8));
+        return timeCompleted.isBefore(date);
     }
 
     @Override
-    public int getMinSortOrder() {
-        return taskDao.getMinSortOrder();
-    }
-
-    @Override
-    public int getMaxSortOrder() {
-        return taskDao.getMaxSortOrder();
-    }
-
-    @Override
-    public int getIncompleteMaxSortOrder() {
-        return taskDao.getIncompleteMaxSortOrder();
-    }
-
-    @Override
-    public void shiftSortOrder(int from, int to, int by) {
-        taskDao.shiftSortOrder(from, to, by);
-    }
-
     public void completeTask(Task task) {
         // convert to task entity
         TaskEntity taskEntity = fromTask(task);
@@ -113,9 +170,14 @@ public class RoomTaskRepository implements TaskRepository {
     @Override
     public void deleteCompletedTasks(boolean completed) {
         for (TaskEntity task : taskDao.findAll()) {
-            if (task.completed) {
+            var recurType = task.getRecurType();
+            if (task.isCompleted() && (recurType == RecurType.PENDING || recurType == RecurType.ONCE)) {
                 taskDao.remove(task.id);
             }
+//            else {//if (recurType == RecurType.DAILY){
+//                task.uncomplete();
+//                save(task.toTask());
+//            }
         }
     }
 

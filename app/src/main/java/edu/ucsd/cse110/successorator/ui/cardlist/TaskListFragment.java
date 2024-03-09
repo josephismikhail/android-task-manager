@@ -7,13 +7,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
@@ -56,7 +56,6 @@ public class TaskListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
             // Delegate the task completion logic to the ViewModel
             activityModel.completeTask(TaskEntity.fromTask(task));
@@ -70,6 +69,13 @@ public class TaskListFragment extends Fragment {
         });
     }
 
+    /*
+    Links:
+    - https://stackoverflow.com/questions/36914596/java-8-localdatetime-today-at-specific-hour
+    - https://stackoverflow.com/questions/23944370/how-to-get-milliseconds-from-localdatetime-in-java-8
+    - https://stackoverflow.com/questions/28177370/how-to-format-localdate-to-string
+    - https://stackoverflow.com/questions/29201103/how-to-compare-localdate-instances-java-8
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -97,13 +103,19 @@ public class TaskListFragment extends Fragment {
         if (currentTime.before(calendar.getTime())) {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
         }
-        else {
-            var modelOwner = requireActivity();
-            var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
-            var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
-            this.activityModel = modelProvider.get(MainViewModel.class);
 
-            activityModel.deleteCompletedTasksBefore(calendar.getTimeInMillis());
+        // TextView dateTextView = view.getRoot().findViewById(R.id.date);
+        LocalDateTime currentLocalTime = LocalDateTime.now();
+        LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
+
+        if (currentLocalTime.isBefore(cutoffTime)) {
+            cutoffTime = cutoffTime.minusDays(1);
+        }
+        else {
+            cutoffTime = currentLocalTime;
+//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
+            activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
         // Get the updated date and time
@@ -163,7 +175,11 @@ public class TaskListFragment extends Fragment {
 
 //        // Update the text of the TextView with the formatted date
 //        dateSpinner.setText(updatedTimeString);
+        activityModel.setNewTime(cutoffTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
+        // dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
+        // Forward date button
         view.dateButton.setOnClickListener(v -> {
             // Increment the date by one day
             calendar.add(Calendar.DATE, 1);
@@ -175,11 +191,17 @@ public class TaskListFragment extends Fragment {
             options.set(1, "Tomorrow - " + sdf.format(tmrCalendar2.getTime()));
 //            String updatedTimeString2 = sdf.format(newTime);
             adapter.notifyDataSetChanged();
-            dateSpinner.setSelection(0);
+            // dateSpinner.setSelection(0);
 
             // Update the text of the TextView with the formatted date
 //            dateSpinner.setText(updatedTimeString2);
             activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(activityModel.getCurrentTime());
+
+
+            activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
+            activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(activityModel.getCurrentTime());
         });
 
         return view.getRoot();
