@@ -23,8 +23,11 @@ import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreatePendingMenuFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreatePendingTaskDialogFragment;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateRecurringMenuFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTomorrowTaskDialogFragment;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding mainView;
@@ -51,12 +54,25 @@ public class TaskListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
-            if (activityModel.getCurrTaskView() == TaskViews.TODAY_VIEW ||
-                activityModel.getCurrTaskView() == TaskViews.TOMORROW_VIEW) {
-                activityModel.completeTask(TaskEntity.fromTask(task));
-            }
-        });
+        this.adapter = new TaskListAdapter(
+                requireContext(),
+                List.of(),
+                task -> {
+                    if (activityModel.getCurrTaskView() == TaskViews.TODAY_VIEW ||
+                        activityModel.getCurrTaskView() == TaskViews.TOMORROW_VIEW) {
+                        activityModel.completeTask(TaskEntity.fromTask(task));
+                    }
+                },
+                task -> {
+                    if (activityModel.getCurrTaskView() == TaskViews.PENDING_VIEW) {
+                        var dialogFragment = CreatePendingMenuFragment.newInstance(task);
+                        dialogFragment.show(getParentFragmentManager(), "CreatePendingMenuFragment");
+                    } else if (activityModel.getCurrTaskView() == TaskViews.RECURRING_VIEW) {
+                        var dialogFragment = CreateRecurringMenuFragment.newInstance(task);
+                        dialogFragment.show(getParentFragmentManager(), "CreateRecurringMenuFragment");
+                    }
+                }
+        );
 
         activityModel.getOrderedTasks().observe(tasks -> {
             if (tasks == null) return;
@@ -114,15 +130,28 @@ public class TaskListFragment extends Fragment {
                 // Get the selected item
                 String selectedItem = (String) parent.getItemAtPosition(position);
 
-                if (!selectedItem.split("-")[0].equals("Pending")) {
+                if (selectedItem.split("-")[0].equals("Pending")) {
+                    mainView.plusButton.setOnClickListener(v -> {
+                        var dialogFragment = CreatePendingTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreatePendingTaskDialogFragment");
+                    });
+                }
+                if (selectedItem.split("-")[0].equals("Tomorrow ")) {
+                    mainView.plusButton.setOnClickListener(v -> {
+                        var dialogFragment = CreateTomorrowTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreateTomorrowTaskDialogFragment");
+                    });
+                }
+                if (selectedItem.split("-")[0].equals("Recurring")){
                     mainView.plusButton.setOnClickListener(v -> {
                         var dialogFragment = CreateTaskDialogFragment.newInstance();
                         dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
                     });
-                } else {
+                }
+                if (selectedItem.split("-")[0].equals("Today ")){
                     mainView.plusButton.setOnClickListener(v -> {
-                        var dialogFragment = CreatePendingTaskDialogFragment.newInstance();
-                        dialogFragment.show(getParentFragmentManager(), "CreatePendingTaskDialogFragment");
+                        var dialogFragment = CreateTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
                     });
                 }
 

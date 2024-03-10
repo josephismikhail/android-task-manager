@@ -1,0 +1,89 @@
+package edu.ucsd.cse110.successorator.ui.cardlist.dialog;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Objects;
+
+import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.databinding.PendingTaskMenuBinding;
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+
+public class CreatePendingMenuFragment extends DialogFragment {
+    private PendingTaskMenuBinding view;
+    private MainViewModel activityModel;
+    private Task task;
+
+    CreatePendingMenuFragment(Task task) {
+        this.task = task;
+    }
+
+    public static CreatePendingMenuFragment newInstance(Task task) {
+        var fragment = new CreatePendingMenuFragment(task);
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        this.view = PendingTaskMenuBinding.inflate(getLayoutInflater());
+
+        return new AlertDialog.Builder(getActivity())
+                .setView(view.getRoot())
+                .setPositiveButton("Save", this::onPositiveButtonClick)
+                .setNegativeButton("Cancel", this::onNegativeButtonClick)
+                .create();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        var modelOwner = requireActivity();
+        var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
+        var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
+        this.activityModel = modelProvider.get(MainViewModel.class);
+    }
+
+    private void onPositiveButtonClick(DialogInterface dialog, int which) {
+        if (view.moveToday.isChecked()) {
+            var newOneTime = new Task(null, task.getTask(), false, -1,
+                    null, RecurType.ONCE,
+                    activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+            activityModel.deleteTask(task.getId());
+            activityModel.newTask(newOneTime);
+        } else if (view.moveTomorrow.isChecked()) {
+            var newOneTime = new Task(null, task.getTask(), false, -1,
+                    null, RecurType.ONCE,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.deleteTask(task.getId());
+            activityModel.newTask(newOneTime);
+        } else if (view.finishPending.isChecked()) {
+            var newOneTime = new Task(null, task.getTask(), true, -1,
+                    LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(-8)), RecurType.ONCE,
+                    activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+            activityModel.deleteTask(task.getId());
+            activityModel.newTask(newOneTime);
+        } else if (view.deletePending.isChecked()) {
+            activityModel.deleteTask(task.getId());
+        }
+        Objects.requireNonNull(getDialog()).dismiss();
+    }
+
+    private void onNegativeButtonClick(DialogInterface dialog, int which) {
+        dialog.cancel();
+    }
+}
