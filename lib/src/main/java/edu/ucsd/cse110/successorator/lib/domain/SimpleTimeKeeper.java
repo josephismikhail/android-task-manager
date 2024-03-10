@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
-import edu.ucsd.cse110.successorator.lib.util.Subject;
-
 public class SimpleTimeKeeper implements TimeKeeper {
     private final InMemoryDataSource dataSource;
 

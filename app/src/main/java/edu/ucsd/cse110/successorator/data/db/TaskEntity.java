@@ -109,4 +109,6 @@ public class TaskEntity {
     public void setDisplay(boolean b) {
         this.display = b;
     }
+
+    public boolean isDisplay() { return this.display; }
 }
