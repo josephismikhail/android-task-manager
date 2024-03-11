@@ -26,6 +26,7 @@ import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreatePendingMenuFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreatePendingTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateRecurringMenuFragment;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateRecurringTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTomorrowTaskDialogFragment;
 
@@ -144,8 +145,8 @@ public class TaskListFragment extends Fragment {
                 }
                 if (selectedItem.split("-")[0].equals("Recurring")){
                     mainView.plusButton.setOnClickListener(v -> {
-                        var dialogFragment = CreateTaskDialogFragment.newInstance();
-                        dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
+                        var dialogFragment = CreateRecurringTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreateRecurringTaskDialogFragment");
                     });
                 }
                 if (selectedItem.split("-")[0].equals("Today ")){

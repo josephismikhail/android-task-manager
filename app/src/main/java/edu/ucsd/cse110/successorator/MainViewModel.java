@@ -143,6 +143,7 @@ public class MainViewModel extends ViewModel {
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
+                        .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
                         .filter(Task::display)
                         .collect(Collectors.toList());
                 break;
