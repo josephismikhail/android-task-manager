@@ -9,6 +9,8 @@ import androidx.room.Transaction;
 
 import java.util.List;
 
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
+
 @Dao
 public interface TaskDao {
 
@@ -33,6 +35,9 @@ public interface TaskDao {
     @Query("SELECT COUNT(*) FROM tasks")
     int count();
 
+    @Query("SELECT MAX(id) FROM tasks")
+    int getMaxId();
+
     @Query("SELECT MIN(sortOrder) FROM tasks")
     int getMinSortOrder();
 
@@ -48,8 +53,8 @@ public interface TaskDao {
     @Transaction
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
-        var newTask = new TaskEntity(
-                null, task.task, false, getMinSortOrder() - 1, null
+        var newTask = new TaskEntity(null, task.task, false, getMinSortOrder() - 1,
+                null, RecurType.ONCE, null, task.display
         );
         return Math.toIntExact(insert(newTask));
     }

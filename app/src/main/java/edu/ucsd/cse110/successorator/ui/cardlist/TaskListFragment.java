@@ -11,6 +11,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +23,6 @@ import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
-
-// library for showing date
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class TaskListFragment extends Fragment {
     private FragmentTaskListBinding view;
@@ -51,7 +49,6 @@ public class TaskListFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
             // Delegate the task completion logic to the ViewModel
             activityModel.completeTask(TaskEntity.fromTask(task));
@@ -65,6 +62,13 @@ public class TaskListFragment extends Fragment {
         });
     }
 
+    /*
+    Links:
+    - https://stackoverflow.com/questions/36914596/java-8-localdatetime-today-at-specific-hour
+    - https://stackoverflow.com/questions/23944370/how-to-get-milliseconds-from-localdatetime-in-java-8
+    - https://stackoverflow.com/questions/28177370/how-to-format-localdate-to-string
+    - https://stackoverflow.com/questions/29201103/how-to-compare-localdate-instances-java-8
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,49 +82,29 @@ public class TaskListFragment extends Fragment {
         });
 
         TextView dateTextView = view.getRoot().findViewById(R.id.date);
-        Calendar calendar = Calendar.getInstance();
-        Date currentTime = calendar.getTime();
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime cutoffTime = currentTime.toLocalDate().atTime(2,0,0);
 
-        // Set the time to 2 AM
-        calendar.set(Calendar.HOUR_OF_DAY, 2);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        // Check if the current time is before 2 AM, then add one day
-        if (currentTime.before(calendar.getTime())) {
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        if (currentTime.isBefore(cutoffTime)) {
+            cutoffTime = cutoffTime.minusDays(1);
         }
         else {
-            var modelOwner = requireActivity();
-            var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
-            var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
-            this.activityModel = modelProvider.get(MainViewModel.class);
-
-            activityModel.deleteCompletedTasksBefore(calendar.getTimeInMillis());
+            cutoffTime = currentTime;
+//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
+            activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
-        // Get the updated date and time
-        Date updatedTime = calendar.getTime();
+        activityModel.setNewTime(cutoffTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
+        dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
-        // Format the date for display
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd", Locale.getDefault());
-        String updatedTimeString = sdf.format(updatedTime);
-
-        // Update the text of the TextView with the formatted date
-        dateTextView.setText(updatedTimeString);
-
+        // Forward date button
         view.dateButton.setOnClickListener(v -> {
-            // Increment the date by one day
-            calendar.add(Calendar.DATE, 1);
-
-            // Get the updated date and time
-            Date newTime = calendar.getTime();
-            String updatedTimeString2 = sdf.format(newTime);
-
-            // Update the text of the TextView with the formatted date
-            dateTextView.setText(updatedTimeString2);
+            activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
+            dateTextView.setText(activityModel.getCurrentTime().format(formatter));
             activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(activityModel.getCurrentTime());
         });
 
         return view.getRoot();

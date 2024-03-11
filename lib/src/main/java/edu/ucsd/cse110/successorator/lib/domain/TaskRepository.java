@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.successorator.lib.domain;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import edu.ucsd.cse110.successorator.lib.util.Subject;
@@ -14,21 +15,14 @@ public interface TaskRepository {
 
     void save(List<Task> taskList);
 
-    void prepend(Task task);
+    void newTask(Task task);
 
-    void remove(int id);
-
-    int getMinSortOrder();
-
-    int getMaxSortOrder();
-
-    int getIncompleteMaxSortOrder();
-
-    void shiftSortOrder(int from, int to, int by);
+    void updateDisplayTask(LocalDateTime date);
 
     void deleteCompletedTasks(boolean completed);
 
     void deleteCompletedTasksBefore(long cutoffTime);
 
     void completeTask(Task task);
+
 }
