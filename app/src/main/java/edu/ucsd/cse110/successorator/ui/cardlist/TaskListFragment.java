@@ -26,6 +26,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.ContextViews;
 import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FocusModeDialogBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
@@ -155,6 +156,7 @@ public class TaskListFragment extends Fragment{
         Spinner focusModeSpinner = view.getRoot().findViewById(R.id.mode);
 
         List<String> focusModeOptions = new ArrayList<>();
+        focusModeOptions.add("All");
         focusModeOptions.add("Home");
         focusModeOptions.add("Work");
         focusModeOptions.add("School");
@@ -174,21 +176,20 @@ public class TaskListFragment extends Fragment{
 
                 // Perform actions based on the selected item
                 switch (selectedItem) {
+                    case "All":
+                        activityModel.switchContextView(ContextViews.ALL);
+                        break;
                     case "Home":
-                        // Perform action for Today
-                        activityModel.switchView(TaskViews.HOME_VIEW);
+                        activityModel.switchContextView(ContextViews.HOME);
                         break;
                     case "Work":
-                        // Perform action for Tomorrow
-                        activityModel.switchView(TaskViews.WORK_VIEW);
+                        activityModel.switchContextView(ContextViews.WORK);
                         break;
                     case "School":
-                        // Perform action for Pending
-                        activityModel.switchView(TaskViews.SCHOOL_VIEW);
+                        activityModel.switchContextView(ContextViews.SCHOOL);
                         break;
                     case "Errand":
-                        // Perform action for Recurring
-                        activityModel.switchView(TaskViews.ERRAND_VIEW);
+                        activityModel.switchContextView(ContextViews.ERRAND);
                         break;
                 }
             }

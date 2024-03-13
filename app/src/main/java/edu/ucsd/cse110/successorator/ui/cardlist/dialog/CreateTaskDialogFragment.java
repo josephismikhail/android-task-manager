@@ -58,9 +58,9 @@ public class CreateTaskDialogFragment extends DialogFragment {
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
-//                .setTitle("New Task")
-//                .setMessage("Please provide the new task text.")
-//                .setView(view.getRoot())
+                .setTitle("New Task")
+                .setMessage("Please provide the new task text.")
+                .setView(view.getRoot())
 //                .setPositiveButton("Create", this::onSaveButtonClick)
                 .create();
 
