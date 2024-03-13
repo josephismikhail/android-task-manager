@@ -156,7 +156,7 @@ public class TaskListFragment extends Fragment{
         Spinner focusModeSpinner = view.getRoot().findViewById(R.id.mode);
 
         List<String> focusModeOptions = new ArrayList<>();
-        focusModeOptions.add("All");
+        focusModeOptions.add("Cancel");
         focusModeOptions.add("Home");
         focusModeOptions.add("Work");
         focusModeOptions.add("School");
@@ -176,7 +176,7 @@ public class TaskListFragment extends Fragment{
 
                 // Perform actions based on the selected item
                 switch (selectedItem) {
-                    case "All":
+                    case "Cancel":
                         activityModel.switchContextView(ContextViews.ALL);
                         break;
                     case "Home":
