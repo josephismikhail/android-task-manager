@@ -82,10 +82,14 @@ public class RoomTaskRepository implements TaskRepository {
         for (TaskEntity task : taskList) {
             if (!checkRecurTask(task, date) && task.isCompleted()
                     && completedBeforeToday(task.toTask(), date)) {
+                task.changeStatus();
                 task.setDisplay(false);
                 taskDao.insert(task);
-            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+            } else if (checkRecurTask(task, date) && task.isCompleted() && task.recurType == RecurType.DAILY) {
                 task.changeStatus();
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && task.isCompleted()) {
                 task.setDisplay(true);
                 taskDao.insert(task);
             } else if (checkRecurTask(task, date) && !task.isCompleted()) {

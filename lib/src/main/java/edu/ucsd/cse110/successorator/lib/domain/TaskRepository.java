@@ -27,5 +27,4 @@ public interface TaskRepository {
     void deleteCompletedTasksBefore(long cutoffTime);
 
     void completeTask(Task task);
-
 }
