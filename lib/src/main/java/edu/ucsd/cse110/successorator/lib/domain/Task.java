@@ -93,10 +93,6 @@ public class Task implements Serializable {
         return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
-    public void changeContext(Context context) {
-        this.context = context;
-    }
-
     public Task withRecurType(RecurType recurType) {
         return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
