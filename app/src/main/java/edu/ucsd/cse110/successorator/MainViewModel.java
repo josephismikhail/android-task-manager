@@ -22,6 +22,8 @@ import javax.inject.Inject;
 
 import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.Context;
+import edu.ucsd.cse110.successorator.lib.domain.ContextViews;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
@@ -34,6 +36,7 @@ public class MainViewModel extends ViewModel {
     // Domain state (true "Model" state)
     private final TaskRepository taskRepository;
     private TaskViews currTaskView;
+    private ContextViews currContextView;
     private final TimeKeeper timeKeeper;
 
     // UI state
@@ -59,6 +62,7 @@ public class MainViewModel extends ViewModel {
         this.taskRepository = taskRepository;
 
         this.currTaskView = TaskViews.TODAY_VIEW;
+        this.currContextView = ContextViews.ALL;
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
@@ -128,69 +132,84 @@ public class MainViewModel extends ViewModel {
         updateOrderedTasks(this.unorderedTasks.getValue());
     }
 
+    public void switchContextView(ContextViews contextView) {
+        this.currContextView = contextView;
+        updateOrderedTasks(this.unorderedTasks.getValue());
+    }
+
     private void updateOrderedTasks(List<Task> tasks) {
         if (tasks == null) return;
         List<Task> newOrderedTasks = new ArrayList<>();
+        switch (this.currContextView) {
+            case ALL:
+                // shows all tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .collect(Collectors.toList());
+                break;
+            case HOME:
+                // filter to get HOME context tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getContext() == Context.HOME))
+                        .collect(Collectors.toList());
+                break;
+            case WORK:
+                // filter to get WORK context tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getContext() == Context.WORK))
+                        .collect(Collectors.toList());
+                break;
+            case SCHOOL:
+                // filter to get SCHOOL context tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getContext() == Context.SCHOOL))
+                        .collect(Collectors.toList());
+                break;
+            case ERRAND:
+                // filter to get ERRAND context tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getContext() == Context.ERRAND))
+                        .collect(Collectors.toList());
+                break;
+        }
+
+        //
         switch (this.currTaskView) {
             case TODAY_VIEW:
-                // TODO - filter to get only today's tasks
+                // filter to get only today's tasks
                 System.out.println("updated on today");
-                newOrderedTasks = tasks.stream()
+                newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(Task::display)
                         .collect(Collectors.toList());
                 break;
             case TOMORROW_VIEW:
-                // TODO - filter to get only tomorrow's tasks
+                // filter to get only tomorrow's tasks
                 System.out.println("updated on tomorrow");
-                newOrderedTasks = tasks.stream()
+                newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime().plusDays(1)))
                         .collect(Collectors.toList());
                 break;
             case PENDING_VIEW:
-                // TODO - filter to get only pending tasks
-                newOrderedTasks = tasks.stream()
+                // filter to get only pending tasks
+                newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() == RecurType.PENDING))
                         .collect(Collectors.toList());
                 break;
             case RECURRING_VIEW:
-                // TODO - filter to get only recurring tasks
-                newOrderedTasks = tasks.stream()
+                // filter to get only recurring tasks
+                newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> ((t.getRecurType() == RecurType.DAILY)
                                     || (t.getRecurType() == RecurType.WEEKLY)
                                     || (t.getRecurType() == RecurType.MONTHLY)
                                     || (t.getRecurType() == RecurType.YEARLY)))
-                        .collect(Collectors.toList());
-                break;
-            case HOME_VIEW:
-                // TODO - filter to get only pending tasks
-                newOrderedTasks = tasks.stream()
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
-                        .collect(Collectors.toList());
-                break;
-            case WORK_VIEW:
-                // TODO - filter to get only pending tasks
-                newOrderedTasks = tasks.stream()
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
-                        .collect(Collectors.toList());
-                break;
-            case SCHOOL_VIEW:
-                // TODO - filter to get only pending tasks
-                newOrderedTasks = tasks.stream()
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
-                        .collect(Collectors.toList());
-                break;
-            case ERRAND_VIEW:
-                // TODO - filter to get only pending tasks
-                newOrderedTasks = tasks.stream()
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
                         .collect(Collectors.toList());
                 break;
         }

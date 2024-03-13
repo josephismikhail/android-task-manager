@@ -26,6 +26,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.ContextViews;
 import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FocusModeDialogBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
@@ -155,6 +156,7 @@ public class TaskListFragment extends Fragment{
         Spinner focusModeSpinner = view.getRoot().findViewById(R.id.mode);
 
         List<String> focusModeOptions = new ArrayList<>();
+        focusModeOptions.add("Cancel");
         focusModeOptions.add("Home");
         focusModeOptions.add("Work");
         focusModeOptions.add("School");
@@ -169,26 +171,28 @@ public class TaskListFragment extends Fragment{
         focusModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Hide spinner text
+                ((TextView)view).setText(null);
+
                 // Get the selected item
                 String selectedItem = (String) parent.getItemAtPosition(position);
 
                 // Perform actions based on the selected item
                 switch (selectedItem) {
+                    case "Cancel":
+                        activityModel.switchContextView(ContextViews.ALL);
+                        break;
                     case "Home":
-                        // Perform action for Today
-                        activityModel.switchView(TaskViews.HOME_VIEW);
+                        activityModel.switchContextView(ContextViews.HOME);
                         break;
                     case "Work":
-                        // Perform action for Tomorrow
-                        activityModel.switchView(TaskViews.WORK_VIEW);
+                        activityModel.switchContextView(ContextViews.WORK);
                         break;
                     case "School":
-                        // Perform action for Pending
-                        activityModel.switchView(TaskViews.SCHOOL_VIEW);
+                        activityModel.switchContextView(ContextViews.SCHOOL);
                         break;
                     case "Errand":
-                        // Perform action for Recurring
-                        activityModel.switchView(TaskViews.ERRAND_VIEW);
+                        activityModel.switchContextView(ContextViews.ERRAND);
                         break;
                 }
             }
@@ -202,7 +206,6 @@ public class TaskListFragment extends Fragment{
         activityModel.setNewTime(cutoffTime);
 
         view.dateButton.setOnClickListener(v -> {
-
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(activityModel.getCurrentTime());
@@ -210,7 +213,6 @@ public class TaskListFragment extends Fragment{
             options.set(0, "Today - " + activityModel.getCurrentTime().format(formatter));
             options.set(1, "Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
             adapter.notifyDataSetChanged();
-
         });
 
         return view.getRoot();

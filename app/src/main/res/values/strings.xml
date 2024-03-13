@@ -15,4 +15,5 @@
     <string name="weekly">weekly</string>
     <string name="w">W</string>
     <string name="yearly">yearly</string>
+    <string name="forward_date_button">Forward Date Button</string>
 </resources>
