@@ -7,7 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,8 +57,13 @@ public class CreateTaskDialogFragment extends DialogFragment {
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
+                .setTitle("New Task")
+                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
+                .setPositiveButton("Create", this::onPositiveButtonClick)
+                .setNegativeButton("Cancel", this::onNegativeButtonClick)
                 .create();
+
     }
 
     @Override
@@ -64,6 +74,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
+
     }
 
     private void onSaveButtonClick(View v) {
@@ -87,26 +98,9 @@ public class CreateTaskDialogFragment extends DialogFragment {
         Objects.requireNonNull(getDialog()).dismiss();
     }
 
-//    private void onPositiveButtonClick(DialogInterface dialog, int which) {
-//        var taskText = view.taskFrontEditText.getText().toString();
-//        var task = new Task(null, taskText, false, -1, null);
-//        if (taskText.trim().isEmpty()) {
-//            dialog.dismiss();
-//        }
-//        if (view.onceButton.isChecked()){
-//            activityModel.newTask(task);
-//        } else if (view.dailyButton.isChecked()) {
-//            activityModel.newRecurringTask(task, RecurFrequency.DAILY);
-//        } else if (view.weeklyButton.isChecked()) {
-//            activityModel.newRecurringTask(task, RecurFrequency.WEEKLY);
-//        } else if (view.monthlyButton.isChecked()) {
-//            activityModel.newRecurringTask(task, RecurFrequency.MONTHLY);
-//        } else if (view.yearlyButton.isChecked()) {
-//            activityModel.newRecurringTask(task, RecurFrequency.YEARLY);
-//        }
-//        dialog.dismiss();
-//    }
-
+    private void onNegativeButtonClick(DialogInterface dialog, int which) {
+        dialog.cancel();
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
