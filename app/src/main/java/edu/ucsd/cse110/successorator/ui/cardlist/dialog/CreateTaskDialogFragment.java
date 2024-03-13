@@ -31,6 +31,7 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
+import edu.ucsd.cse110.successorator.lib.domain.TagType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class CreateTaskDialogFragment extends DialogFragment {
@@ -80,19 +81,64 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var taskText = view.taskEditText.getText().toString();
         var task = new Task(null, taskText, false, -1,
                 null, RecurType.ONCE,
-                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), TagType.HOME,true);
         if (taskText.trim().isEmpty()) {
             // do nothing
         } else if (view.onceButton.isChecked()){
-            activityModel.newTask(task);
+            if(view.homeButton.isChecked()) {
+                activityModel.newTask(task);
+            }else if (view.workButton.isChecked()) {
+                activityModel.newTask(task.withTagType(TagType.WORK));
+            }else if (view.schoolButton.isChecked()) {
+                activityModel.newTask(task.withTagType(TagType.SCHOOL));
+            }else if (view.errandsButton.isChecked()) {
+                activityModel.newTask(task.withTagType(TagType.ERRAND));
+            }
+            activityModel.newTask(task.withTagType(TagType.PENDING));
         } else if (view.dailyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.DAILY));
+            if(view.homeButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.DAILY));
+            }else if (view.workButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.DAILY).withTagType(TagType.WORK));
+            }else if (view.schoolButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.DAILY).withTagType(TagType.SCHOOL));
+            }else if (view.errandsButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.DAILY).withTagType(TagType.ERRAND));
+            }
+            activityModel.newTask(task.withRecurType(RecurType.DAILY).withTagType(TagType.PENDING));
         } else if (view.weeklyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
+            if(view.homeButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
+            }else if (view.workButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.WEEKLY).withTagType(TagType.WORK));
+            }else if (view.schoolButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.WEEKLY).withTagType(TagType.SCHOOL));
+            }else if (view.errandsButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.WEEKLY).withTagType(TagType.ERRAND));
+            }
+            activityModel.newTask(task.withRecurType(RecurType.WEEKLY).withTagType(TagType.PENDING));
         } else if (view.monthlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
+            if(view.homeButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
+            }else if (view.workButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.MONTHLY).withTagType(TagType.WORK));
+            }else if (view.schoolButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.MONTHLY).withTagType(TagType.SCHOOL));
+            }else if (view.errandsButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.MONTHLY).withTagType(TagType.ERRAND));
+            }
+            activityModel.newTask(task.withRecurType(RecurType.MONTHLY).withTagType(TagType.PENDING));
         } else if (view.yearlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
+            if(view.homeButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.YEARLY));
+            }else if (view.workButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.YEARLY).withTagType(TagType.WORK));
+            }else if (view.schoolButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.YEARLY).withTagType(TagType.SCHOOL));
+            }else if (view.errandsButton.isChecked()) {
+                activityModel.newTask(task.withRecurType(RecurType.YEARLY).withTagType(TagType.ERRAND));
+            }
+            activityModel.newTask(task.withRecurType(RecurType.YEARLY).withTagType(TagType.PENDING));
         }
         Objects.requireNonNull(getDialog()).dismiss();
     }

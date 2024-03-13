@@ -17,10 +17,11 @@ public class Task implements Serializable {
     private Long completedTime;
     private RecurType recurType;
     private Long recurDate;
+    private TagType tagType;
     private boolean display;
 
     public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
-                @Nullable Long completedTime, RecurType recurType, Long recurDate, boolean display) {
+                @Nullable Long completedTime, RecurType recurType, Long recurDate, TagType tagType, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
@@ -28,6 +29,7 @@ public class Task implements Serializable {
         this.completedTime = completedTime;
         this.recurType = recurType;
         this.recurDate = recurDate;
+        this.tagType = tagType;
         this.display = display;
     }
 
@@ -62,12 +64,14 @@ public class Task implements Serializable {
         return recurDate;
     }
 
+    public TagType getTagType() {return tagType;}
+
     public boolean display() {
         return display;
     }
 
     public Task withId(int id) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, tagType, display);
     }
 
     public void changeStatus() {
@@ -84,15 +88,18 @@ public class Task implements Serializable {
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, tagType, display);
     }
 
     public Task withRecurType(RecurType recurType) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, tagType, display);
     }
 
     public Task withRecurDate(Long recurDate) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, tagType, display);
+    }
+    public Task withTagType(TagType tagType) {
+        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, tagType, display);
     }
 
     public void setDisplay(boolean display) {
@@ -109,4 +116,6 @@ public class Task implements Serializable {
 
     @Override
     public int hashCode() { return Objects.hash(id, task, completed, sortOrder, completedTime); }
+
+
 }
