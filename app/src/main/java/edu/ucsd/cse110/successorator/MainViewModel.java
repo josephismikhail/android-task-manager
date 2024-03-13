@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.Context;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
@@ -169,28 +170,28 @@ public class MainViewModel extends ViewModel {
                 // TODO - filter to get only pending tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .filter(t -> (t.getContext() == Context.HOME))
                         .collect(Collectors.toList());
                 break;
             case WORK_VIEW:
                 // TODO - filter to get only pending tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .filter(t -> (t.getContext() == Context.WORK))
                         .collect(Collectors.toList());
                 break;
             case SCHOOL_VIEW:
                 // TODO - filter to get only pending tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .filter(t -> (t.getContext() == Context.SCHOOL))
                         .collect(Collectors.toList());
                 break;
             case ERRAND_VIEW:
                 // TODO - filter to get only pending tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .filter(t -> (t.getContext() == Context.ERRAND))
                         .collect(Collectors.toList());
                 break;
         }

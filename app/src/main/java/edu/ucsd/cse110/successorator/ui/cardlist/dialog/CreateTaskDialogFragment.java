@@ -30,6 +30,7 @@ import java.util.Objects;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Context;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -78,22 +79,38 @@ public class CreateTaskDialogFragment extends DialogFragment {
 
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
-        var task = new Task(null, taskText, false, -1,
-                null, RecurType.ONCE,
-                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+        RecurType recurType = RecurType.ONCE;
+        Context context = Context.HOME;
+
         if (taskText.trim().isEmpty()) {
             // do nothing
-        } else if (view.onceButton.isChecked()){
-            activityModel.newTask(task);
-        } else if (view.dailyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.DAILY));
-        } else if (view.weeklyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
-        } else if (view.monthlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
-        } else if (view.yearlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
+            Objects.requireNonNull(getDialog()).dismiss();
         }
+
+        // Getting recurType
+        if (view.dailyButton.isChecked()) {
+            recurType = RecurType.DAILY;
+        } else if (view.weeklyButton.isChecked()) {
+            recurType = RecurType.WEEKLY;
+        } else if (view.monthlyButton.isChecked()) {
+            recurType = RecurType.MONTHLY;
+        } else if (view.yearlyButton.isChecked()) {
+            recurType = RecurType.YEARLY;
+        }
+
+        // Getting context
+        if (view.workButton.isChecked()) {
+            context = Context.WORK;
+        } else if (view.schoolButton.isChecked()) {
+            context = Context.SCHOOL;
+        } else if (view.errandsButton.isChecked()) {
+            context = Context.ERRAND;
+        }
+
+        var task = new Task(null, taskText, false, -1,
+                null, context, recurType,
+                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+        activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();
     }
 
