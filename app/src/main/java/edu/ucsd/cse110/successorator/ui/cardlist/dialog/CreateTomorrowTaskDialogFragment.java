@@ -85,9 +85,15 @@ public class CreateTomorrowTaskDialogFragment extends DialogFragment {
                     activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
             activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
         } else if (view.monthlyButton.isChecked()) {
-//            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
+            var task = new Task(null, taskText, false, -1,
+                    null, RecurType.ONCE,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
         } else if (view.yearlyButton.isChecked()) {
-//            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
+            var task = new Task(null, taskText, false, -1,
+                    null, RecurType.ONCE,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
         }
         Objects.requireNonNull(getDialog()).dismiss();
     }

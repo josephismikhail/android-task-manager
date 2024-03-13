@@ -179,5 +179,4 @@ public class MainViewModel extends ViewModel {
     public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime().getValue(); }
 
     public void setNewTime(LocalDateTime newTime) { timeKeeper.setDateTime(newTime); }
-
 }
