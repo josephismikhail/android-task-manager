@@ -1,5 +1,10 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
+import static edu.ucsd.cse110.successorator.lib.domain.Context.ERRAND;
+import static edu.ucsd.cse110.successorator.lib.domain.Context.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.Context.SCHOOL;
+import static edu.ucsd.cse110.successorator.lib.domain.Context.WORK;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,7 +21,6 @@ import java.util.function.Consumer;
 
 import edu.ucsd.cse110.successorator.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
     private final Consumer<Task> onTaskClicked;
@@ -43,18 +47,18 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
 
-        binding.tag.setText(task.getTagType().toString().indexOf(0,1));
+        binding.tag.setText(task.getContext().toString().indexOf(0,1));
         var layoutInflater = LayoutInflater.from(getContext());
 //        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
 
-        if(task.getTagType() == TagType.HOME) {
+        if(task.getContext() == HOME) {
             binding.tag.setBackgroundColor(Color.parseColor("#F4EEBB"));
 //            binding2.mode.setBackgroundColor(Color.parseColor("#F4EEBB"));
-        } else if (task.getTagType() == TagType.WORK) {
+        } else if (task.getContext() == WORK) {
 
-        }else if (task.getTagType() == TagType.SCHOOL) {
+        }else if (task.getContext() == SCHOOL) {
 
-        }else if (task.getTagType() == TagType.ERRAND) {
+        }else if (task.getContext() == ERRAND) {
 
         }
 
