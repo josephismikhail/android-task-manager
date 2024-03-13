@@ -25,9 +25,9 @@ public class TaskTest {
     @Test
     public void testWithSortOrder() {
         var task = new Task(2, "testing 1", true, 1, System.currentTimeMillis(), RecurType.ONCE, null, true);
-        var expected = new Task(2, "testing 1", true, 81, System.currentTimeMillis(), RecurType.ONCE, null, true);
-        var actual = task.withSortOrder(81);
-        assertEquals(expected, actual);
+        var expected = task;
+        assertEquals(task, expected);
+        assertNotEquals(expected, task.withSortOrder(81));
     }
 
     @Test
@@ -49,5 +49,64 @@ public class TaskTest {
         assertTrue(task1.isCompleted());
         task1.changeStatus();
         assertFalse(task1.isCompleted());
+    }
+
+
+    @Test
+    public void testGetCompletedTime() {
+        Long now = System.currentTimeMillis();
+        var task = new Task(3, "testing 2", true, 2, now, RecurType.ONCE, null, false);
+        assertEquals(now, task.getCompletedTime());
+    }
+
+    @Test
+    public void testGetRecurType() {
+        var task = new Task(3, "testing 2", true, 2, null, RecurType.DAILY, null, false);
+        assertEquals(RecurType.DAILY, task.getRecurType());
+    }
+
+    @Test
+    public void testGetRecurDate() {
+        Long futureDate = System.currentTimeMillis() + 100000;
+        var task = new Task(3, "testing 3", false, 2, null, RecurType.WEEKLY, futureDate, false);
+        assertEquals(futureDate, task.getRecurDate());
+    }
+
+    @Test
+    public void testDisplay() {
+        var task = new Task(3, "testing 4", false, 2, null, RecurType.MONTHLY, null, true);
+        assertTrue(task.display());
+    }
+
+    @Test
+    public void testWithRecurType() {
+        var task = new Task(4, "testing 5", false, 3, null, null, null, true);
+        var expected = new Task(4, "testing 5", false, 3, null, RecurType.YEARLY, null, true);
+        var actual = task.withRecurType(RecurType.YEARLY);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testWithRecurDate() {
+        var task = new Task(5, "testing 6", false, 4, null, null, null, true);
+        Long newRecurDate = System.currentTimeMillis() + 50000;
+        var expected = new Task(5, "testing 6", false, 4, null, null, newRecurDate, true);
+        var actual = task.withRecurDate(newRecurDate);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testUncomplete() {
+        var task = new Task(6, "testing 7", true, 5, System.currentTimeMillis(), null, null, true);
+        task.uncomplete();
+        assertFalse(task.isCompleted());
+    }
+
+    @Test
+    public void testSetDisplay() {
+        var task = new Task(7, "testing 8", false, 6, null, null, null, false);
+        assertFalse(task.display());
+        task.setDisplay(true);
+        assertTrue(task.display());
     }
 }
