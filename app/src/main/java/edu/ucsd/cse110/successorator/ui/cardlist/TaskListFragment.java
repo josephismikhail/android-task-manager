@@ -57,8 +57,8 @@ public class TaskListFragment extends Fragment{
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        Spinner focusModeButton = view.mode;
-        focusModeButton.setOnClickListener(this::onFocusButtonClick);
+//        Spinner focusModeButton = view.mode;
+//        focusModeButton.setOnClickListener(this::onFocusButtonClick);
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
             // Delegate the task completion logic to the ViewModel
             activityModel.completeTask(TaskEntity.fromTask(task));
@@ -96,73 +96,18 @@ public class TaskListFragment extends Fragment{
         });
 
 
-        Spinner focusModeButton = view.mode;
-// Example data for the spinner
-        String[] items = new String[]{"Home Mode", "Work Mode", "School Mode", "Errand Mode"};
-
-        this.adapter2 = new FocusModeArrayAdapter(requireContext(), items, focus -> {
-            focusModeButton.setOnClickListener(v -> {
-                adapter2.getDropDownView(requireContext(), items, focus);
-                adapter2.show(getParentFragmentManager(), "CreateTaskDialogFragment");
-            });
-            // 1. Create sorting method in MainViewModel like 'sorttask(String focus)', that returns a list of task that according to different mode
-        });
-        focusModeButton.setAdapter(adapter2);
-
-        // 2. change the view outside, so it could create a new task view according to different mode user click
-
-
-
-        //focusModeButton.setEmptyView(view.emptyText);
-        // TextView title = view.date;
-// Handling item selection
-        // focusModeButton.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-           // @Override
-            //public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // change title
-//                String selectedItem = items[position];
-//                int itemId = selectedItem.getItemId();
-//                Intent intent = new Intent(getActivity(), FocusModeActivity.class);
-//                if (itemId == R.id.home_mode) {
-//                    intent.putExtra("mode", "Home Mode");
-//                } else if (itemId == R.id.work_mode) {
-//                    intent.putExtra("mode", "Work Mode");
-//                } else if (itemId == R.id.school_mode) {
-//                    intent.putExtra("mode", "School Mode");
-//                } else if (itemId == R.id.errand_mode) {
-//                    intent.putExtra("mode", "Errand Mode");
-//                }
-//                startActivity(intent);
-                // title.setText(selectedItem);
-                // change task list accodring to name
-//            }
-//            //@Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                // Optional: Do something when no item is selected
-//            }
+//        Spinner focusModeButton = view.mode;
+//// Example data for the spinner
+//        String[] items = new String[]{"Home Mode", "Work Mode", "School Mode", "Errand Mode"};
+//
+//        this.adapter2 = new FocusModeArrayAdapter(requireContext(), items, focus -> {
+//            focusModeButton.setOnClickListener(v -> {
+////                adapter2.getDropDownView(requireContext(), items, focus);
+////                adapter2.show(getParentFragmentManager(), "CreateTaskDialogFragment");
+//            });
+//            // 1. Create sorting method in MainViewModel like 'sorttask(String focus)', that returns a list of task that according to different mode
 //        });
-
-//        NavigationView navigationView = view.FocusModeView;
-//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                int itemId = item.getItemId();
-//                Intent intent = new Intent(getActivity(), FocusModeActivity.class);
-//                if (itemId == R.id.home_mode) {
-//                    intent.putExtra("mode", "Home Mode");
-//                } else if (itemId == R.id.work_mode) {
-//                    intent.putExtra("mode", "Work Mode");
-//                } else if (itemId == R.id.school_mode) {
-//                    intent.putExtra("mode", "School Mode");
-//                } else if (itemId == R.id.errand_mode) {
-//                    intent.putExtra("mode", "Errand Mode");
-//                }
-//                startActivity(intent);
-//                // Close the navigation drawer if needed
-//                return true;
-//            }
-//        });
-
+////        focusModeButton.setAdapter(adapter2);
 
         TextView dateTextView = view.getRoot().findViewById(R.id.date);
         LocalDateTime currentTime = LocalDateTime.now();
@@ -173,7 +118,6 @@ public class TaskListFragment extends Fragment{
         }
         else {
             cutoffTime = currentTime;
-//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(LocalDateTime.now());
         }

@@ -57,11 +57,10 @@ public class CreateTaskDialogFragment extends DialogFragment {
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("New Task")
-                .setMessage("Please provide the new task text.")
-                .setView(view.getRoot())
-                .setPositiveButton("Create", this::onPositiveButtonClick)
-                .setNegativeButton("Cancel", this::onNegativeButtonClick)
+//                .setTitle("New Task")
+//                .setMessage("Please provide the new task text.")
+//                .setView(view.getRoot())
+//                .setPositiveButton("Create", this::onSaveButtonClick)
                 .create();
 
     }
@@ -98,9 +97,9 @@ public class CreateTaskDialogFragment extends DialogFragment {
         Objects.requireNonNull(getDialog()).dismiss();
     }
 
-    private void onNegativeButtonClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-    }
+//    private void onNegativeButtonClick(DialogInterface dialog, int which) {
+//        dialog.cancel();
+//    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
