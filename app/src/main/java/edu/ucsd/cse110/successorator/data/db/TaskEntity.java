@@ -7,11 +7,11 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+
 @Entity(tableName = "tasks")
 public class TaskEntity {
     @PrimaryKey(autoGenerate = true)

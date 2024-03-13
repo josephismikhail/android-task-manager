@@ -9,15 +9,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FocusModeDialogBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
@@ -95,46 +97,81 @@ public class TaskListFragment extends Fragment{
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
 
+        Spinner dateSpinner = view.getRoot().findViewById(R.id.date);
+        LocalDateTime currentLocalTime = LocalDateTime.now();
+        LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
 
-//        Spinner focusModeButton = view.mode;
-//// Example data for the spinner
-//        String[] items = new String[]{"Home Mode", "Work Mode", "School Mode", "Errand Mode"};
-//
-//        this.adapter2 = new FocusModeArrayAdapter(requireContext(), items, focus -> {
-//            focusModeButton.setOnClickListener(v -> {
-////                adapter2.getDropDownView(requireContext(), items, focus);
-////                adapter2.show(getParentFragmentManager(), "CreateTaskDialogFragment");
-//            });
-//            // 1. Create sorting method in MainViewModel like 'sorttask(String focus)', that returns a list of task that according to different mode
-//        });
-////        focusModeButton.setAdapter(adapter2);
-
-        TextView dateTextView = view.getRoot().findViewById(R.id.date);
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime cutoffTime = currentTime.toLocalDate().atTime(2,0,0);
-
-        if (currentTime.isBefore(cutoffTime)) {
+        if (currentLocalTime.isBefore(cutoffTime)) {
             cutoffTime = cutoffTime.minusDays(1);
         }
         else {
-            cutoffTime = currentTime;
+            cutoffTime = currentLocalTime;
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
         activityModel.setNewTime(cutoffTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
-        dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
-        // Forward date button
+        List<String> options = new ArrayList<>();
+        options.add("Today - " + activityModel.getCurrentTime().format(formatter));
+        options.add("Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
+        options.add("Pending");
+        options.add("Recurring");
+
+        // set up the adapter for the dropdown menu
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(adapter);
+
+        // switch to different views
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item
+                String selectedItem = (String) parent.getItemAtPosition(position);
+
+                // Perform actions based on the selected item
+                switch (selectedItem.split(" - ")[0]) { // Using split to get the first part ("Today", "Tomorrow", "Pending", "Recurring")
+                    case "Today":
+                        // Perform action for Today
+                        activityModel.switchView(TaskViews.TODAY_VIEW);
+                        break;
+                    case "Tomorrow":
+                        // Perform action for Tomorrow
+                        activityModel.switchView(TaskViews.TOMORROW_VIEW);
+                        break;
+                    case "Pending":
+                        // Perform action for Pending
+                        activityModel.switchView(TaskViews.PENDING_VIEW);
+                        break;
+                    case "Recurring":
+                        // Perform action for Recurring
+                        activityModel.switchView(TaskViews.RECURRING_VIEW);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Do something when nothing is selected
+            }
+        });
+
+        activityModel.setNewTime(cutoffTime);
+
         view.dateButton.setOnClickListener(v -> {
+
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
-            dateTextView.setText(activityModel.getCurrentTime().format(formatter));
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(activityModel.getCurrentTime());
+
+            options.set(0, "Today - " + activityModel.getCurrentTime().format(formatter));
+            options.set(1, "Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
+            adapter.notifyDataSetChanged();
+
         });
 
         return view.getRoot();
     }
-
 }
