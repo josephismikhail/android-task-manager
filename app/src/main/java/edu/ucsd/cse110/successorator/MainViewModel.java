@@ -3,18 +3,12 @@ package edu.ucsd.cse110.successorator;
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -42,8 +36,8 @@ public class MainViewModel extends ViewModel {
     // UI state
     private final Subject<List<Task>> unorderedTasks;
     private final SimpleSubject<List<Task>> orderedTasks;
-    private List<Task> allTasks;
-    private final SimpleSubject<LocalDateTime> currentTime;
+    // private List<Task> allTasks;
+    // private final SimpleSubject<LocalDateTime> currentTime;
     private final SimpleSubject<String> dateDisplayText;
 
 
@@ -74,23 +68,10 @@ public class MainViewModel extends ViewModel {
         this.timeKeeper = timeKeeper;
 
         // Create the observable subjects.
-        this.allTasks = new ArrayList<>();
-        this.currentTime = new SimpleSubject<>();
+        // this.allTasks = new ArrayList<>();
+        // this.currentTime = new SimpleSubject<>();
         this.dateDisplayText = new SimpleSubject<>();
 
-        // When the list of cards changes (or is first loaded), reset the ordering.
-        taskRepository.findAll().observe(tasks -> {
-            if (tasks == null) return;
-
-            /*allTasks = tasks.stream()
-                    .sorted(Comparator.comparingInt(Task::getSortOrder))
-                    .collect(Collectors.toList());
-            var newOrderedTasks = allTasks.stream()
-                    .filter(Task::display)
-                    .collect(Collectors.toList());
-            orderedTasks.setValue(newOrderedTasks);*/
-            updateOrderedTasks(tasks);
-        });
     }
 
     public Subject<List<Task>> getOrderedTasks() {
@@ -189,8 +170,8 @@ public class MainViewModel extends ViewModel {
         switch (this.currTaskView) {
             case TODAY_VIEW:
                 // filter to get only today's tasks
-                System.out.println("updated on today");
                 newOrderedTasks = newOrderedTasks.stream()
+                        //.sorted(Comparator.comparing(Task::getContext))
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
@@ -199,8 +180,8 @@ public class MainViewModel extends ViewModel {
                 break;
             case TOMORROW_VIEW:
                 // filter to get only tomorrow's tasks
-                System.out.println("updated on tomorrow");
                 newOrderedTasks = newOrderedTasks.stream()
+                        //.sorted(Comparator.comparing(Task::getContext))
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime().plusDays(1)))
@@ -209,6 +190,7 @@ public class MainViewModel extends ViewModel {
             case PENDING_VIEW:
                 // filter to get only pending tasks
                 newOrderedTasks = newOrderedTasks.stream()
+                        //.sorted(Comparator.comparing(Task::getContext))
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() == RecurType.PENDING))
                         .collect(Collectors.toList());
@@ -216,6 +198,7 @@ public class MainViewModel extends ViewModel {
             case RECURRING_VIEW:
                 // filter to get only recurring tasks
                 newOrderedTasks = newOrderedTasks.stream()
+                        //.sorted(Comparator.comparing(Task::getContext))
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> ((t.getRecurType() == RecurType.DAILY)
                                     || (t.getRecurType() == RecurType.WEEKLY)

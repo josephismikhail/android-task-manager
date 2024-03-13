@@ -21,6 +21,7 @@ import java.util.Objects;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreatePendingTaskBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Context;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -63,13 +64,12 @@ public class CreatePendingTaskDialogFragment extends DialogFragment {
 
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
+        var context = getTaskContext();
         var task = new Task(null, taskText, false, -1,
-                null, RecurType.ONCE,
+                null, context, RecurType.PENDING,
                 activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
-        if (taskText.trim().isEmpty()) {
-            // do nothing
-        } else {
-            activityModel.newTask(task.withRecurType(RecurType.PENDING));
+        if (!taskText.trim().isEmpty()) {
+            activityModel.newTask(task);
         }
         Objects.requireNonNull(getDialog()).dismiss();
     }
@@ -91,6 +91,21 @@ public class CreatePendingTaskDialogFragment extends DialogFragment {
         activityModel.setNewTime(cutoffTime);
 
         return view;
+    }
+
+    private Context getTaskContext() {
+        if (view.homeButton.isChecked()) {
+            return Context.HOME;
+        }
+        else if (view.schoolButton.isChecked()) {
+            return Context.SCHOOL;
+        }
+        else if (view.workButton.isChecked()) {
+            return Context.WORK;
+        }
+        else {
+            return Context.ERRAND;
+        }
     }
 
 }

@@ -40,6 +40,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Task task = getItem(position);
+        if (task == null) {System.out.println("task is null in TLA");}
         assert task != null;
 
         ListItemTaskBinding binding;
@@ -50,7 +51,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
 
-        binding.tag.setText(task.getContext().toString().indexOf(0,1));
+        binding.tag.setText(task.getContext().toString().substring(0, 1));
         var layoutInflater = LayoutInflater.from(getContext());
 //        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
 

@@ -29,6 +29,7 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateRecurringTaskBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Context;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -110,12 +111,13 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
 
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
-
         if (taskText.trim().isEmpty() || selectedDate == null) { return; }
+
+        var context = getTaskContext();
 
         long epochSecond = selectedDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
         var task = new Task(null, taskText, false, -1,
-                null, RecurType.DAILY,
+                null, context, RecurType.DAILY,
                 epochSecond, true);
 
         if (view.dailyButton.isChecked()) {
@@ -185,6 +187,21 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         var yearlyRecurText = "Yearly on " + DateTimeFormatter.ofPattern("MM/dd").format(activityModel.getCurrentTime());
         binding.yearlyButton.setText(yearlyRecurText);
         return view;
+    }
+
+    private Context getTaskContext() {
+        if (view.homeButton.isChecked()) {
+            return Context.HOME;
+        }
+        else if (view.schoolButton.isChecked()) {
+            return Context.SCHOOL;
+        }
+        else if (view.workButton.isChecked()) {
+            return Context.WORK;
+        }
+        else {
+            return Context.ERRAND;
+        }
     }
 
 }
