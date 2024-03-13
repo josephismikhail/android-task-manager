@@ -39,11 +39,8 @@ public class MainViewModel extends ViewModel {
     // UI state
     private final Subject<List<Task>> unorderedTasks;
     private final SimpleSubject<List<Task>> orderedTasks;
-
     private List<Task> allTasks;
-
     private final SimpleSubject<LocalDateTime> currentTime;
-
     private final SimpleSubject<String> dateDisplayText;
 
 
@@ -166,6 +163,34 @@ public class MainViewModel extends ViewModel {
                                     || (t.getRecurType() == RecurType.WEEKLY)
                                     || (t.getRecurType() == RecurType.MONTHLY)
                                     || (t.getRecurType() == RecurType.YEARLY)))
+                        .collect(Collectors.toList());
+                break;
+            case HOME_VIEW:
+                // TODO - filter to get only pending tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .collect(Collectors.toList());
+                break;
+            case WORK_VIEW:
+                // TODO - filter to get only pending tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .collect(Collectors.toList());
+                break;
+            case SCHOOL_VIEW:
+                // TODO - filter to get only pending tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .collect(Collectors.toList());
+                break;
+            case ERRAND_VIEW:
+                // TODO - filter to get only pending tasks
+                newOrderedTasks = tasks.stream()
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
                         .collect(Collectors.toList());
                 break;
         }

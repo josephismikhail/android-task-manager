@@ -33,11 +33,8 @@ import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment
 
 public class TaskListFragment extends Fragment{
     private FragmentTaskListBinding view;
-    private FocusModeDialogBinding focusMenu;
     private MainViewModel activityModel;
     private TaskListAdapter adapter;
-
-    private FocusModeArrayAdapter adapter2;
 
     public TaskListFragment() {
 
@@ -59,8 +56,6 @@ public class TaskListFragment extends Fragment{
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-//        Spinner focusModeButton = view.mode;
-//        focusModeButton.setOnClickListener(this::onFocusButtonClick);
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
             // Delegate the task completion logic to the ViewModel
             activityModel.completeTask(TaskEntity.fromTask(task));
@@ -72,10 +67,6 @@ public class TaskListFragment extends Fragment{
             adapter.addAll(new ArrayList<>(tasks));
             adapter.notifyDataSetChanged();
         });
-    }
-
-    private void onFocusButtonClick(View view) {
-
     }
 
     /*
@@ -97,9 +88,9 @@ public class TaskListFragment extends Fragment{
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
 
-        Spinner dateSpinner = view.getRoot().findViewById(R.id.date);
         LocalDateTime currentLocalTime = LocalDateTime.now();
         LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
+
 
         if (currentLocalTime.isBefore(cutoffTime)) {
             cutoffTime = cutoffTime.minusDays(1);
@@ -113,6 +104,8 @@ public class TaskListFragment extends Fragment{
         activityModel.setNewTime(cutoffTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
 
+        Spinner dateSpinner = view.getRoot().findViewById(R.id.date);
+
         List<String> options = new ArrayList<>();
         options.add("Today - " + activityModel.getCurrentTime().format(formatter));
         options.add("Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
@@ -120,9 +113,10 @@ public class TaskListFragment extends Fragment{
         options.add("Recurring");
 
         // set up the adapter for the dropdown menu
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, options);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dateSpinner.setAdapter(adapter);
+        ArrayAdapter<String> dateSpinnerAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, options);
+        dateSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(dateSpinnerAdapter);
 
         // switch to different views
         dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -148,6 +142,53 @@ public class TaskListFragment extends Fragment{
                     case "Recurring":
                         // Perform action for Recurring
                         activityModel.switchView(TaskViews.RECURRING_VIEW);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Do something when nothing is selected
+            }
+        });
+
+        Spinner focusModeSpinner = view.getRoot().findViewById(R.id.mode);
+
+        List<String> focusModeOptions = new ArrayList<>();
+        focusModeOptions.add("Home");
+        focusModeOptions.add("Work");
+        focusModeOptions.add("School");
+        focusModeOptions.add("Errand");
+
+        ArrayAdapter<String> focusModeAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, focusModeOptions);
+        focusModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        focusModeSpinner.setAdapter(focusModeAdapter);
+
+        // switch to different context views
+        focusModeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item
+                String selectedItem = (String) parent.getItemAtPosition(position);
+
+                // Perform actions based on the selected item
+                switch (selectedItem) {
+                    case "Home":
+                        // Perform action for Today
+                        activityModel.switchView(TaskViews.HOME_VIEW);
+                        break;
+                    case "Work":
+                        // Perform action for Tomorrow
+                        activityModel.switchView(TaskViews.WORK_VIEW);
+                        break;
+                    case "School":
+                        // Perform action for Pending
+                        activityModel.switchView(TaskViews.SCHOOL_VIEW);
+                        break;
+                    case "Errand":
+                        // Perform action for Recurring
+                        activityModel.switchView(TaskViews.ERRAND_VIEW);
                         break;
                 }
             }
