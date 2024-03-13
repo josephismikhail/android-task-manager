@@ -24,13 +24,16 @@ import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
     private final Consumer<Task> onTaskClicked;
+    private final Consumer<Task> onTaskLongPress;
 
     public TaskListAdapter(
             Context context,
             List<Task> tasks,
-            Consumer<Task> onTaskClicked) {
+            Consumer<Task> onTaskClicked,
+            Consumer<Task> onTaskLongPress) {
         super(context, 0, new ArrayList<>(tasks));
         this.onTaskClicked = onTaskClicked;
+        this.onTaskLongPress = onTaskLongPress;
     }
 
     @NonNull
@@ -77,6 +80,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Bind clicks to update the model.
         binding.getRoot().setOnClickListener(v -> {
             onTaskClicked.accept(task);
+        });
+
+        binding.getRoot().setOnLongClickListener(v -> {
+            onTaskLongPress.accept(task);
+            return true;
         });
 
 
