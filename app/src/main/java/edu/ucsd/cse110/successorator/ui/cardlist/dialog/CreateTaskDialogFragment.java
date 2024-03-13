@@ -2,31 +2,30 @@ package edu.ucsd.cse110.successorator.ui.cardlist.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
 import java.util.Locale;
+import java.util.Objects;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class CreateTaskDialogFragment extends DialogFragment {
@@ -34,9 +33,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
     private MainViewModel activityModel;
 
 
-    CreateTaskDialogFragment() {
-
-    }
+    CreateTaskDialogFragment() {}
 
     public static CreateTaskDialogFragment newInstance() {
         var fragment = new CreateTaskDialogFragment();
@@ -55,13 +52,8 @@ public class CreateTaskDialogFragment extends DialogFragment {
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("New Task")
-                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
-                .setPositiveButton("Create", this::onPositiveButtonClick)
-                .setNegativeButton("Cancel", this::onNegativeButtonClick)
                 .create();
-
     }
 
     @Override
@@ -72,33 +64,49 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
-
     }
+
     private void onSaveButtonClick(View v) {
-        var taskText = view.taskFrontEditText.getText().toString();
+        var taskText = view.taskEditText.getText().toString();
+        var task = new Task(null, taskText, false, -1,
+                null, RecurType.ONCE,
+                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
         if (taskText.trim().isEmpty()) {
-            //not valid
-        } else {
-            var task = new Task(-1, taskText, false, -1, null);
-            activityModel.prepend(task);
-            getDialog().dismiss();
+            // do nothing
+        } else if (view.onceButton.isChecked()){
+            activityModel.newTask(task);
+        } else if (view.dailyButton.isChecked()) {
+            activityModel.newTask(task.withRecurType(RecurType.DAILY));
+        } else if (view.weeklyButton.isChecked()) {
+            activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
+        } else if (view.monthlyButton.isChecked()) {
+            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
+        } else if (view.yearlyButton.isChecked()) {
+            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
         }
-    }
-    private void onPositiveButtonClick(DialogInterface dialog, int which) {
-        var taskText = view.taskFrontEditText.getText().toString();
-        if (taskText.trim().isEmpty()) {
-            dialog.dismiss();
-        } else {
-            var task = new Task(-1, taskText, false, -1, null);
-            activityModel.prepend(task);
-
-            dialog.dismiss();
-        }
+        Objects.requireNonNull(getDialog()).dismiss();
     }
 
-    private void onNegativeButtonClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-    }
+//    private void onPositiveButtonClick(DialogInterface dialog, int which) {
+//        var taskText = view.taskFrontEditText.getText().toString();
+//        var task = new Task(null, taskText, false, -1, null);
+//        if (taskText.trim().isEmpty()) {
+//            dialog.dismiss();
+//        }
+//        if (view.onceButton.isChecked()){
+//            activityModel.newTask(task);
+//        } else if (view.dailyButton.isChecked()) {
+//            activityModel.newRecurringTask(task, RecurFrequency.DAILY);
+//        } else if (view.weeklyButton.isChecked()) {
+//            activityModel.newRecurringTask(task, RecurFrequency.WEEKLY);
+//        } else if (view.monthlyButton.isChecked()) {
+//            activityModel.newRecurringTask(task, RecurFrequency.MONTHLY);
+//        } else if (view.yearlyButton.isChecked()) {
+//            activityModel.newRecurringTask(task, RecurFrequency.YEARLY);
+//        }
+//        dialog.dismiss();
+//    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,8 +116,8 @@ public class CreateTaskDialogFragment extends DialogFragment {
             Log.e("YourFragment", "RadioButton weeklyButton not found in the layout");
             return view;
         }
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime cutoffTime = LocalDate.now().atTime(2, 0,0);
+        LocalDateTime currentTime = activityModel.getCurrentTime();
+        LocalDateTime cutoffTime = activityModel.getCurrentTime().toLocalDate().atTime(2, 0,0);
 
         if (currentTime.isBefore(cutoffTime)) {
             cutoffTime = cutoffTime.minusDays(1);
@@ -118,33 +126,42 @@ public class CreateTaskDialogFragment extends DialogFragment {
         }
         activityModel.setNewTime(cutoffTime);
 
-        // set week day
-        binding.weeklyButton.setText("weekly on " + activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+        var onceTaskText = "Once";
+        binding.onceButton.setText(onceTaskText);
 
-        // set month date
-        int dayOfMonth = (activityModel.getCurrentTime().getDayOfMonth());
+        var dailyRecurText = "Daily";
+        binding.dailyButton.setText(dailyRecurText);
+
+        // Weekly button text
+        var weeklyRecurText = "Weekly on " +
+                activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
+        binding.weeklyButton.setText(weeklyRecurText);
+
+        // Monthly button text
+        int nthWeekday = activityModel.getCurrentTime().get(ChronoField.ALIGNED_WEEK_OF_MONTH);
         String ordinalIndicator;
-        if (dayOfMonth >= 11 && dayOfMonth <= 13) {
-            ordinalIndicator = "th";
-        } else {
-            switch (dayOfMonth % 10) {
-                case 1: ordinalIndicator = "st";
+        switch (nthWeekday) {
+            case 1:
+                ordinalIndicator = "st";
                 break;
-                case 2: ordinalIndicator = "nd";
+            case 2:
+                ordinalIndicator = "nd";
                 break;
-                case 3: ordinalIndicator = "rd";
+            case 3:
+                ordinalIndicator = "rd";
                 break;
-                default: ordinalIndicator = "th";
+            default:
+                ordinalIndicator = "th";
                 break;
-            }
         }
-        binding.monthlyButton.setText("monthly on " + String.valueOf(dayOfMonth) + ordinalIndicator + " " + activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+        var monthlyRecurText = "Monthly on " + nthWeekday + ordinalIndicator + " " +
+                activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
+        binding.monthlyButton.setText(monthlyRecurText);
 
-        // set yearly
-        String yearlyTime = DateTimeFormatter.ofPattern("MM/dd").format(activityModel.getCurrentTime());
-        binding.yearlyButton.setText("yearly on " + yearlyTime);
+        // Yearly button text
+        var yearlyRecurText = "Yearly on " + DateTimeFormatter.ofPattern("MM/dd").format(activityModel.getCurrentTime());
+        binding.yearlyButton.setText(yearlyRecurText);
         return view;
-
     }
 
 }

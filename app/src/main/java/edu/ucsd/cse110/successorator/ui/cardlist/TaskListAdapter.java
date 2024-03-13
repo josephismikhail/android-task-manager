@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import edu.ucsd.cse110.successorator.data.db.TaskDao;
-import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -74,7 +72,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         var task = getItem(position);
         assert task != null;
 
-        var id = task.id();
+        var id = task.getId();
         assert id != null;
 
         return id;

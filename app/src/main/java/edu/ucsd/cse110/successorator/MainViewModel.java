@@ -8,8 +8,10 @@ import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +36,13 @@ public class MainViewModel extends ViewModel {
     // UI state
     private final SimpleSubject<List<Task>> orderedTasks;
 
+    private List<Task> allTasks;
+
+    private final SimpleSubject<LocalDateTime> currentTime;
+
+    private final SimpleSubject<String> dateDisplayText;
+
+
     public static final ViewModelInitializer<MainViewModel> initializer =
         new ViewModelInitializer<>(
             MainViewModel.class,
@@ -50,49 +59,45 @@ public class MainViewModel extends ViewModel {
 
         // Create the observable subjects.
         this.orderedTasks = new SimpleSubject<>();
+        this.allTasks = new ArrayList<>();
+        this.currentTime = new SimpleSubject<>();
+        this.dateDisplayText = new SimpleSubject<>();
 
         // When the list of cards changes (or is first loaded), reset the ordering.
         taskRepository.findAll().observe(tasks -> {
             if (tasks == null) return;
 
-            var newOrderedTasks = tasks.stream()
-                .sorted(Comparator.comparingInt(Task::sortOrder))
-                .collect(Collectors.toList());
+            allTasks = tasks.stream()
+                    .sorted(Comparator.comparingInt(Task::getSortOrder))
+                    .collect(Collectors.toList());
+            var newOrderedTasks = allTasks.stream()
+                    .filter(Task::display)
+                    .collect(Collectors.toList());
             orderedTasks.setValue(newOrderedTasks);
         });
-
-//        timeKeeper.getDateTime().observe(
-//                timeKeeper.setDateTime();
-//        });
     }
 
     public Subject<List<Task>> getOrderedTasks() {
         return orderedTasks;
     }
 
-    public int getMinSortOrder() {
-        return taskRepository.getMinSortOrder();
+    public void updateDisplayTask(LocalDateTime date) {
+        taskRepository.updateDisplayTask(date);
     }
 
-    public int getMaxSortOrder() {
-        return taskRepository.getMaxSortOrder();
+    public void updateDisplayTaskButton() {
+        taskRepository.updateDisplayTask(getCurrentTime());
     }
 
-    public int getIncompleteMaxSortOrder() {
-        return taskRepository.getIncompleteMaxSortOrder();
+    public Subject<String> getDateDisplayText() { return dateDisplayText; }
+
+    public void save(Task task) {
+        taskRepository.save(task);
     }
 
-    public void shiftSortOrder(int from, int to, int by) {
-        taskRepository.shiftSortOrder(from, to, by);
+    public void newTask(Task task) {
+        taskRepository.newTask(task);
     }
-
-    public void save(Task task) { taskRepository.save(task); }
-
-    public void prepend(Task task) {
-        taskRepository.prepend(task);
-    }
-
-    public void remove(int id) { taskRepository.remove(id); }
 
     public void deleteCompletedTasks(boolean completed) {taskRepository.deleteCompletedTasks(completed);}
 
