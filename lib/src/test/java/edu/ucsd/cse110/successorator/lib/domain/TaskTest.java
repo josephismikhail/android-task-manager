@@ -109,4 +109,12 @@ public class TaskTest {
         task.setDisplay(true);
         assertTrue(task.display());
     }
+
+    @Test
+    public void testWithContext() {
+        var task = new Task(8, "testing 9", false, 7, null, Context.ERRAND, RecurType.YEARLY, null, true);
+        var expected = new Task(8, "testing 9", false, 7, null, Context.HOME, RecurType.YEARLY, null, true);
+        var actual = task.withContext(Context.HOME);
+        assertEquals(expected, actual);
+    }
 }
