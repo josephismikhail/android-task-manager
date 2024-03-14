@@ -9,6 +9,7 @@ import androidx.room.Transaction;
 
 import java.util.List;
 
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 
 @Dao
@@ -54,7 +55,7 @@ public interface TaskDao {
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
         var newTask = new TaskEntity(null, task.task, false, getMinSortOrder() - 1,
-                null, RecurType.ONCE, null, task.display
+                null, TaskContext.HOME, RecurType.ONCE, null, task.display
         );
         return Math.toIntExact(insert(newTask));
     }

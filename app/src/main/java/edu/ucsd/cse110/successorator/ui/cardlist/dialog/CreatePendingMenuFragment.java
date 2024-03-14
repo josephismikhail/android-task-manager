@@ -61,19 +61,19 @@ public class CreatePendingMenuFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         if (view.moveToday.isChecked()) {
             var newOneTime = new Task(null, task.getTask(), false, -1,
-                    null, RecurType.ONCE,
+                    null, task.getContext(), RecurType.ONCE,
                     activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
             activityModel.deleteTask(task.getId());
             activityModel.newTask(newOneTime);
         } else if (view.moveTomorrow.isChecked()) {
             var newOneTime = new Task(null, task.getTask(), false, -1,
-                    null, RecurType.ONCE,
+                    null, task.getContext(), RecurType.ONCE,
                     activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
             activityModel.deleteTask(task.getId());
             activityModel.newTask(newOneTime);
         } else if (view.finishPending.isChecked()) {
             var newOneTime = new Task(null, task.getTask(), true, -1,
-                    LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(-8)), RecurType.ONCE,
+                    LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(-8)), task.getContext(), RecurType.ONCE,
                     activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
             activityModel.deleteTask(task.getId());
             activityModel.newTask(newOneTime);

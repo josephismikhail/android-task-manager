@@ -11,6 +11,7 @@ import java.time.ZoneOffset;
 
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 
 @Entity(tableName = "tasks")
 public class TaskEntity {
@@ -30,6 +31,9 @@ public class TaskEntity {
     @ColumnInfo(name = "completedTime")
     public Long completedTime;
 
+    @ColumnInfo(name = "context")
+    public TaskContext context;
+
     @ColumnInfo(name = "recurType")
     public RecurType recurType;
 
@@ -39,13 +43,14 @@ public class TaskEntity {
     @ColumnInfo(name = "display")
     public boolean display;
 
-    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
-               @Nullable Long completedTime, RecurType recurType, Long recurDate, boolean display) {
+    public TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
+                      @Nullable Long completedTime, TaskContext context, RecurType recurType, Long recurDate, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
         this.sortOrder = sortOrder;
         this.completedTime = completedTime;
+        this.context = context;
         this.recurType = recurType;
         this.recurDate = recurDate;
         this.display = display;
@@ -53,11 +58,11 @@ public class TaskEntity {
 
     public static TaskEntity fromTask(@NonNull Task task) {
         return new TaskEntity(task.getId(), task.getTask(), task.isCompleted(), task.getSortOrder(),
-                task.getCompletedTime(), task.getRecurType(), task.getRecurDate(), task.display());
+                task.getCompletedTime(), task.getContext(), task.getRecurType(), task.getRecurDate(), task.display());
     }
 
     public @NonNull Task toTask() {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
     public int getTaskID() {
@@ -103,12 +108,10 @@ public class TaskEntity {
 
     public TaskEntity withSortOrder(int newSortOrder) {
         return new TaskEntity(this.id, this.task, this.completed, newSortOrder,
-                this.completedTime, this.recurType, this.recurDate, this.display);
+                this.completedTime, this.context, this.recurType, this.recurDate, this.display);
     }
 
     public void setDisplay(boolean b) {
         this.display = b;
     }
-
-    public boolean isDisplay() { return this.display; }
 }

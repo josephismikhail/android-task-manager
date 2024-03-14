@@ -7,9 +7,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
 
 import android.content.Context;
 
@@ -21,7 +23,6 @@ import edu.ucsd.cse110.successorator.data.db.TaskDao;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseTest {
@@ -40,7 +41,7 @@ public class DatabaseTest {
     @Test
     public void writeAndReadTaskTest() throws Exception {
         var testTask = new Task(0, "task", false, 0,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         TaskEntity task = fromTask(testTask);
         dao.insert(task);
         TaskEntity byID = dao.find(task.getTaskID());
@@ -51,7 +52,7 @@ public class DatabaseTest {
     @Test
     public void completeOneTaskTest() {
         Task task = new Task(0, "Test Task", false, 0,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         dao.insert(fromTask(task)); // Insert initial task
 
         RoomTaskRepository repository = new RoomTaskRepository(dao);
@@ -67,9 +68,9 @@ public class DatabaseTest {
     @Test
     public void completeTwoTasksTest() {
         Task task1 = new Task(0, "Test Task 1", false, 0,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         Task task2 = new Task(1, "Test Task 2", false, 1,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         dao.insert(fromTask(task1));
         dao.insert(fromTask(task2));
 
@@ -94,9 +95,9 @@ public class DatabaseTest {
     @Test
     public void uncompleteTwoTasksTest() {
         Task task1 = new Task(0, "Test Task 1", true, 0,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         Task task2 = new Task(1, "Test Task 2", true, 1,
-                System.currentTimeMillis(), RecurType.ONCE, null, true);
+                System.currentTimeMillis(), HOME, RecurType.ONCE, null, true);
         dao.insert(fromTask(task1));
         dao.insert(fromTask(task2));
 
