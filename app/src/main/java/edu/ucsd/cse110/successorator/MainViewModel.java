@@ -112,6 +112,10 @@ public class MainViewModel extends ViewModel {
         taskRepository.completeTask(task.toTask());
     }
 
+    public void deleteTask(int id) {
+        taskRepository.deleteTask(id);
+    }
+
     public void deleteCompletedTasks(boolean completed) {
         taskRepository.deleteCompletedTasks(completed);
     }
@@ -175,5 +179,4 @@ public class MainViewModel extends ViewModel {
     public LocalDateTime getCurrentTime() { return timeKeeper.getDateTime().getValue(); }
 
     public void setNewTime(LocalDateTime newTime) { timeKeeper.setDateTime(newTime); }
-
 }
