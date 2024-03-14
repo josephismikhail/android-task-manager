@@ -68,8 +68,6 @@ public class MainViewModel extends ViewModel {
         this.timeKeeper = timeKeeper;
 
         // Create the observable subjects.
-        // this.allTasks = new ArrayList<>();
-        // this.currentTime = new SimpleSubject<>();
         this.dateDisplayText = new SimpleSubject<>();
 
     }
@@ -166,45 +164,79 @@ public class MainViewModel extends ViewModel {
                 break;
         }
 
-        //
+        List<Task> newUncompletedOrderedTasks = newOrderedTasks.stream()
+                                                                .filter(t -> (!t.isCompleted()))
+                                                                .collect(Collectors.toList());
+        List<Task> newCompletedOrderedTasks = newOrderedTasks.stream()
+                                                                .filter(Task::isCompleted)
+                                                                .collect(Collectors.toList());
+
         switch (this.currTaskView) {
             case TODAY_VIEW:
                 // filter to get only today's tasks
-                newOrderedTasks = newOrderedTasks.stream()
-                        //.sorted(Comparator.comparing(Task::getContext))
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                newUncompletedOrderedTasks = newUncompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
                         .filter(Task::display)
                         .collect(Collectors.toList());
+                newCompletedOrderedTasks = newCompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
+                        .filter(t -> (t.getRecurType() != RecurType.PENDING))
+                        .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
+                        .filter(Task::display)
+                        .collect(Collectors.toList());
+                newUncompletedOrderedTasks.addAll(newCompletedOrderedTasks);
+                newOrderedTasks = newUncompletedOrderedTasks;
                 break;
             case TOMORROW_VIEW:
                 // filter to get only tomorrow's tasks
-                newOrderedTasks = newOrderedTasks.stream()
-                        //.sorted(Comparator.comparing(Task::getContext))
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                newUncompletedOrderedTasks = newUncompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime().plusDays(1)))
                         .collect(Collectors.toList());
+                newCompletedOrderedTasks = newCompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
+                        .filter(t -> (t.getRecurType() != RecurType.PENDING))
+                        .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime().plusDays(1)))
+                        .collect(Collectors.toList());
+                newUncompletedOrderedTasks.addAll(newCompletedOrderedTasks);
+                newOrderedTasks = newUncompletedOrderedTasks;
                 break;
             case PENDING_VIEW:
                 // filter to get only pending tasks
-                newOrderedTasks = newOrderedTasks.stream()
+                newUncompletedOrderedTasks = newUncompletedOrderedTasks.stream()
                         //.sorted(Comparator.comparing(Task::getContext))
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
                         .filter(t -> (t.getRecurType() == RecurType.PENDING))
                         .collect(Collectors.toList());
+                newCompletedOrderedTasks = newCompletedOrderedTasks.stream()
+                        //.sorted(Comparator.comparing(Task::getContext))
+                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() == RecurType.PENDING))
+                        .collect(Collectors.toList());
+                newUncompletedOrderedTasks.addAll(newCompletedOrderedTasks);
+                newOrderedTasks = newUncompletedOrderedTasks;
                 break;
             case RECURRING_VIEW:
                 // filter to get only recurring tasks
-                newOrderedTasks = newOrderedTasks.stream()
-                        //.sorted(Comparator.comparing(Task::getContext))
-                        .sorted(Comparator.comparingInt(Task::getSortOrder))
+                newUncompletedOrderedTasks = newUncompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
                         .filter(t -> ((t.getRecurType() == RecurType.DAILY)
                                     || (t.getRecurType() == RecurType.WEEKLY)
                                     || (t.getRecurType() == RecurType.MONTHLY)
                                     || (t.getRecurType() == RecurType.YEARLY)))
                         .collect(Collectors.toList());
+                newCompletedOrderedTasks = newCompletedOrderedTasks.stream()
+                        .sorted(Comparator.comparing(Task::getContext))
+                        .filter(t -> ((t.getRecurType() == RecurType.DAILY)
+                                || (t.getRecurType() == RecurType.WEEKLY)
+                                || (t.getRecurType() == RecurType.MONTHLY)
+                                || (t.getRecurType() == RecurType.YEARLY)))
+                        .collect(Collectors.toList());
+                newUncompletedOrderedTasks.addAll(newCompletedOrderedTasks);
+                newOrderedTasks = newUncompletedOrderedTasks;
                 break;
         }
         orderedTasks.setValue(newOrderedTasks);
