@@ -127,6 +127,10 @@ public class MainViewModel extends ViewModel {
         taskRepository.deleteCompletedTasksBefore(cutoffTime);
     }
 
+    public TaskViews getCurrTaskView() {
+        return this.currTaskView;
+    }
+
     public void switchView(TaskViews nextView) {
         this.currTaskView = nextView;
         updateOrderedTasks(this.unorderedTasks.getValue());
@@ -184,6 +188,7 @@ public class MainViewModel extends ViewModel {
                 System.out.println("updated on today");
                 newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(Task::display)
                         .collect(Collectors.toList());
                 break;
@@ -192,6 +197,7 @@ public class MainViewModel extends ViewModel {
                 System.out.println("updated on tomorrow");
                 newOrderedTasks = newOrderedTasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
+                        .filter(t -> (t.getRecurType() != RecurType.PENDING))
                         .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime().plusDays(1)))
                         .collect(Collectors.toList());
                 break;
