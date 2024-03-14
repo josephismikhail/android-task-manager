@@ -1,8 +1,11 @@
 package edu.ucsd.cse110.successorator;
 
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         this.view = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(view.getRoot());
     }

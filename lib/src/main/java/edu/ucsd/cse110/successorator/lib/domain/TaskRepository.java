@@ -20,10 +20,11 @@ public interface TaskRepository {
 
     void updateDisplayTask(LocalDateTime date);
 
+    void deleteTask(int id);
+
     void deleteCompletedTasks(boolean completed);
 
     void deleteCompletedTasksBefore(long cutoffTime);
 
     void completeTask(Task task);
-
 }

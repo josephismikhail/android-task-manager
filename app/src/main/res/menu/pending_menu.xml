@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/move_today"
+        android:title="Move to Today" />
+    <item
+        android:id="@+id/move_tomorrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Move to Tomorrow" />
+    <item
+        android:id="@+id/finish_pending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Finish" />
+    <item
+        android:id="@+id/delete_pending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Delete" />
+</menu>

@@ -82,10 +82,20 @@ public class RoomTaskRepository implements TaskRepository {
         for (TaskEntity task : taskList) {
             if (!checkRecurTask(task, date) && task.isCompleted()
                     && completedBeforeToday(task.toTask(), date)) {
+                task.changeStatus();
                 task.setDisplay(false);
                 taskDao.insert(task);
-            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+            } else if (checkRecurTask(task, date) && task.isCompleted() && task.recurType == RecurType.DAILY) {
                 task.changeStatus();
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && !task.isCompleted()) {
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (!task.isCompleted() && task.recurType == RecurType.ONCE) {
                 task.setDisplay(true);
                 taskDao.insert(task);
             }
@@ -183,16 +193,18 @@ public class RoomTaskRepository implements TaskRepository {
     }
 
     @Override
+    public void deleteTask(int id) {
+        TaskEntity task = taskDao.find(id);
+        taskDao.remove(task.id);
+    }
+
+    @Override
     public void deleteCompletedTasks(boolean completed) {
         for (TaskEntity task : taskDao.findAll()) {
             var recurType = task.getRecurType();
             if (task.isCompleted() && (recurType == RecurType.PENDING || recurType == RecurType.ONCE)) {
                 taskDao.remove(task.id);
             }
-//            else {//if (recurType == RecurType.DAILY){
-//                task.uncomplete();
-//                save(task.toTask());
-//            }
         }
     }
 
