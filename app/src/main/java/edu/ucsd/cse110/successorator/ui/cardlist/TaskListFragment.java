@@ -4,16 +4,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,13 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
+import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
+import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreatePendingTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends Fragment {
-    private FragmentTaskListBinding view;
+    private FragmentTaskListBinding mainView;
     private MainViewModel activityModel;
     private TaskListAdapter adapter;
 
@@ -50,8 +52,10 @@ public class TaskListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         this.adapter = new TaskListAdapter(requireContext(), List.of(), task -> {
-            // Delegate the task completion logic to the ViewModel
-            activityModel.completeTask(TaskEntity.fromTask(task));
+            if (activityModel.getCurrTaskView() == TaskViews.TODAY_VIEW ||
+                activityModel.getCurrTaskView() == TaskViews.TOMORROW_VIEW) {
+                activityModel.completeTask(TaskEntity.fromTask(task));
+            }
         });
 
         activityModel.getOrderedTasks().observe(tasks -> {
@@ -72,41 +76,97 @@ public class TaskListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.view = FragmentTaskListBinding.inflate(inflater, container, false);
-        view.taskList.setAdapter(adapter);
-        view.taskList.setEmptyView(view.emptyText);
+        this.mainView = FragmentTaskListBinding.inflate(inflater, container, false);
+        mainView.taskList.setAdapter(adapter);
+        mainView.taskList.setEmptyView(mainView.emptyText);
 
-        view.plusButton.setOnClickListener(v -> {
-            var dialogFragment = CreateTaskDialogFragment.newInstance();
-            dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
-        });
+        Spinner dateSpinner = mainView.getRoot().findViewById(R.id.date);
+        LocalDateTime currentLocalTime = LocalDateTime.now();
+        LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
 
-        TextView dateTextView = view.getRoot().findViewById(R.id.date);
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime cutoffTime = currentTime.toLocalDate().atTime(2,0,0);
-
-        if (currentTime.isBefore(cutoffTime)) {
+        if (currentLocalTime.isBefore(cutoffTime)) {
             cutoffTime = cutoffTime.minusDays(1);
         }
         else {
-            cutoffTime = currentTime;
-//            activityModel.deleteCompletedTasksBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());//.toInstant().toEpochMilli());
+            cutoffTime = currentLocalTime;
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(LocalDateTime.now());
         }
 
         activityModel.setNewTime(cutoffTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
-        dateTextView.setText(activityModel.getCurrentTime().format(formatter));
 
-        // Forward date button
-        view.dateButton.setOnClickListener(v -> {
-            activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
-            dateTextView.setText(activityModel.getCurrentTime().format(formatter));
-            activityModel.deleteCompletedTasks(true);
-            activityModel.updateDisplayTask(activityModel.getCurrentTime());
+        List<String> options = new ArrayList<>();
+        options.add("Today - " + activityModel.getCurrentTime().format(formatter));
+        options.add("Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
+        options.add("Pending");
+        options.add("Recurring");
+
+        // set up the adapter for the dropdown menu
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(adapter);
+
+        // switch to different views
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item
+                String selectedItem = (String) parent.getItemAtPosition(position);
+
+                if (!selectedItem.split("-")[0].equals("Pending")) {
+                    mainView.plusButton.setOnClickListener(v -> {
+                        var dialogFragment = CreateTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
+                    });
+                } else {
+                    mainView.plusButton.setOnClickListener(v -> {
+                        var dialogFragment = CreatePendingTaskDialogFragment.newInstance();
+                        dialogFragment.show(getParentFragmentManager(), "CreatePendingTaskDialogFragment");
+                    });
+                }
+
+                // Perform actions based on the selected item
+                switch (selectedItem.split(" - ")[0]) { // Using split to get the first part ("Today", "Tomorrow", "Pending", "Recurring")
+                    case "Today":
+                        // Perform action for Today
+                        activityModel.switchView(TaskViews.TODAY_VIEW);
+                        break;
+                    case "Tomorrow":
+                        // Perform action for Tomorrow
+                        activityModel.switchView(TaskViews.TOMORROW_VIEW);
+                        break;
+                    case "Pending":
+                        // Perform action for Pending
+                        activityModel.switchView(TaskViews.PENDING_VIEW);
+                        break;
+                    case "Recurring":
+                        // Perform action for Recurring
+                        activityModel.switchView(TaskViews.RECURRING_VIEW);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Do something when nothing is selected
+            }
         });
 
-        return view.getRoot();
+        activityModel.setNewTime(cutoffTime);
+
+        mainView.dateButton.setOnClickListener(v -> {
+
+            activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
+            activityModel.deleteCompletedTasks(true);
+            activityModel.updateDisplayTask(activityModel.getCurrentTime());
+
+            options.set(0, "Today - " + activityModel.getCurrentTime().format(formatter));
+            options.set(1, "Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
+            adapter.notifyDataSetChanged();
+
+        });
+
+        return mainView.getRoot();
     }
 }

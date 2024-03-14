@@ -4,13 +4,10 @@ import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import androidx.lifecycle.Transformations;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,7 +89,7 @@ public class RoomTaskRepository implements TaskRepository {
         }
     }
 
-    public boolean checkRecurTask(TaskEntity task, LocalDateTime date) {
+    public static boolean checkRecurTask(TaskEntity task, LocalDateTime date) {
         var recurType = task.getRecurType();
         var taskRecurDate = LocalDateTime.ofEpochSecond(task.getRecurDate(),
                 0, ZoneOffset.ofHours(-8));
@@ -108,13 +105,13 @@ public class RoomTaskRepository implements TaskRepository {
         }
     }
 
-    public boolean checkRecurWeekly(LocalDateTime taskDate, LocalDateTime date) {
+    public static boolean checkRecurWeekly(LocalDateTime taskDate, LocalDateTime date) {
         var taskWeekday = taskDate.getDayOfWeek();
         var currentWeekday = date.getDayOfWeek();
         return taskWeekday == currentWeekday;
     }
 
-    public boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
+    public static boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
         var taskNthWeekday = taskDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
         var dateNthWeekday = date.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
         if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
@@ -123,7 +120,7 @@ public class RoomTaskRepository implements TaskRepository {
         return false;
     }
 
-    private boolean checkRecurYearly(LocalDateTime taskDate, LocalDateTime date) {
+    private static boolean checkRecurYearly(LocalDateTime taskDate, LocalDateTime date) {
         if (taskDate.getDayOfMonth() == 29 && taskDate.getMonth() == Month.FEBRUARY) {
             return taskDate.getDayOfYear() == date.getDayOfYear();
         } else {
