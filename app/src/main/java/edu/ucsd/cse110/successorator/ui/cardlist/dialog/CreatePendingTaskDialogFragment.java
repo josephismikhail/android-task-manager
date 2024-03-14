@@ -3,7 +3,6 @@ package edu.ucsd.cse110.successorator.ui.cardlist.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import java.util.Objects;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreatePendingTaskBinding;
-import edu.ucsd.cse110.successorator.lib.domain.Context;
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -93,18 +92,18 @@ public class CreatePendingTaskDialogFragment extends DialogFragment {
         return view;
     }
 
-    private Context getTaskContext() {
+    private TaskContext getTaskContext() {
         if (view.homeButton.isChecked()) {
-            return Context.HOME;
+            return TaskContext.HOME;
         }
         else if (view.schoolButton.isChecked()) {
-            return Context.SCHOOL;
+            return TaskContext.SCHOOL;
         }
         else if (view.workButton.isChecked()) {
-            return Context.WORK;
+            return TaskContext.WORK;
         }
         else {
-            return Context.ERRAND;
+            return TaskContext.ERRAND;
         }
     }
 

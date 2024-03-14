@@ -25,7 +25,7 @@ import java.util.Objects;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
-import edu.ucsd.cse110.successorator.lib.domain.Context;
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
@@ -72,7 +72,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
         RecurType recurType = RecurType.ONCE;
-        Context context = Context.HOME;
+        TaskContext taskContext = TaskContext.HOME;
 
         if (taskText.trim().isEmpty()) {
             // do nothing
@@ -90,17 +90,17 @@ public class CreateTaskDialogFragment extends DialogFragment {
             recurType = RecurType.YEARLY;
         }
 
-        // Getting context
+        // Getting TaskContext
         if (view.workButton.isChecked()) {
-            context = Context.WORK;
+            taskContext = TaskContext.WORK;
         } else if (view.schoolButton.isChecked()) {
-            context = Context.SCHOOL;
+            taskContext = TaskContext.SCHOOL;
         } else if (view.errandsButton.isChecked()) {
-            context = Context.ERRAND;
+            taskContext = TaskContext.ERRAND;
         }
 
         var task = new Task(null, taskText, false, -1,
-                null, context, recurType,
+                null, taskContext, recurType,
                 activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
         activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();

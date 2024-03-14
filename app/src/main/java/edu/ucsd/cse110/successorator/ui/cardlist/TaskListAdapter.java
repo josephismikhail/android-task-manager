@@ -1,9 +1,9 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
-import static edu.ucsd.cse110.successorator.lib.domain.Context.ERRAND;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.HOME;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.SCHOOL;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.WORK;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.ERRAND;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.SCHOOL;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.WORK;
 
 import android.content.Context;
 import android.graphics.Color;

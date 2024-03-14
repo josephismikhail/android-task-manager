@@ -4,7 +4,6 @@ import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
 import androidx.lifecycle.Transformations;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;

@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
-import edu.ucsd.cse110.successorator.lib.domain.Context;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 
 @Entity(tableName = "tasks")
 public class TaskEntity {
@@ -32,7 +32,7 @@ public class TaskEntity {
     public Long completedTime;
 
     @ColumnInfo(name = "context")
-    public Context context;
+    public TaskContext context;
 
     @ColumnInfo(name = "recurType")
     public RecurType recurType;
@@ -43,8 +43,8 @@ public class TaskEntity {
     @ColumnInfo(name = "display")
     public boolean display;
 
-    TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
-               @Nullable Long completedTime, Context context, RecurType recurType, Long recurDate, boolean display) {
+    public TaskEntity(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
+                      @Nullable Long completedTime, TaskContext context, RecurType recurType, Long recurDate, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
@@ -85,10 +85,6 @@ public class TaskEntity {
         return completedTime;
     }
 
-    public Context getContext() {
-        return context;
-    }
-
     public RecurType getRecurType() {
         return recurType;
     }
@@ -118,6 +114,4 @@ public class TaskEntity {
     public void setDisplay(boolean b) {
         this.display = b;
     }
-
-    public boolean isDisplay() { return this.display; }
 }

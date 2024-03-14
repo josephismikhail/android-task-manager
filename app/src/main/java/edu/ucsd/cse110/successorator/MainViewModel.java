@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
-import edu.ucsd.cse110.successorator.lib.domain.Context;
+import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.ContextViews;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
@@ -138,28 +138,28 @@ public class MainViewModel extends ViewModel {
                 // filter to get HOME context tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getContext() == Context.HOME))
+                        .filter(t -> (t.getContext() == TaskContext.HOME))
                         .collect(Collectors.toList());
                 break;
             case WORK:
                 // filter to get WORK context tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getContext() == Context.WORK))
+                        .filter(t -> (t.getContext() == TaskContext.WORK))
                         .collect(Collectors.toList());
                 break;
             case SCHOOL:
                 // filter to get SCHOOL context tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getContext() == Context.SCHOOL))
+                        .filter(t -> (t.getContext() == TaskContext.SCHOOL))
                         .collect(Collectors.toList());
                 break;
             case ERRAND:
                 // filter to get ERRAND context tasks
                 newOrderedTasks = tasks.stream()
                         .sorted(Comparator.comparingInt(Task::getSortOrder))
-                        .filter(t -> (t.getContext() == Context.ERRAND))
+                        .filter(t -> (t.getContext() == TaskContext.ERRAND))
                         .collect(Collectors.toList());
                 break;
         }
