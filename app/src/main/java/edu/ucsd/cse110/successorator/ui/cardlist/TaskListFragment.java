@@ -167,7 +167,7 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-        Spinner focusModeSpinner = view.getRoot().findViewById(R.id.mode);
+        Spinner focusModeSpinner = mainView.getRoot().findViewById(R.id.mode);
 
         List<String> focusModeOptions = new ArrayList<>();
         focusModeOptions.add("Cancel");
