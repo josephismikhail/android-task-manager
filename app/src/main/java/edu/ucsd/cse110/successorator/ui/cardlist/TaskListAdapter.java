@@ -48,8 +48,10 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         }
 
         binding.tag.setText(task.getContext().toString().substring(0,1));
-//        binding.tag.setText("HH");
-        if(task.getContext() == HOME) {
+
+        if (task.isCompleted()) {
+            binding.tag.setBackgroundColor(Color.GRAY);
+        } else if(task.getContext() == HOME) {
             binding.tag.setBackgroundColor(Color.rgb(244, 238, 18));
         } else if (task.getContext() == WORK) {
             binding.tag.setBackgroundColor(Color.rgb(188, 215, 237));
