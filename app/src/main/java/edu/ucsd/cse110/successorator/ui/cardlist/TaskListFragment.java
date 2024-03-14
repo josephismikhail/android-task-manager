@@ -1,6 +1,8 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -180,18 +182,23 @@ public class TaskListFragment extends Fragment{
                 // Perform actions based on the selected item
                 switch (selectedItem) {
                     case "Cancel":
+                        focusModeSpinner.setBackgroundTintList(null);
                         activityModel.switchContextView(ContextViews.ALL);
                         break;
                     case "Home":
+                        focusModeSpinner.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(244, 238, 18)));
                         activityModel.switchContextView(ContextViews.HOME);
                         break;
                     case "Work":
+                        focusModeSpinner.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(188, 215, 237)));
                         activityModel.switchContextView(ContextViews.WORK);
                         break;
                     case "School":
+                        focusModeSpinner.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(243, 213, 237)));
                         activityModel.switchContextView(ContextViews.SCHOOL);
                         break;
                     case "Errand":
+                        focusModeSpinner.setBackgroundTintList(ColorStateList.valueOf(Color.rgb(213, 251, 175)));
                         activityModel.switchContextView(ContextViews.ERRAND);
                         break;
                 }
