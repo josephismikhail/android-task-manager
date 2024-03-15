@@ -1,5 +1,10 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.ERRAND;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.SCHOOL;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.WORK;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -7,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
@@ -15,11 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import edu.ucsd.cse110.successorator.databinding.FragmentTaskListBinding;
 import edu.ucsd.cse110.successorator.databinding.ListItemTaskBinding;
-import edu.ucsd.cse110.successorator.lib.domain.TagType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
     private final Consumer<Task> onTaskClicked;
@@ -39,6 +40,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Task task = getItem(position);
+        if (task == null) {System.out.println("task is null in TLA");}
         assert task != null;
 
         ListItemTaskBinding binding;
@@ -49,19 +51,20 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
 
-        binding.tag.setText(task.getTagType().toString().indexOf(0,1));
+        binding.tag.setText(task.getContext().toString().substring(0, 1));
         var layoutInflater = LayoutInflater.from(getContext());
 //        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
 
-        if(task.getTagType() == TagType.HOME) {
-            binding.tag.setBackgroundColor(Color.parseColor("#F4EEBB"));
-//            binding2.mode.setBackgroundColor(Color.parseColor("#F4EEBB"));
-        } else if (task.getTagType() == TagType.WORK) {
-
-        }else if (task.getTagType() == TagType.SCHOOL) {
-
-        }else if (task.getTagType() == TagType.ERRAND) {
-
+        if (task.isCompleted()) {
+            binding.tag.setBackgroundColor(Color.GRAY);
+        } else if(task.getContext() == HOME) {
+            binding.tag.setBackgroundColor(Color.rgb(244, 238, 18));
+        } else if (task.getContext() == WORK) {
+            binding.tag.setBackgroundColor(Color.rgb(188, 215, 237));
+        }else if (task.getContext() == SCHOOL) {
+            binding.tag.setBackgroundColor(Color.rgb(243, 213, 237));
+        }else if (task.getContext() == ERRAND) {
+            binding.tag.setBackgroundColor(Color.rgb(213, 251, 175));
         }
 
         // M -> V

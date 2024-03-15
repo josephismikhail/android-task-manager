@@ -13,7 +13,9 @@ import java.util.Objects;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.RecurringTaskMenuBinding;
+import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.TaskViews;
 
 public class CreateRecurringMenuFragment extends DialogFragment {
     private RecurringTaskMenuBinding view;
@@ -53,7 +55,9 @@ public class CreateRecurringMenuFragment extends DialogFragment {
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         if (view.deleteRecurring.isChecked()) {
+            var newTask = task.withRecurType(RecurType.ONCE);
             activityModel.deleteTask(task.getId());
+            activityModel.newTask(newTask);
         }
         Objects.requireNonNull(getDialog()).dismiss();
     }

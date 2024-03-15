@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("dagger.hilt.android.plugin")
@@ -35,6 +37,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    packaging {
+        resources {
+            pickFirsts.add("mockito-extensions/org.mockito.plugins.MockMaker")
+        }
+    }
 }
 
 dependencies {
@@ -46,7 +54,12 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+
     androidTestImplementation("org.mockito:mockito-android:4.11.0")
+
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito:2.28.1")
 
     debugImplementation("androidx.test:monitor:1.6.1")
     
@@ -55,8 +68,4 @@ dependencies {
     implementation("com.google.dagger:hilt-android-testing:2.38.1")
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.38.1")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
-
-//    testImplementation("androidx.arch.core:core-testing:2.2.0")
-//    testImplementation("androidx.arch.core:core-runtime:2.2.0")
-//    testImplementation("androidx.arch.core:core-common:2.2.0")
 }

@@ -8,9 +8,13 @@
 
     <TextView
         android:id="@+id/tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:text="TextView"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:flow_horizontalAlign="center"
+        app:flow_verticalAlign="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_text"
         app:layout_constraintStart_toStartOf="parent"
