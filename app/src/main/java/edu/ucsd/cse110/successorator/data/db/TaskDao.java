@@ -51,6 +51,9 @@ public interface TaskDao {
     @Query("UPDATE tasks SET sortOrder = sortOrder + :by " + "WHERE sortOrder >= :from AND sortOrder <= :to")
     void shiftSortOrder(int from, int to, int by);
 
+    @Query("SELECT * FROM tasks WHERE task = :taskName LIMIT 1")
+    LiveData<TaskEntity> findByName(String taskName);
+
     @Transaction
     default int prepend(TaskEntity task) {
         shiftSortOrder(getMinSortOrder(), getMaxSortOrder(), 1);
