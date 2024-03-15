@@ -2,6 +2,7 @@ package edu.ucsd.cse110.successorator.data.db;
 
 import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,10 @@ public class RoomTaskRepository implements TaskRepository {
 
     public RoomTaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
+    }
+
+    protected TaskDao getTaskDao() {
+        return taskDao;
     }
 
     @Override
@@ -189,6 +194,14 @@ public class RoomTaskRepository implements TaskRepository {
 
         // Save the updated task
         taskDao.insert(taskEntity);
+    }
+
+    public Task findTaskByName(String task) {
+        return null;
+    }
+
+    public boolean isTaskPresentOnSameDayOfWeek(String submitCse110Homework, LocalDateTime nextDayAtTwoAM) {
+        return false;
     }
 
     @Override
