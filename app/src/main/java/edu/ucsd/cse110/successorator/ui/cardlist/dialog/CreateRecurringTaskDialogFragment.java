@@ -115,6 +115,7 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         var taskText = view.taskEditText.getText().toString();
         RecurType recurType = RecurType.DAILY;
         TaskContext taskContext = TaskContext.HOME;
+        boolean setDisplay = false;
 
         if (taskText.trim().isEmpty()) {
             // do nothing
@@ -140,9 +141,13 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
             taskContext = TaskContext.ERRAND;
         }
 
+        if (selectedDate == activityModel.getCurrentTime() || selectedDate == activityModel.getCurrentTime().plusDays(1)) {
+            setDisplay = true;
+        }
+
         var task = new Task(null, taskText, false, -1,
                 null, taskContext, recurType,
-                selectedDate.atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+                selectedDate.atZone(ZoneId.systemDefault()).toEpochSecond(), setDisplay);
         activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();
     }
