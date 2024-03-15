@@ -169,23 +169,23 @@ public class TaskListFragment extends Fragment {
                 switch (selectedItem.split(" - ")[0]) { // Using split to get the first part ("Today", "Tomorrow", "Pending", "Recurring")
                     case "Today":
                         // Perform action for Today
-                        mainView.taskList.setEmptyView(mainView.emptyText);
                         activityModel.switchView(TaskViews.TODAY_VIEW);
+                        mainView.taskList.setEmptyView(mainView.emptyText);
                         break;
                     case "Tomorrow":
                         // Perform action for Tomorrow
-                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         activityModel.switchView(TaskViews.TOMORROW_VIEW);
+                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         break;
                     case "Pending":
                         // Perform action for Pending
-                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         activityModel.switchView(TaskViews.PENDING_VIEW);
+                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         break;
                     case "Recurring":
                         // Perform action for Recurring
-                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         activityModel.switchView(TaskViews.RECURRING_VIEW);
+                        mainView.emptyText.setVisibility(View.INVISIBLE);
                         break;
                 }
             }

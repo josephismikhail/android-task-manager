@@ -126,6 +126,7 @@
 
             <RadioButton
                 android:id="@+id/dailyButton"
+                android:checked="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
