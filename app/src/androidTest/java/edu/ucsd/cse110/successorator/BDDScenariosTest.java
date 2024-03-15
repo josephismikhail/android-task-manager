@@ -60,6 +60,7 @@ public class BDDScenariosTest {
 
     /**
      *      User Story 1
+     *      Recurring Tasks
      *      BDD Scenario 3 - Create Weekly Task
      **/
     @Test
@@ -92,6 +93,7 @@ public class BDDScenariosTest {
 
     /**
      *      User Story 2
+     *      New Tasks Views
      *      BDD Scenario 4 - Rollover unfinished tasks from “Tomorrow” view to next day’s “Today”
      **/
     @Test
@@ -122,6 +124,7 @@ public class BDDScenariosTest {
 
     /**
      *      User Story 3
+     *      Pending Tasks
      *      BDD Scenario 1 - Create a task in “Pending" view
      **/
     @Test
@@ -154,8 +157,46 @@ public class BDDScenariosTest {
         assertFalse(containsTask(recurringTasks, "book a plane ticket"));
     }
 
+    /**
+     *      User Story 5
+     *      Contextual Task Management
+     *      BDD Scenario 1 - Create a task with a Context
+     **/
+    @Test
+    public void testCreateTaskWithContext() {
+        // When creating a task with "Work" context
+        Task newTask = new Task(null, "Grade exams", false, 0, null, TaskContext.WORK, RecurType.PENDING, System.currentTimeMillis() / 1000, true);
+        viewModel.newTask(newTask);
+
+        // Then: Verify the task appears in the Pending view
+        viewModel.switchView(TaskViews.PENDING_VIEW);
+        List<Task> pendingTasks = viewModel.getOrderedTasks().getValue();
+        assert pendingTasks != null;
+        assertTrue(containsTaskWithSpecificContext(pendingTasks, "Grade exams", TaskContext.WORK));
+
+        // And: Verify the task does not appear in the Today view
+        viewModel.switchView(TaskViews.TODAY_VIEW);
+        List<Task> todayTasks = viewModel.getOrderedTasks().getValue();
+        assertFalse(containsTask(todayTasks, "Grade exams"));
+
+        // And: Verify the task does not appear in the Tomorrow view
+        viewModel.switchView(TaskViews.TOMORROW_VIEW);
+        List<Task> tomorrowTasks = viewModel.getOrderedTasks().getValue();
+        assertFalse(containsTask(tomorrowTasks, "Grade exams"));
+
+        // And: Verify the task does not appear in the Recurring view
+        viewModel.switchView(TaskViews.RECURRING_VIEW);
+        List<Task> recurringTasks = viewModel.getOrderedTasks().getValue();
+        assertFalse(containsTask(recurringTasks, "Grade exams"));
+    }
+
     // Helper method to check if a list of tasks contains a task with a specific name
     private boolean containsTask(List<Task> tasks, String taskName) {
         return tasks.stream().anyMatch(task -> task.getTask().equals(taskName));
+    }
+
+    // Helper method to check if a list of tasks contains a task with a specific name & context
+    private boolean containsTaskWithSpecificContext(List<Task> tasks, String taskName, TaskContext context) {
+        return tasks.stream().anyMatch(task -> task.getTask().equals(taskName) && task.getContext() == context);
     }
 }
