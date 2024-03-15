@@ -91,9 +91,7 @@ public class Task implements Serializable {
     public Task withSortOrder(int sortOrder) {
         return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
-    public Task withContext(Context context) {
-        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
-    }
+
     public Task withRecurType(RecurType recurType) {
         return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
