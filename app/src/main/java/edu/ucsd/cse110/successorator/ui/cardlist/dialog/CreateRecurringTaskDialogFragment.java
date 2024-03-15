@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +25,7 @@ import java.time.temporal.ChronoField;
 import java.util.Locale;
 import java.util.Objects;
 
+import edu.ucsd.cse110.successorator.MainActivity;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateRecurringTaskBinding;
@@ -36,7 +37,7 @@ import edu.ucsd.cse110.successorator.lib.domain.Task;
 public class CreateRecurringTaskDialogFragment extends DialogFragment {
     private FragmentDialogCreateRecurringTaskBinding view;
     private MainViewModel activityModel;
-    private LocalDate selectedDate;
+    private LocalDateTime selectedDate;
 
     CreateRecurringTaskDialogFragment() {}
 
@@ -51,16 +52,37 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         this.view = FragmentDialogCreateRecurringTaskBinding.inflate(getLayoutInflater());
-        selectedDate = LocalDate.now();
+        selectedDate = activityModel.getCurrentTime();
         updateDateButtonText();
         // Click save button to save
         FragmentDialogCreateRecurringTaskBinding binding = this.view;
         ImageButton saveButton = binding.saveButton;
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
+
+
+        LocalDateTime now = activityModel.getCurrentTime();
+        int year = now.getYear();
+        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
+        int day = now.getDayOfMonth();
+
         // Click date button to show date picker
         Button dateSelectButton = view.dateSelect;
-        dateSelectButton.setOnClickListener(this::showDatePickerDialog);
+        dateSelectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(),
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            selectedDate = LocalDateTime.of(year, month + 1, dayOfMonth, 0, 0);
+                            updateDateButtonText();
+                            updateRecurringOptionLabels();
+                        }
+                    }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
         return new AlertDialog.Builder(getActivity())
                 .setView(view.getRoot())
                 .create();
@@ -76,20 +98,23 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
     }
 
-    private void showDatePickerDialog(View v) {
-        LocalDate now = LocalDate.now();
-        int year = now.getYear();
-        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
-        int day = now.getDayOfMonth();
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(), (view, yearSelected, monthOfYear, dayOfMonth) -> {
-            selectedDate = LocalDate.of(yearSelected, monthOfYear + 1, dayOfMonth);
-            updateDateButtonText();
-            updateRecurringOptionLabels();
-        }, year, month, day);
-
-        datePickerDialog.show();
-    }
+//    private void showDatePickerDialog(View v) {
+//        LocalDateTime now = activityModel.getCurrentTime();
+//        int year = now.getYear();
+//        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
+//        int day = now.getDayOfMonth();
+//
+//        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(), (view, yearSelected, monthOfYear, dayOfMonth) -> {
+//            @Override
+//            public void onDateSet(DatePicker view, )
+//
+//            selectedDate = LocalDateTime.of(yearSelected, monthOfYear, dayOfMonth, 0, 0);
+//            updateDateButtonText();
+//            updateRecurringOptionLabels();
+//        }, year, month, day);
+//
+//        datePickerDialog.show();
+//    }
 
     private void updateDateButtonText() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -98,11 +123,7 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
     }
 
     private void updateRecurringOptionLabels() {
-        if (selectedDate == null) return;
-
-        // Update button texts based on the selected date
-        DateTimeFormatter dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEEE", Locale.getDefault());
-        String weeklyText = "Weekly on " + selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        String weeklyText = "Weekly on " + selectedDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
         String monthlyText = "Monthly on " + selectedDate.format(DateTimeFormatter.ofPattern("MMM dd"));
         String yearlyText = "Yearly on " + selectedDate.format(DateTimeFormatter.ofPattern("MMM dd"));
 
@@ -113,36 +134,45 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
 
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
-        if (taskText.trim().isEmpty() || selectedDate == null) { return; }
+        RecurType recurType = RecurType.DAILY;
+        TaskContext taskContext = TaskContext.HOME;
 
-        var context = getTaskContext();
-
-        long epochSecond = selectedDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
-        var task = new Task(null, taskText, false, -1,
-                null, context, RecurType.DAILY,
-                epochSecond, true);
-
-        if (view.dailyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.DAILY));
-        } else if (view.weeklyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.WEEKLY));
-        } else if (view.monthlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.MONTHLY));
-        } else if (view.yearlyButton.isChecked()) {
-            activityModel.newTask(task.withRecurType(RecurType.YEARLY));
+        if (taskText.trim().isEmpty()) {
+            // do nothing
+            Objects.requireNonNull(getDialog()).dismiss();
+            return;
         }
+
+        // Getting recurType
+        if (view.weeklyButton.isChecked()) {
+            recurType = RecurType.WEEKLY;
+        } else if (view.monthlyButton.isChecked()) {
+            recurType = RecurType.MONTHLY;
+        } else if (view.yearlyButton.isChecked()) {
+            recurType = RecurType.YEARLY;
+        }
+
+        // Getting TaskContext
+        if (view.workButton.isChecked()) {
+            taskContext = TaskContext.WORK;
+        } else if (view.schoolButton.isChecked()) {
+            taskContext = TaskContext.SCHOOL;
+        } else if (view.errandsButton.isChecked()) {
+            taskContext = TaskContext.ERRAND;
+        }
+
+        var task = new Task(null, taskText, false, -1,
+                null, taskContext, recurType,
+                selectedDate.atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+        activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false); // Replace with your actual layout file
+        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false);
         FragmentDialogCreateRecurringTaskBinding binding = this.view;
-        if (binding.weeklyButton == null || binding.monthlyButton == null || binding.yearlyButton == null) {
-            Log.e("YourFragment", "RadioButton weeklyButton not found in the layout");
-            return view;
-        }
         LocalDateTime currentTime = activityModel.getCurrentTime();
         LocalDateTime cutoffTime = activityModel.getCurrentTime().toLocalDate().atTime(2, 0,0);
 
@@ -152,9 +182,6 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
             cutoffTime = currentTime;
         }
         activityModel.setNewTime(cutoffTime);
-
-//        var onceTaskText = "Once";
-//        binding.onceButton.setText(onceTaskText);
 
         var dailyRecurText = "Daily";
         binding.dailyButton.setText(dailyRecurText);
@@ -191,19 +218,19 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         return view;
     }
 
-    private TaskContext getTaskContext() {
-        if (view.homeButton.isChecked()) {
-            return TaskContext.HOME;
-        }
-        else if (view.schoolButton.isChecked()) {
-            return TaskContext.SCHOOL;
-        }
-        else if (view.workButton.isChecked()) {
-            return TaskContext.WORK;
-        }
-        else {
-            return TaskContext.ERRAND;
-        }
-    }
+//    private TaskContext getTaskContext() {
+//        if (view.homeButton.isChecked()) {
+//            return TaskContext.HOME;
+//        }
+//        else if (view.schoolButton.isChecked()) {
+//            return TaskContext.SCHOOL;
+//        }
+//        else if (view.workButton.isChecked()) {
+//            return TaskContext.WORK;
+//        }
+//        else {
+//            return TaskContext.ERRAND;
+//        }
+//    }
 
 }

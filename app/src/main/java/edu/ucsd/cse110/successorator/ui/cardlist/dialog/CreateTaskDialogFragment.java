@@ -77,6 +77,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
         if (taskText.trim().isEmpty()) {
             // do nothing
             Objects.requireNonNull(getDialog()).dismiss();
+            return;
         }
 
         // Getting recurType
@@ -109,12 +110,8 @@ public class CreateTaskDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false); // Replace with your actual layout file
+        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false);
         FragmentDialogCreateTaskBinding binding = this.view;
-        /*if (binding.weeklyButton == null || binding.monthlyButton == null || binding.yearlyButton == null) {
-            Log.e("YourFragment", "RadioButton weeklyButton not found in the layout");
-            return view;
-        }*/
         LocalDateTime currentTime = activityModel.getCurrentTime();
         LocalDateTime cutoffTime = activityModel.getCurrentTime().toLocalDate().atTime(2, 0,0);
 
