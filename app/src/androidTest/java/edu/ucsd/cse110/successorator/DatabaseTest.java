@@ -7,10 +7,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
 
 import android.content.Context;
 
@@ -22,7 +23,6 @@ import edu.ucsd.cse110.successorator.data.db.TaskDao;
 import edu.ucsd.cse110.successorator.data.db.TaskEntity;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseTest {

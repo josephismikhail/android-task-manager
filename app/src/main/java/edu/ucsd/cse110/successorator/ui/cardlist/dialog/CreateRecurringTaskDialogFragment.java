@@ -1,12 +1,15 @@
 package edu.ucsd.cse110.successorator.ui.cardlist.dialog;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -22,21 +25,24 @@ import java.time.temporal.ChronoField;
 import java.util.Locale;
 import java.util.Objects;
 
+import edu.ucsd.cse110.successorator.MainActivity;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateRecurringTaskBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
-public class CreateTaskDialogFragment extends DialogFragment {
-    private FragmentDialogCreateTaskBinding view;
+public class CreateRecurringTaskDialogFragment extends DialogFragment {
+    private FragmentDialogCreateRecurringTaskBinding view;
     private MainViewModel activityModel;
+    private LocalDateTime selectedDate;
 
-    CreateTaskDialogFragment() {}
+    CreateRecurringTaskDialogFragment() {}
 
-    public static CreateTaskDialogFragment newInstance() {
-        var fragment = new CreateTaskDialogFragment();
+    public static CreateRecurringTaskDialogFragment newInstance() {
+        var fragment = new CreateRecurringTaskDialogFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -45,15 +51,18 @@ public class CreateTaskDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        this.view = FragmentDialogCreateTaskBinding.inflate(getLayoutInflater());
+        this.view = FragmentDialogCreateRecurringTaskBinding.inflate(getLayoutInflater());
+        selectedDate = activityModel.getCurrentTime();
+        updateDateButtonText();
         // Click save button to save
-        FragmentDialogCreateTaskBinding binding = this.view;
+        FragmentDialogCreateRecurringTaskBinding binding = this.view;
         ImageButton saveButton = binding.saveButton;
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
+        // Click date button to show date picker
+        Button dateSelectButton = view.dateSelect;
+        dateSelectButton.setOnClickListener(this::showDatePickerDialog);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("New Task")
-                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
                 .create();
     }
@@ -66,12 +75,45 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
+    }
 
+    private void showDatePickerDialog(View v) {
+        LocalDateTime now = selectedDate;
+        int year = now.getYear();
+        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
+        int day = now.getDayOfMonth();
+        int hours = now.getHour();
+        int minutes = now.getMinute();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(),
+                (view, year1, month1, dayOfMonth) -> {
+                    selectedDate = LocalDateTime.of(year1, month1 + 1, dayOfMonth, hours, minutes);
+                    updateDateButtonText();
+                    updateRecurringOptionLabels();
+                }, year, month, day);
+
+        datePickerDialog.show();
+    }
+
+    private void updateDateButtonText() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String formattedDate = selectedDate.format(formatter);
+        view.dateSelect.setText(formattedDate); // Update the button text
+    }
+
+    private void updateRecurringOptionLabels() {
+        String weeklyText = "Weekly on " + selectedDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
+        String monthlyText = "Monthly on " + selectedDate.format(DateTimeFormatter.ofPattern("MMM dd"));
+        String yearlyText = "Yearly on " + selectedDate.format(DateTimeFormatter.ofPattern("MMM dd"));
+
+        view.weeklyButton.setText(weeklyText);
+        view.monthlyButton.setText(monthlyText);
+        view.yearlyButton.setText(yearlyText);
     }
 
     private void onSaveButtonClick(View v) {
         var taskText = view.taskEditText.getText().toString();
-        RecurType recurType = RecurType.ONCE;
+        RecurType recurType = RecurType.DAILY;
         TaskContext taskContext = TaskContext.HOME;
 
         if (taskText.trim().isEmpty()) {
@@ -81,9 +123,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
         }
 
         // Getting recurType
-        if (view.dailyButton.isChecked()) {
-            recurType = RecurType.DAILY;
-        } else if (view.weeklyButton.isChecked()) {
+        if (view.weeklyButton.isChecked()) {
             recurType = RecurType.WEEKLY;
         } else if (view.monthlyButton.isChecked()) {
             recurType = RecurType.MONTHLY;
@@ -102,7 +142,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
 
         var task = new Task(null, taskText, false, -1,
                 null, taskContext, recurType,
-                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
+                selectedDate.atZone(ZoneId.systemDefault()).toEpochSecond(), true);
         activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();
     }
@@ -111,7 +151,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false);
-        FragmentDialogCreateTaskBinding binding = this.view;
+        FragmentDialogCreateRecurringTaskBinding binding = this.view;
         LocalDateTime currentTime = activityModel.getCurrentTime();
         LocalDateTime cutoffTime = activityModel.getCurrentTime().toLocalDate().atTime(2, 0,0);
 
@@ -121,9 +161,6 @@ public class CreateTaskDialogFragment extends DialogFragment {
             cutoffTime = currentTime;
         }
         activityModel.setNewTime(cutoffTime);
-
-        var onceTaskText = "Once";
-        binding.onceButton.setText(onceTaskText);
 
         var dailyRecurText = "Daily";
         binding.dailyButton.setText(dailyRecurText);
@@ -159,5 +196,4 @@ public class CreateTaskDialogFragment extends DialogFragment {
         binding.yearlyButton.setText(yearlyRecurText);
         return view;
     }
-
 }

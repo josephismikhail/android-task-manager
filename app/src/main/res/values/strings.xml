@@ -16,4 +16,6 @@
     <string name="w">W</string>
     <string name="yearly">yearly</string>
     <string name="forward_date_button">Forward Date Button</string>
+    <string name="select_date">Select Date</string>
+    <string name="starting_at">Starting at:</string>
 </resources>

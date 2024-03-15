@@ -20,10 +20,15 @@ public interface TaskRepository {
 
     void updateDisplayTask(LocalDateTime date);
 
+    void deleteTask(int id);
+
     void deleteCompletedTasks(boolean completed);
 
     void deleteCompletedTasksBefore(long cutoffTime);
 
     void completeTask(Task task);
 
+    Task findTaskByName(String task);
+
+    boolean isTaskPresentOnSameDayOfWeek(String submitCse110Homework, LocalDateTime nextDayAtTwoAM);
 }

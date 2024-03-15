@@ -29,14 +29,14 @@ import edu.ucsd.cse110.successorator.lib.domain.TaskContext;
 import edu.ucsd.cse110.successorator.lib.domain.RecurType;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 
-public class CreateTaskDialogFragment extends DialogFragment {
+public class CreateTomorrowTaskDialogFragment extends DialogFragment {
     private FragmentDialogCreateTaskBinding view;
     private MainViewModel activityModel;
 
-    CreateTaskDialogFragment() {}
+    CreateTomorrowTaskDialogFragment() {}
 
-    public static CreateTaskDialogFragment newInstance() {
-        var fragment = new CreateTaskDialogFragment();
+    public static CreateTomorrowTaskDialogFragment newInstance() {
+        var fragment = new CreateTomorrowTaskDialogFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -52,8 +52,6 @@ public class CreateTaskDialogFragment extends DialogFragment {
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("New Task")
-                .setMessage("Please provide the new task text.")
                 .setView(view.getRoot())
                 .create();
     }
@@ -66,61 +64,51 @@ public class CreateTaskDialogFragment extends DialogFragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
-
     }
 
     private void onSaveButtonClick(View v) {
+        var context = getTaskContext();
         var taskText = view.taskEditText.getText().toString();
-        RecurType recurType = RecurType.ONCE;
-        TaskContext taskContext = TaskContext.HOME;
-
         if (taskText.trim().isEmpty()) {
             // do nothing
-            Objects.requireNonNull(getDialog()).dismiss();
-            return;
-        }
-
-        // Getting recurType
-        if (view.dailyButton.isChecked()) {
-            recurType = RecurType.DAILY;
+        } else if (view.onceButton.isChecked()){
+            var task = new Task(null, taskText, false, -1,
+                    null, context, RecurType.ONCE,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task);
+        } else if (view.dailyButton.isChecked()) {
+            var task = new Task(null, taskText, false, -1,
+                    null, context, RecurType.DAILY,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task);
         } else if (view.weeklyButton.isChecked()) {
-            recurType = RecurType.WEEKLY;
+            var task = new Task(null, taskText, false, -1,
+                    null, context, RecurType.WEEKLY,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task);
         } else if (view.monthlyButton.isChecked()) {
-            recurType = RecurType.MONTHLY;
+            var task = new Task(null, taskText, false, -1,
+                    null, context, RecurType.MONTHLY,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task);
         } else if (view.yearlyButton.isChecked()) {
-            recurType = RecurType.YEARLY;
+            var task = new Task(null, taskText, false, -1,
+                    null, context, RecurType.YEARLY,
+                    activityModel.getCurrentTime().plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(), false);
+            activityModel.newTask(task);
         }
-
-        // Getting TaskContext
-        if (view.workButton.isChecked()) {
-            taskContext = TaskContext.WORK;
-        } else if (view.schoolButton.isChecked()) {
-            taskContext = TaskContext.SCHOOL;
-        } else if (view.errandsButton.isChecked()) {
-            taskContext = TaskContext.ERRAND;
-        }
-
-        var task = new Task(null, taskText, false, -1,
-                null, taskContext, recurType,
-                activityModel.getCurrentTime().atZone(ZoneId.systemDefault()).toEpochSecond(), true);
-        activityModel.newTask(task);
         Objects.requireNonNull(getDialog()).dismiss();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_dialog_create_task, container, false); // Replace with your actual layout file
         FragmentDialogCreateTaskBinding binding = this.view;
-        LocalDateTime currentTime = activityModel.getCurrentTime();
-        LocalDateTime cutoffTime = activityModel.getCurrentTime().toLocalDate().atTime(2, 0,0);
-
-        if (currentTime.isBefore(cutoffTime)) {
-            cutoffTime = cutoffTime.minusDays(1);
-        } else {
-            cutoffTime = currentTime;
+        if (binding.weeklyButton == null || binding.monthlyButton == null || binding.yearlyButton == null) {
+            Log.e("YourFragment", "RadioButton weeklyButton not found in the layout");
+            return view;
         }
-        activityModel.setNewTime(cutoffTime);
 
         var onceTaskText = "Once";
         binding.onceButton.setText(onceTaskText);
@@ -130,11 +118,11 @@ public class CreateTaskDialogFragment extends DialogFragment {
 
         // Weekly button text
         var weeklyRecurText = "Weekly on " +
-                activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
+                activityModel.getCurrentTime().plusDays(1).getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
         binding.weeklyButton.setText(weeklyRecurText);
 
         // Monthly button text
-        int nthWeekday = activityModel.getCurrentTime().get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        int nthWeekday = activityModel.getCurrentTime().plusDays(1).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
         String ordinalIndicator;
         switch (nthWeekday) {
             case 1:
@@ -151,13 +139,28 @@ public class CreateTaskDialogFragment extends DialogFragment {
                 break;
         }
         var monthlyRecurText = "Monthly on " + nthWeekday + ordinalIndicator + " " +
-                activityModel.getCurrentTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
+                activityModel.getCurrentTime().plusDays(1).getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault());
         binding.monthlyButton.setText(monthlyRecurText);
 
         // Yearly button text
-        var yearlyRecurText = "Yearly on " + DateTimeFormatter.ofPattern("MM/dd").format(activityModel.getCurrentTime());
+        var yearlyRecurText = "Yearly on " + DateTimeFormatter.ofPattern("MM/dd").format(activityModel.getCurrentTime().plusDays(1));
         binding.yearlyButton.setText(yearlyRecurText);
         return view;
+    }
+
+    private TaskContext getTaskContext() {
+        if (view.homeButton.isChecked()) {
+            return TaskContext.HOME;
+        }
+        else if (view.schoolButton.isChecked()) {
+            return TaskContext.SCHOOL;
+        }
+        else if (view.workButton.isChecked()) {
+            return TaskContext.WORK;
+        }
+        else {
+            return TaskContext.ERRAND;
+        }
     }
 
 }

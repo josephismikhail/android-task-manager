@@ -2,9 +2,9 @@ package edu.ucsd.cse110.successorator.data.db;
 
 import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -25,6 +25,10 @@ public class RoomTaskRepository implements TaskRepository {
 
     public RoomTaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
+    }
+
+    protected TaskDao getTaskDao() {
+        return taskDao;
     }
 
     @Override
@@ -82,10 +86,20 @@ public class RoomTaskRepository implements TaskRepository {
         for (TaskEntity task : taskList) {
             if (!checkRecurTask(task, date) && task.isCompleted()
                     && completedBeforeToday(task.toTask(), date)) {
+                task.changeStatus();
                 task.setDisplay(false);
                 taskDao.insert(task);
-            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+            } else if (checkRecurTask(task, date) && task.isCompleted() && task.recurType == RecurType.DAILY) {
                 task.changeStatus();
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && task.isCompleted()) {
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (checkRecurTask(task, date) && !task.isCompleted()) {
+                task.setDisplay(true);
+                taskDao.insert(task);
+            } else if (!task.isCompleted() && task.recurType == RecurType.ONCE) {
                 task.setDisplay(true);
                 taskDao.insert(task);
             }
@@ -182,6 +196,20 @@ public class RoomTaskRepository implements TaskRepository {
         taskDao.insert(taskEntity);
     }
 
+    public Task findTaskByName(String task) {
+        return null;
+    }
+
+    public boolean isTaskPresentOnSameDayOfWeek(String submitCse110Homework, LocalDateTime nextDayAtTwoAM) {
+        return false;
+    }
+
+    @Override
+    public void deleteTask(int id) {
+        TaskEntity task = taskDao.find(id);
+        taskDao.remove(task.id);
+    }
+
     @Override
     public void deleteCompletedTasks(boolean completed) {
         for (TaskEntity task : taskDao.findAll()) {
@@ -189,10 +217,6 @@ public class RoomTaskRepository implements TaskRepository {
             if (task.isCompleted() && (recurType == RecurType.PENDING || recurType == RecurType.ONCE)) {
                 taskDao.remove(task.id);
             }
-//            else {//if (recurType == RecurType.DAILY){
-//                task.uncomplete();
-//                save(task.toTask());
-//            }
         }
     }
 

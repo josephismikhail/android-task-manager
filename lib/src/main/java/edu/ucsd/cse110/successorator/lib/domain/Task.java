@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
@@ -15,13 +14,13 @@ public class Task implements Serializable {
     private boolean completed;
     private final int sortOrder;
     private Long completedTime;
-    private Context context;
+    private TaskContext context;
     private RecurType recurType;
     private Long recurDate;
     private boolean display;
 
     public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
-                @Nullable Long completedTime, Context context, RecurType recurType, Long recurDate, boolean display) {
+                @Nullable Long completedTime, TaskContext context, RecurType recurType, Long recurDate, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
@@ -56,7 +55,7 @@ public class Task implements Serializable {
         return completedTime;
     }
 
-    public Context getContext() {
+    public TaskContext getContext() {
         return context;
     }
 

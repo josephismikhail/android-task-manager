@@ -1,9 +1,9 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
-import static edu.ucsd.cse110.successorator.lib.domain.Context.ERRAND;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.HOME;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.SCHOOL;
-import static edu.ucsd.cse110.successorator.lib.domain.Context.WORK;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.ERRAND;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.SCHOOL;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.WORK;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -24,19 +24,23 @@ import edu.ucsd.cse110.successorator.lib.domain.Task;
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
     private final Consumer<Task> onTaskClicked;
+    private final Consumer<Task> onTaskLongPress;
 
     public TaskListAdapter(
             Context context,
             List<Task> tasks,
-            Consumer<Task> onTaskClicked) {
+            Consumer<Task> onTaskClicked,
+            Consumer<Task> onTaskLongPress) {
         super(context, 0, new ArrayList<>(tasks));
         this.onTaskClicked = onTaskClicked;
+        this.onTaskLongPress = onTaskLongPress;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Task task = getItem(position);
+        if (task == null) {System.out.println("task is null in TLA");}
         assert task != null;
 
         ListItemTaskBinding binding;
@@ -47,7 +51,9 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
         }
 
-        binding.tag.setText(task.getContext().toString().substring(0,1));
+        binding.tag.setText(task.getContext().toString().substring(0, 1));
+        var layoutInflater = LayoutInflater.from(getContext());
+//        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
 
         if (task.isCompleted()) {
             binding.tag.setBackgroundColor(Color.GRAY);
@@ -76,6 +82,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Bind clicks to update the model.
         binding.getRoot().setOnClickListener(v -> {
             onTaskClicked.accept(task);
+        });
+
+        binding.getRoot().setOnLongClickListener(v -> {
+            onTaskLongPress.accept(task);
+            return true;
         });
 
 
