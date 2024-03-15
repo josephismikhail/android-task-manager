@@ -177,13 +177,11 @@ public class MainViewModel extends ViewModel {
                 newUncompletedOrderedTasks = newUncompletedOrderedTasks.stream()
                         .sorted(Comparator.comparing(Task::getContext))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
-                        .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
                         .filter(Task::display)
                         .collect(Collectors.toList());
                 newCompletedOrderedTasks = newCompletedOrderedTasks.stream()
                         .sorted(Comparator.comparing(Task::getContext))
                         .filter(t -> (t.getRecurType() != RecurType.PENDING))
-//                        .filter(t -> RoomTaskRepository.checkRecurTask(TaskEntity.fromTask(t), getCurrentTime()))
                         .filter(Task::display)
                         .collect(Collectors.toList());
                 newUncompletedOrderedTasks.addAll(newCompletedOrderedTasks);
