@@ -55,15 +55,16 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         var layoutInflater = LayoutInflater.from(getContext());
 //        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
 
-        if(task.getContext() == HOME) {
-            binding.tag.setBackgroundColor(Color.parseColor("#F4EEBB"));
-//            binding2.mode.setBackgroundColor(Color.parseColor("#F4EEBB"));
+        if (task.isCompleted()) {
+            binding.tag.setBackgroundColor(Color.GRAY);
+        } else if(task.getContext() == HOME) {
+            binding.tag.setBackgroundColor(Color.rgb(244, 238, 18));
         } else if (task.getContext() == WORK) {
-
+            binding.tag.setBackgroundColor(Color.rgb(188, 215, 237));
         }else if (task.getContext() == SCHOOL) {
-
+            binding.tag.setBackgroundColor(Color.rgb(243, 213, 237));
         }else if (task.getContext() == ERRAND) {
-
+            binding.tag.setBackgroundColor(Color.rgb(213, 251, 175));
         }
 
         // M -> V

@@ -109,4 +109,5 @@ public class TaskTest {
         task.setDisplay(true);
         assertTrue(task.display());
     }
+
 }
