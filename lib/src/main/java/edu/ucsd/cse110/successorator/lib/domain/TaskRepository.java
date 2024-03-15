@@ -27,4 +27,8 @@ public interface TaskRepository {
     void deleteCompletedTasksBefore(long cutoffTime);
 
     void completeTask(Task task);
+
+    Task findTaskByName(String task);
+
+    boolean isTaskPresentOnSameDayOfWeek(String submitCse110Homework, LocalDateTime nextDayAtTwoAM);
 }

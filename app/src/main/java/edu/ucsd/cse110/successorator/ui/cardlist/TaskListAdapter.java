@@ -1,6 +1,12 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.ERRAND;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.HOME;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.SCHOOL;
+import static edu.ucsd.cse110.successorator.lib.domain.TaskContext.WORK;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +40,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Task task = getItem(position);
+        if (task == null) {System.out.println("task is null in TLA");}
         assert task != null;
 
         ListItemTaskBinding binding;
@@ -42,6 +49,21 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         } else {
             var layoutInflater = LayoutInflater.from(getContext());
             binding = ListItemTaskBinding.inflate(layoutInflater, parent, false);
+        }
+
+        binding.tag.setText(task.getContext().toString().substring(0, 1));
+        var layoutInflater = LayoutInflater.from(getContext());
+//        @NonNull FragmentTaskListBinding binding2 = FragmentTaskListBinding.inflate(layoutInflater, parent, false);
+
+        if(task.getContext() == HOME) {
+            binding.tag.setBackgroundColor(Color.parseColor("#F4EEBB"));
+//            binding2.mode.setBackgroundColor(Color.parseColor("#F4EEBB"));
+        } else if (task.getContext() == WORK) {
+
+        }else if (task.getContext() == SCHOOL) {
+
+        }else if (task.getContext() == ERRAND) {
+
         }
 
         // M -> V

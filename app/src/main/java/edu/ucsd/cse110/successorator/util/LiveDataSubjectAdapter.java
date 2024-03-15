@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.successorator.util;
 
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
@@ -28,5 +27,9 @@ public class LiveDataSubjectAdapter<T> implements Subject<T> {
     @Override
     public void removeObserver(Observer<T> observer) {
         adaptee.removeObserver(observer::onChanged);
+    }
+
+    public LiveData<T> getAdaptee() {
+        return this.adaptee;
     }
 }

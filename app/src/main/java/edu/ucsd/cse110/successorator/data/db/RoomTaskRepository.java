@@ -2,12 +2,15 @@ package edu.ucsd.cse110.successorator.data.db;
 
 import static edu.ucsd.cse110.successorator.data.db.TaskEntity.fromTask;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,10 @@ public class RoomTaskRepository implements TaskRepository {
 
     public RoomTaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
+    }
+
+    protected TaskDao getTaskDao() {
+        return taskDao;
     }
 
     @Override
@@ -124,6 +131,18 @@ public class RoomTaskRepository implements TaskRepository {
     public static boolean checkRecurMonthly(LocalDateTime taskDate, LocalDateTime date) {
         var taskNthWeekday = taskDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
         var dateNthWeekday = date.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+
+        // Check if previous month did not contain Nth weekday
+        // If above is true, return true if current day is 1st weekday of month
+        var prevMonthLastWeekday = YearMonth.of( date.getYear(), date.getMonth().minus(1) )
+                .atEndOfMonth()
+                .with( TemporalAdjusters.previousOrSame( taskDate.getDayOfWeek() ) );
+        var prevMonthNthWeekday = prevMonthLastWeekday.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        if (prevMonthNthWeekday < taskNthWeekday && dateNthWeekday == 1
+            && taskDate.getDayOfWeek() == date.getDayOfWeek()) {
+            return true;
+        }
+
         if (taskDate.getDayOfWeek() == date.getDayOfWeek()) {
             return taskNthWeekday == dateNthWeekday;
         }
@@ -175,6 +194,14 @@ public class RoomTaskRepository implements TaskRepository {
 
         // Save the updated task
         taskDao.insert(taskEntity);
+    }
+
+    public Task findTaskByName(String task) {
+        return null;
+    }
+
+    public boolean isTaskPresentOnSameDayOfWeek(String submitCse110Homework, LocalDateTime nextDayAtTwoAM) {
+        return false;
     }
 
     @Override

@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
@@ -15,17 +14,19 @@ public class Task implements Serializable {
     private boolean completed;
     private final int sortOrder;
     private Long completedTime;
+    private TaskContext context;
     private RecurType recurType;
     private Long recurDate;
     private boolean display;
 
     public Task(@Nullable Integer id, @NonNull String task, boolean completed, int sortOrder,
-                @Nullable Long completedTime, RecurType recurType, Long recurDate, boolean display) {
+                @Nullable Long completedTime, TaskContext context, RecurType recurType, Long recurDate, boolean display) {
         this.id = id;
         this.task = task;
         this.completed = completed;
         this.sortOrder = sortOrder;
         this.completedTime = completedTime;
+        this.context = context;
         this.recurType = recurType;
         this.recurDate = recurDate;
         this.display = display;
@@ -54,6 +55,10 @@ public class Task implements Serializable {
         return completedTime;
     }
 
+    public TaskContext getContext() {
+        return context;
+    }
+
     public RecurType getRecurType() {
         return recurType;
     }
@@ -67,7 +72,7 @@ public class Task implements Serializable {
     }
 
     public Task withId(int id) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
     public void changeStatus() {
@@ -84,15 +89,15 @@ public class Task implements Serializable {
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
     public Task withRecurType(RecurType recurType) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
     public Task withRecurDate(Long recurDate) {
-        return new Task(id, task, completed, sortOrder, completedTime, recurType, recurDate, display);
+        return new Task(id, task, completed, sortOrder, completedTime, context, recurType, recurDate, display);
     }
 
     public void setDisplay(boolean display) {
