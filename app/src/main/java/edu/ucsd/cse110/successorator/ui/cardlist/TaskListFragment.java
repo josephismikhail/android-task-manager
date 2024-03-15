@@ -106,8 +106,6 @@ public class TaskListFragment extends Fragment {
         mainView.taskList.setAdapter(adapter);
 //        mainView.taskList.setEmptyView(mainView.emptyText);
 
-        Spinner dateSpinner = mainView.getRoot().findViewById(R.id.date);
-
         LocalDateTime currentLocalTime = LocalDateTime.now();
         LocalDateTime cutoffTime = currentLocalTime.toLocalDate().atTime(2,0,0);
 
@@ -123,6 +121,7 @@ public class TaskListFragment extends Fragment {
         activityModel.setNewTime(cutoffTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
 
+        Spinner dateSpinner = mainView.getRoot().findViewById(R.id.date);
         List<String> options = new ArrayList<>();
         options.add("Today - " + activityModel.getCurrentTime().format(formatter));
         options.add("Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
