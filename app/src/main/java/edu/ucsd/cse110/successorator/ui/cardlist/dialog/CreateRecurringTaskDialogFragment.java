@@ -59,30 +59,9 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         ImageButton saveButton = binding.saveButton;
         // Set a click listener for the Save ImageButton
         saveButton.setOnClickListener(this::onSaveButtonClick);
-
-
-        LocalDateTime now = activityModel.getCurrentTime();
-        int year = now.getYear();
-        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
-        int day = now.getDayOfMonth();
-
         // Click date button to show date picker
         Button dateSelectButton = view.dateSelect;
-        dateSelectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(),
-                    new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                            selectedDate = LocalDateTime.of(year, month + 1, dayOfMonth, 0, 0);
-                            updateDateButtonText();
-                            updateRecurringOptionLabels();
-                        }
-                    }, year, month, day);
-                datePickerDialog.show();
-            }
-        });
+        dateSelectButton.setOnClickListener(this::showDatePickerDialog);
         return new AlertDialog.Builder(getActivity())
                 .setView(view.getRoot())
                 .create();
@@ -98,23 +77,23 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
     }
 
-//    private void showDatePickerDialog(View v) {
-//        LocalDateTime now = activityModel.getCurrentTime();
-//        int year = now.getYear();
-//        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
-//        int day = now.getDayOfMonth();
-//
-//        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(), (view, yearSelected, monthOfYear, dayOfMonth) -> {
-//            @Override
-//            public void onDateSet(DatePicker view, )
-//
-//            selectedDate = LocalDateTime.of(yearSelected, monthOfYear, dayOfMonth, 0, 0);
-//            updateDateButtonText();
-//            updateRecurringOptionLabels();
-//        }, year, month, day);
-//
-//        datePickerDialog.show();
-//    }
+    private void showDatePickerDialog(View v) {
+        LocalDateTime now = selectedDate;
+        int year = now.getYear();
+        int month = now.getMonthValue() - 1; // DatePickerDialog uses 0-indexed months!
+        int day = now.getDayOfMonth();
+        int hours = now.getHour();
+        int minutes = now.getMinute();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireActivity(),
+                (view, year1, month1, dayOfMonth) -> {
+                    selectedDate = LocalDateTime.of(year1, month1 + 1, dayOfMonth, hours, minutes);
+                    updateDateButtonText();
+                    updateRecurringOptionLabels();
+                }, year, month, day);
+
+        datePickerDialog.show();
+    }
 
     private void updateDateButtonText() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -217,20 +196,4 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
         binding.yearlyButton.setText(yearlyRecurText);
         return view;
     }
-
-//    private TaskContext getTaskContext() {
-//        if (view.homeButton.isChecked()) {
-//            return TaskContext.HOME;
-//        }
-//        else if (view.schoolButton.isChecked()) {
-//            return TaskContext.SCHOOL;
-//        }
-//        else if (view.workButton.isChecked()) {
-//            return TaskContext.WORK;
-//        }
-//        else {
-//            return TaskContext.ERRAND;
-//        }
-//    }
-
 }
