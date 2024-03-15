@@ -51,6 +51,8 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         this.view = FragmentDialogCreateRecurringTaskBinding.inflate(getLayoutInflater());
+        selectedDate = LocalDate.now();
+        updateDateButtonText();
         // Click save button to save
         FragmentDialogCreateRecurringTaskBinding binding = this.view;
         ImageButton saveButton = binding.saveButton;

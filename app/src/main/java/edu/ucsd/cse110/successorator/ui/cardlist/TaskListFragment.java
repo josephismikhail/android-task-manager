@@ -245,6 +245,7 @@ public class TaskListFragment extends Fragment {
         activityModel.setNewTime(cutoffTime);
 
         mainView.dateButton.setOnClickListener(v -> {
+            int currentPosition = dateSpinner.getSelectedItemPosition();
             activityModel.setNewTime(activityModel.getCurrentTime().plusDays(1));
             activityModel.deleteCompletedTasks(true);
             activityModel.updateDisplayTask(activityModel.getCurrentTime());
@@ -252,6 +253,8 @@ public class TaskListFragment extends Fragment {
             options.set(0, "Today - " + activityModel.getCurrentTime().format(formatter));
             options.set(1, "Tomorrow - " + activityModel.getCurrentTime().plusDays(1).format(formatter));
             adapter.notifyDataSetChanged();
+            dateSpinnerAdapter.notifyDataSetChanged();
+            dateSpinner.setSelection(currentPosition);
         });
 
         return mainView.getRoot();
