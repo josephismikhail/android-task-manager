@@ -1,7 +1,7 @@
 # Task Management App (Successorator)
 
-A productivity app built in **Android Studio (Java)** that allows users to add, remove, and reorder daily tasks.  
-The app promotes productivity by breaking down broad goals into simple, actionable items.
+A productivity app built in **Android Studio (Java)**.
+This app will function as a TO-DO list for a user. They will be able to add goals to a list that will rollover to the next day if not completed. They can tap on any goal to mark it as finished so it is moved to the bottom of the list. The app also supports recurring goals, context setting, and different views.
 
 ---
 
