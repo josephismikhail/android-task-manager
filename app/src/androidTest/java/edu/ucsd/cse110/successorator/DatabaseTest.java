@@ -38,6 +38,11 @@ public class DatabaseTest {
                 .taskDao();
     }
 
+    @After
+    public void closeDb() {
+        db.close();
+    }
+
     @Test
     public void writeAndReadTaskTest() throws Exception {
         var testTask = new Task(0, "task", false, 0,

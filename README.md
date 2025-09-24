@@ -1,31 +1,52 @@
-# Team 5 - Successorator 
+# Task Management App (Successorator)
+
+A productivity app built in **Android Studio (Java)** that allows users to add, remove, and reorder daily tasks.  
+The app promotes productivity by breaking down broad goals into simple, actionable items.
 
 ---
 
-Successorator is a "success list" app that assists users in planning out their day by breaking down broad and oftentimes ambiguous goals into simple and digestible tasks to promote productivity in daily life.
+## My Contributions
+- Implemented **instrumented tests** with **JUnit 4** and **AndroidX Test** to validate repository and ViewModel workflows  
+- Wrote **Behavior-Driven Development (BDD)** scenarios to ensure recurring tasks, rollovers, and contextual task management worked as expected  
+- Used a **Room in-memory database** and **mockable time/data sources** for reliable, deterministic testing  
+- Led QA efforts to improve app reliability across Android versions and screen sizes  
 
-**MS2 Iteration 1:**
+---
 
-Estimated Velocity: _0.65_
+## Tech Stack
+- **Language & IDE**: Java, Android Studio  
+- **Testing**: JUnit 4, AndroidX Test  
+- **Database**: Room (with in-memory testing)  
+- **Version Control**: Git, GitHub  
 
-Estimated Work Completed: _15 hours_
+---
 
-Actual Hours Needed: _30 hours_
+## Run (Development)
+1. Clone the repository  
+   ```bash
+   git clone https://github.com/<your-username>/android-task-manager.git
+   cd android-task-manager
 
-User Stories + Tasks Addressed:
-- US1: Recurring Tasks
-- US1-1: Refactor Date
-- US1-2: Recurring Functionality
-- US1-3: Update Create Task Dialog
- 
-I1 Velocity: 15/30 = _0.5_
+## Class Notes / Iteration Logs  
+*(Original course documentation preserved for reference)*  
 
-Analysis of Iteration 1:
-- Iteration 1 progress was unideal, primarily because of the difficulty of US1-2: Recurring Functionality. We ran into issues with implementation, which pushed back our agenda for other tasks and user stories given that many of them relied on US1-2 to be completed. We purposefully high-balled the estimated hours for US1-2 to be 12 hours during the MS2 Planning Phase, but we still required additional time to attend office hours and fix multiple bugs among other things. We adjusted our plan for Iteration 2 to take on US2 and US3, which worked out nicely given that the estimated work hours for Iteration 2 were fairly low to account for such situations where we needed to roll over tasks/user stories.
+### MS2 Iteration 1
+- **Estimated Velocity:** 0.65  
+- **Estimated Work Completed:** 15 hours  
+- **Actual Hours Needed:** 30 hours  
+- **User Stories Addressed:**  
+  - US1: Recurring Tasks  
+  - US1-1: Refactor Date  
+  - US1-2: Recurring Functionality  
+  - US1-3: Update Create Task Dialog  
 
-**MS2 Iteration 2 Planning:**
+**Iteration Analysis:**  
+Progress was slowed by the complexity of US1-2 (Recurring Functionality), which delayed dependent tasks. Additional time was needed for debugging and office hours. Plans for Iteration 2 adjusted accordingly.
 
-Predicted Velocity: _0.6_
+---
 
-Justification: 
-- MS2 Iteration 1 velocity was calculated to be 0.5. We anticipated our new velocity to be larger because with the US1-2 task finished, our team will be able to work on significantly more tasks that originally relied on the correct implementation of US1-2.
+### MS2 Iteration 2 Planning
+- **Predicted Velocity:** 0.6  
+- **Justification:** With US1-2 completed, the team expected smoother progress and the ability to address more tasks in the next iteration.  
+
+---

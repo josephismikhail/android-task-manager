@@ -56,6 +56,11 @@ public class MainViewModelTest {
         viewModel = new MainViewModel(testTaskRepository, timeKeeper);
     }
 
+    @After
+    public void tearDown() {
+        db.close();
+    }
+
     @Test
     public void testUpdateDisplayTask() {
         LocalDateTime testDate = LocalDateTime.now();
